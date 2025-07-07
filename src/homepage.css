@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap');
+*{
+    font-family: 'Inter', sans-serif;
+}
+
+
+.footer{
+    margin-left: -15px;
+}
+
+.main{
+    margin-left: 45px;
+}
+
+.navbar{
+    display:flex ;
+    height: 50px;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgb(255, 255, 255);
+}
+
+#menu{
+    width: 30px;
+    height: 30px;
+}
+
+#bell{
+    width: 30px;
+    height: 30px; 
+}
+
+.title{
+    font-size: 30px;
+    font-weight: bold;
+    color: #152C5C;
+}
+
+#home{
+    cursor: pointer;
+}
+
+#goals{
+    cursor: pointer;
+}

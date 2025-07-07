@@ -1,10 +1,13 @@
+
+
 document.addEventListener("DOMContentLoaded", () => {
-  const addCatBtn = document.querySelector(".addcat_button");
-  const uncatBtn = document.querySelector(".Uncat_button");
+  const addCatBtn = document.getElementById("addcat_button");
+  const uncatBtn = document.getElementById("Uncat_button");
   const categoriesContainer = document.getElementById("categories");
+  const orseparator = document.getElementById("or-separator");
 
   let categoryCount = 0; // Partiamo da 1 perché ce n'è già una nel markup
-
+  let uncatActive = false;
   function createCategoryBlock(num) {
     const div = document.createElement("div");
     div.classList.add("category-block");
@@ -42,6 +45,15 @@ document.addEventListener("DOMContentLoaded", () => {
       div.remove();
       categoryCount -= 1;
       updateCategoryLabels();
+      const remainingBlocks = categoriesContainer.querySelectorAll(".category-block");
+      if (remainingBlocks.length === 0) {
+        // Ripristina bottoni e separatore se non ci sono più blocchi
+        uncatBtn.style.display = "inline-block";
+        addCatBtn.style.display = "inline-block";
+        orseparator.style.display = "inline-block";
+        uncatBtn.style.backgroundColor = "#888888";
+        uncatActive = false; // resetta anche lo stato
+      }
     });
 
     const arrow = document.createElement("img");
@@ -84,14 +96,33 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+    
+    
+
   addCatBtn.addEventListener("click", () => {
     categoryCount++;
     const newBlock = createCategoryBlock(categoryCount);
     categoriesContainer.appendChild(newBlock);
     categoriesContainer.scrollTop = categoriesContainer.scrollHeight;
+    uncatBtn.style.display = "none";
+    orseparator.style.display ="none";
+    
   });
 
   uncatBtn.addEventListener("click", () => {
+      uncatActive = !uncatActive; 
+
+    if (uncatActive) {
+      uncatBtn.style.backgroundColor = "black";
+      uncatBtn.style.color = "white";
+      addCatBtn.style.display = "none";
+      orseparator.style.display ="none"
+    } else {
+      uncatBtn.style.backgroundColor = "#888888"; // oppure colore originale
+      addCatBtn.style.display = "inline-block";
+      orseparator.style.display="inline-block"
+    }
+
     const allBlocks = categoriesContainer.querySelectorAll(".category-block");
     allBlocks.forEach(block => block.remove());
 
@@ -101,5 +132,86 @@ document.addEventListener("DOMContentLoaded", () => {
     if (input) input.value = "";
 
     updateCategoryLabels();
+    
   });
+
+
+
+  const confirmButton = document.getElementById("confirm_button");
+
+  confirmButton.addEventListener("click", (e) => {
+
+
+    const blocks = categoriesContainer.querySelectorAll(".category-block");
+    let hasError = false;
+
+    blocks.forEach((block, index) => {
+      const select = block.querySelector("select");
+      const input = block.querySelector(".percent_input");
+
+      // Rimuove eventuali classi errore
+
+      select.classList.remove("input-error");
+      input.classList.remove("input-error");
+
+      // Controllo categoria
+      if (!select || select.value === "") {
+        select.classList.add("input-error");
+        hasError = true;
+      }
+
+      // Controllo percentuale
+      const inputValue = input.value.trim();
+      if (
+        inputValue === "" ||
+        isNaN(inputValue) ||
+        Number(inputValue) < 0 ||
+        Number(inputValue) > 100
+      ) {
+        input.classList.add("input-error");
+        hasError = true;
+      }
+    });
+
+    // Mostra popup in base all'esito
+    if (hasError) {
+      alert("MANCA QUALCOSA ? "); // popup errore
+    } else {
+      openConfirmPopup(); // popup successo
+    }
+  });
+
+
+
 });
+
+
+function goToHomepage() {
+    window.location.href = "homepage.html";
+}
+
+
+function openConfirmPopup(){
+    document.getElementById("confirm-popup").classList.add("popupactive");
+    document.getElementById("overlay").classList.add("overlayactive");
+}
+
+function closeConfirmPopup(){
+    document.getElementById("confirm-popup").classList.remove("popupactive");
+    document.getElementById("overlay").classList.remove("overlayactive");
+    goToHomepage()
+}
+
+
+function openWarningPopup(){
+    document.getElementById("warning-popup").classList.add("popupactive");
+    document.getElementById("overlay").classList.add("overlayactive");
+}
+
+function closeWarningPopup(){
+    document.getElementById("warning-popup").classList.remove("popupactive");
+    document.getElementById("overlay").classList.remove("overlayactive");
+    goToHomepage()
+}
+
+
