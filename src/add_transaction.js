@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     const img = document.createElement("img");
-    img.src = "Red_bin.png";
+    img.src = "images/Red_bin.png";
     img.className = "delete-icon";
     img.alt = "Remove category";
     img.style.cursor = "pointer";
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     const arrow = document.createElement("img");
-    arrow.src = "Arrow_Down.png"
+    arrow.src = "images/Arrow_Down.png"
     arrow.className="arrow-down"
     arrow.style.width ="18px"
     arrow.style.height ="12px"
