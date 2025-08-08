@@ -36,22 +36,21 @@ h2 {
   margin: 10px 0 5px;
 }
 
-.signup-form {
+.login-form {
   display: flex;
   flex-direction: column;
   text-align: left;
   margin-top: 20px;
 }
 
-.signup-form label {
+.login-form label {
   margin-bottom: 5px;
   font-weight: bold;
 }
 
-.signup-form input[type="email"],
-.signup-form input[type="password"],
-.signup-form input[type="text"],
-.signup-form input[type="date"] {
+.login-form input[type="email"],
+.login-form input[type="password"],
+.login-form input[type="text"] {
   padding: 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
@@ -72,7 +71,7 @@ h2 {
   color: rgb(33, 33, 33);
 }
 
-.signup-form button[type="submit"] {
+.login-form button[type="submit"] {
   background: black;
   color: white;
   padding: 15px;
@@ -109,20 +108,6 @@ h2 {
   z-index: 0;
 }
 
-.login-text {
-  margin: 10px 0;
-}
-
-.login-text a {
-  color: #007bff;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.login-text a:hover {
-  text-decoration: underline;
-}
-
 .social-button {
   width: 100%;
   padding: 12px;
@@ -141,6 +126,35 @@ h2 {
   gap: 8px;
 }
 
+.signup-text {
+  margin: 10px 0;
+}
+
+.signup-text a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.signup-text a:hover {
+  text-decoration: underline;
+}
+
+.forgot a {
+  font-size: 13px;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.forgot a:hover {
+  text-decoration: underline;
+}
+
+.forgot {
+  text-align: right;
+  margin: 16px 0 10px;
+}
+
 .apple {
   display: flex;
   justify-content: center;
@@ -152,4 +166,6 @@ h2 {
   font-size: 12px;
   color: #777;
   margin-top: 20px;
+  text-align: center;
 }
+

@@ -2,19 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign Up – FinanceTrack</title>
-  <link rel="stylesheet" href="signup.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Log In – FinanceTrack</title>
+  <link rel="stylesheet" href="login.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <script src="signup.js"></script>
+  <script src="login.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>FinanceTrack</h1>
-    <h2>Create an account</h2>
-    <p>Enter your credentials to sign up for this app</p>
+    <h2>Log into your account</h2>
+    <p>Enter your credentials to log in for this app</p>
 
-    <form class="signup-form">
+    <form class="login-form">
       <label>Email</label>
       <input type="email" placeholder="Enter your email" required />
 
@@ -26,27 +26,26 @@
         </span>
       </div>
 
-      <label>Date of birth</label>
-      <input type="date" />
-
-      <button type="submit">Sign Up</button>
+      <button type="submit">Log In</button>
     </form>
 
-    <div class="separator"><span>or</span></div>
+    <div class="forgot">
+      <a href="#">Forgotten password?</a>
+    </div>
 
-    <p class="login-text">
-      Already have an account?
-      <a href="login.html">Sign in</a>
-    </p>
+    <div class="separator"><span>or</span></div>
 
     <button class="social-button google">Continue with Google</button>
     <button class="social-button apple">Continue with Apple</button>
 
-    <p class="terms">
-      By signing up, you agree to our<br />
-      <a href="terms.html">Terms of Service</a> and
-      <a href="privacy.html">Privacy Policy</a>
+    <p class="signup-text">
+      Don't have an account?
+      <a href="signup.html">Sign up</a>
     </p>
+
   </div>
+
+  <script src="login.js"></script>
 </body>
+
 </html>
