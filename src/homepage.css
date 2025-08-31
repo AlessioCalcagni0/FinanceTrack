@@ -4,7 +4,6 @@
 }
 
 body{
-    
     top: 6%;
     height: 915px;
     position: relative;
@@ -55,7 +54,7 @@ body{
 
 
 .hide {
-    margin-top: 15%;
+    margin-top: 3%;
     padding-top: 0;
 }
 
@@ -72,12 +71,12 @@ body{
     display: inline-block;
 }
 .dropdown-content {
-    z-index: 9999;
+    z-index: 999;
     display: none;
     position: absolute;
-    margin-top:-220%;
+    margin-top:-233%;
     padding-top: 0%;
-    margin-left: -48%;
+    margin-left: -57%;
     background-color: #0B4E92;
     width: 200px;
     height: 970px;
@@ -128,51 +127,40 @@ body{
             cursor: pointer;
             font-weight: bold;
             color: #555;
+            
         }
         .home.active {
             color: #1e90ff;
             border-bottom: 3px solid #1e90ff;
         }
         .goals-list {
-            margin-left: 50px;
+            
+            margin-left: 25px;
             display: flex;
             gap: 55px;
-            overflow-x: auto;
+            overflow-x:scroll;
             padding: 10px 0;
             scroll-snap-type: x mandatory; /* optional snap */
             -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
 
         }
 
-        .goals-list::-webkit-scrollbar-track {
-            background: #f1f1f1;    /* track background */
-            border-radius: 6px;
-        }
-
-        .goals-list::-webkit-scrollbar-thumb {
-            background: #007BFF;    /* draggable thumb */
-            border-radius: 6px;
-        }
-
-        .goals-list::-webkit-scrollbar-thumb:hover {
-            background: #0056b3;    /* hover effect */
-        }
+        
 
         .home-content {
             display: none;
-            padding: 15px;
+            padding: 10px;
         }
         .home-content.active {
             display: block;
         }
 
         .home-card {
-            flex: 0 0 250px;
+            flex: 0 0 300px;
             border: 1px solid #ccc;
             border-radius: 10px;
             padding: 15px;
             margin: 10px auto;
-            width: 90%;
             scroll-snap-align: start;
             box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
         }
@@ -210,7 +198,8 @@ body{
 
         .btn-trans {
             margin-left: 30%;
-            margin-top:30px;
+            margin-top: 4%;
+            margin-bottom: 0%;
             padding: 12px 20px;
             font-size: 16px;
             background: #007bff;

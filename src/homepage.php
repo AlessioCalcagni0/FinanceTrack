@@ -95,11 +95,8 @@ $goals = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php foreach ($goals as $goal): ?>
                         <div class="home-card">
                             <div class="card-header">
-                                <?php if (!empty($goal['photo'])): ?>
-                                    <img src="<?= htmlspecialchars($goal['photo']) ?>" alt="Goal Image" class="goal-thumb">
-                                <?php else: ?>
-                                    <img src="default_goal.png" alt="Default Goal Image" class="goal-thumb">
-                                <?php endif; ?>
+                    
+                                <img src="./images/goal_home.png" alt=" Goal Image" class="goal-thumb">
                                 <h3><?= htmlspecialchars($goal['title']) ?></h3>
                             </div>
                             <p>Deadline: <?= htmlspecialchars($goal['deadline']) ?></p>
@@ -114,12 +111,12 @@ $goals = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <div class="progress-bar" style="width: <?= $progress ?>%"></div>
                             </div>
 
-                            <p>
+                            <p style="display: flex; flex-direction:row; justify-content: space-between;">
                                 <span style="color:green">
-                                    €<?= number_format($goal['saved_amount'], 2, ',', '.') ?> (saved)
-                                </span> | 
+                                    €<?= number_format($goal['saved_amount'], 2, ',', '.') ?> 
+                                </span> 
                                 <span>
-                                    €<?= number_format($goal['saving_amount'] - $goal['saved_amount'], 2, ',', '.') ?> (to save)
+                                    €<?= number_format($goal['saving_amount'] - $goal['saved_amount'], 2, ',', '.') ?> 
                                 </span>
                             </p>
                         </div>

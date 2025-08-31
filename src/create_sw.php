@@ -38,8 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Create Shared Wallet</title>
-<link rel="stylesheet" href="shared-wallets.css">
-<script src="shared-wallets.js"></script>
+<link rel="stylesheet" href="create_sw.css">
+<script src="screate_sw.js"></script>
 
 </head>
     <body>
