@@ -1,8 +1,9 @@
+
 function openMenu(){
     document.getElementById("image1_303_309").classList.add("hide-menu");
-    document.getElementById("home").classList.add("hide-menu");
-    document.getElementById("homes").classList.add("hide-menu");
-    document.getElementById("wallets").classList.add("hide-menu");
+    document.getElementById("hh").classList.add("hide-menu");
+    document.getElementById("hhs").classList.add("hide-menu");
+    document.getElementById("ww").classList.add("hide-menu");
     document.getElementsByClassName("back-arrow")[0].classList.add("show-menu");
 
     document.getElementById("menu-content").classList.toggle("show-menu");
@@ -11,11 +12,11 @@ function openMenu(){
 }
 
 window.onclick = function(event) {
-  if (!event.target.matches('#menu')) {
+  if (!event.target.matches('#menu') && !event.target.matches("menu-content")) {
     document.getElementById("image1_303_309").classList.remove("hide-menu");
-    document.getElementById("home").classList.remove("hide-menu");
-    document.getElementById("homes").classList.remove("hide-menu");
-    document.getElementById("wallets").classList.remove("hide-menu");
+    document.getElementById("hh").classList.remove("hide-menu");
+    document.getElementById("hhs").classList.remove("hide-menu");
+    document.getElementById("ww").classList.remove("hide-menu");
 
     document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
 
@@ -32,9 +33,9 @@ window.onclick = function(event) {
 
 function closeMenu() {
     document.getElementById("image1_303_309").classList.remove("hide-menu");
-    document.getElementById("home").classList.remove("hide-menu");
-    document.getElementById("homes").classList.remove("hide-menu");
-    document.getElementById("wallets").classList.remove("hide-menu");
+    document.getElementById("hh").classList.remove("hide-menu");
+    document.getElementById("hhs").classList.remove("hide-menu");
+    document.getElementById("ww").classList.remove("hide-menu");
     document.getElementById("menu-content").classList.remove("show-menu");
     document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
 

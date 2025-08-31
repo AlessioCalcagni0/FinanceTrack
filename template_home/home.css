@@ -71,11 +71,12 @@ body{
     display: inline-block;
 }
 .dropdown-content {
+    z-index: 999;
     display: none;
     position: absolute;
-    margin-top:-195%;
+    margin-top:-233%;
     padding-top: 0%;
-    margin-left: -48%;
+    margin-left: -57%;
     background-color: #0B4E92;
     width: 200px;
     height: 970px;
