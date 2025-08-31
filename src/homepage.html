@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Categories</title>
-    <link rel="stylesheet" href="categories.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <script src="categories.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Home</title>
+    <link rel="stylesheet" href="homepage.css">
+    <script src="homepage.js"></script>
 </head>
 <body>
   
@@ -18,8 +16,6 @@
             <path fill-rule="evenodd" clip-rule="evenodd" d="M3.09961 12C3.09961 11.5029 3.41653 11.1 3.80747 11.1H16.3917C16.7827 11.1 17.0996 11.5029 17.0996 12C17.0996 12.4971 16.7827 12.9 16.3917 12.9H3.80747C3.41653 12.9 3.09961 12.4971 3.09961 12Z" fill="black"/>
             <path fill-rule="evenodd" clip-rule="evenodd" d="M3.09998 18C3.09998 17.5029 3.50292 17.1 3.99998 17.1H20C20.497 17.1 20.9 17.5029 20.9 18C20.9 18.4971 20.497 18.9 20 18.9H3.99998C3.50292 18.9 3.09998 18.4971 3.09998 18Z" fill="black"/>
             </svg>
-        
-        <div class="title"> Categories</div>
         <!--NOTIFY BELL-->
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <rect width="20" height="20" fill="url(#pattern0_30_198)"/>
@@ -34,72 +30,7 @@
     </div>
     
     <div class="main">
-        
-        <div class="search-bar">
-                <input type="text" id="search" placeholder="Search a category" oninput="search()"> 
-                <button onclick="search()"> <i class="fas fa-search" ></i></button>
-        </div>
-        <div class="frame-category">
-            <div class="label-category"> 
-                <h2 id="name-label"> Category name</h2>
-                <h2 id="limit-label"> Limit</h2>
-                <h2 id="spent-label">Spent </h2>
-            </div>
-            <p>____________________________________</p>
-            <div class="container-category" id="container-category">
-                
-            </div>
-        </div>
-        <div class="add-category-button" onclick="openPopup('category-popup','overlay')"> + Add a category</div>
-        
-        <div class=""> </div>
-        <h2>Expenses by category</h2>
-            <label for="filtro">By:</label>
-            <select id="filtro">
-                <option value="anno">Year</option>
-                <option value="mese">Month</option>
-                <option value="settimana">Week</option>
-            </select>
-
-            <div class="box-chart">
-                <canvas id="myChart" style="width: 150px; height: 150px;"></canvas>
-            </div>
-            <div class="box-chart">
-                <canvas id="budgetChart" width="800" height="800"></canvas>
-            </div>
-
-        <div class="category-popup" id="category-popup">
-            <h1>Add a category</h1>
-            <h2> Select the icon</h2>
-            <div class="choose-icon">
-                <div class="icon" id = "computer" > 
-                </div>
-                <div class="icon" id = "travel">
-                </div>
-                <div class="icon" id = "cash"> 
-                </div>
-                <div class="icon" id = "medical">
-                </div>
-            </div>
-            <h2> Choose the name </h2>
-            <input class="number_input"placeholder="Enter the name of the category">
-            <h2> Select the limit </h2>
-            <input class="number_input" placeholder="Enter the limit for the category">
-            <h2> Select the spent import (Optional)</h2>
-            <input class="number_input" placeholder="Enter the money spent">
-            <div class="end_operation">
-                <button class="cancel_button" onclick="closePopup('category-popup','overlay')">Cancel</button>
-                <button class="confirm_button" id="confirm_button">Confirm</button>
-            </div>
-        </div>
-        </div>
-
-        <div class="warning-overlay" id="warning-overlay">
-            <div class="warning-category-popup"> 
-                <h3 id="warning-message">Please fill all non-optional fields including selecting the icon to add a category</h3>
-                <button class="confirm_button" id="OK">OK</button>
-            </div>
-        </div>
+    
 
         <footer class="footer">
         <!--NAVIGATION BAR-->
@@ -128,11 +59,11 @@
             <image id="image2_55_803" width="56" height="57" preserveAspectRatio="none" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA5CAYAAABj2ui7AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAHsSURBVGhD7Zm7qsJAEIYn8RLxiqidhU9hIVhbWFhY+Ch2NjY+hb2PYGkrPoGFhSDWKghe9+yEOSDHZc9aBB2ZD34kk1mSP8LMXjylgS/Gp9+vRQxyRwxyRwxyRwxy5yNmMtfrFU6nE12Z8TwP4vE4JJNJirjxdoP4+O12C+PxmCJmEokENJtNaDQaFHEEDb6T+/2u5vM5fmSr0um0Go1GNModKTLcEYPcEYPccTaoKy5cLpewIduEObr006j349zo8eWn0yms12uKmMnlctDtdiGbzVLEDj5+sVhAvV6niBndB2EwGEC/36eII2jQhf1+r9rtttJTJatqtZrabDY06n8+ptHr3HDOeD6frcIczP0UpMhwRwxyJxKDWGSw4BwOB6uOx2PYN6MkEoO32w0mkwl0Oh2rer0eLJdLGhUR2Ctc2O12qtVqPfWnv6pWq2q1WqnhcKh837eqXC6r2WzGc8GL0zUX6XegEdEgRYY7YpA7YpA7YpA7YpA7YvARPKNz0au5iOmeSa/ibDAWi0E+n4dKpWJVoVCAIAjCbT7T/UcVi0VIpVJhvun+o0qlEmQyGXobd5z3RXHmj4tT3DWzgR8CT2J/823oJVN4sIngvqsN/PdYnvBGjRQZ7ohB7ohB7ohB7ohB7ny5QYAfM97dOT/4htsAAAAASUVORK5CYII="/>
             </defs>
         </svg>
-        </footer>
+
+
+
+    </footer>
     </div>
-
-    <div id="overlay" class="overlay" onclick="closePopup('category-popup','overlay')"> </div>
-
 </body>
 
 </html>
