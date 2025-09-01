@@ -6,10 +6,10 @@ header("Access-Control-Allow-Headers: Content-Type");
 
 $host = "192.168.1.12";
 
-$dbname = "FinanceTrack";
+$dbname = "financeTrack"; // alessio financeTrack
 $user = "postgres";
 $pass = "admin";
-$port = "3000"; 
+$port = "5433";  // alessio =3000
 
 try {
     $pdo = new PDO("pgsql:host=$host;port=$port;dbname=$dbname", $user, $pass);

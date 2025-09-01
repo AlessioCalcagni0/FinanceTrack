@@ -3,13 +3,112 @@
     font-family: 'Inter', sans-serif;
 }
 
-
-.footer-nav{
-    margin: 0 auto;
-    display:flex;
-    justify-content: center;
-    align-items: center;
+body{
+    top: 6%;
+    height: 915px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
 }
+
+.navbar{
+    margin-left: 2%;
+    padding-top: 6%;
+    display:flex ;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#menu{
+    width: 30px;
+    height: 30px;
+}
+
+#profile{
+    width: 30px;
+    height: 30px;
+}
+
+#bell{
+    margin-right: 5%;
+    width: 30px;
+    height: 30px; 
+}
+
+#title{
+    padding-left: 5%;
+    font-size: 7dvw;
+    font-weight: bold;
+    color: #0B4E92;
+}
+
+
+
+#tabBar{
+    left: 0%;
+    position:absolute;
+    bottom: -45%;
+}
+
+
+
+
+.hide {
+    margin-top: 3%;
+    padding-top: 0;
+}
+
+.show {
+    z-index: 1;
+    margin-top: 15%;
+    margin-bottom: 20%;
+}
+
+
+
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+.dropdown-content {
+    z-index: 999;
+    display: none;
+    position: absolute;
+    margin-top:-233%;
+    padding-top: 0%;
+    margin-left: -57%;
+    background-color: #0B4E92;
+    width: 200px;
+    height: 970px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+.dropdown-content a {
+  color: white;
+  padding: 15px 40px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content h2{
+  color: white;
+  padding-left: 15px;
+  padding-top: 10px;
+  display: block;
+}
+
+.back-arrow{
+    display: none;
+    position: absolute;
+    margin-top: -20px;
+    margin-left: 120px;
+    z-index: 9999;
+}
+
+
+.show-menu {display:block;}
+.hide-menu {display: none;}
 
 
 
@@ -17,33 +116,8 @@
     margin-left: 45px;
 }
 
-.navbar{
-    display:flex ;
-    height: 50px;
-    align-items: center;
-    justify-content: space-between;
-    background-color: rgb(255, 255, 255);
-}
 
-#menu{
 
-    width: 30px;
-    height: 30px;
-}
-
-#bell{
-    
-    width: 30px;
-    height: 30px; 
-}
-
-.title{
-    width: 30px;
-    font-size: 20px;
-    font-weight: bold;
-    color: #152C5C;
-    margin-left: -60px;
-}
 
 
 input{
@@ -330,12 +404,11 @@ input{
 }
 
 .overlay{
+    min-width: 412px;
+    height: 915px;
     position: fixed;
     opacity: 0;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
+    margin: 0 0;
     background-color: rgba(0, 0, 0, .5);
     transition: 200ms ease-in-out;
     pointer-events: none;

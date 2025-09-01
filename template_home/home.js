@@ -5,10 +5,7 @@ function openMenu(){
     document.getElementById("hhs").classList.add("hide-menu");
     document.getElementById("ww").classList.add("hide-menu");
     document.getElementsByClassName("back-arrow")[0].classList.add("show-menu");
-
     document.getElementById("menu-content").classList.toggle("show-menu");
-
-
 }
 
 window.onclick = function(event) {
@@ -17,7 +14,6 @@ window.onclick = function(event) {
     document.getElementById("hh").classList.remove("hide-menu");
     document.getElementById("hhs").classList.remove("hide-menu");
     document.getElementById("ww").classList.remove("hide-menu");
-
     document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
 
     var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -38,5 +34,4 @@ function closeMenu() {
     document.getElementById("ww").classList.remove("hide-menu");
     document.getElementById("menu-content").classList.remove("show-menu");
     document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
-
 }

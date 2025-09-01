@@ -1,3 +1,7 @@
+  function goToSW(){
+    window.location.href = "./src/sharedWallet.php";
+  }
+  
   // --- Popup function ---
   function showPopup(messages, type) {
     let popup = document.getElementById("popup");

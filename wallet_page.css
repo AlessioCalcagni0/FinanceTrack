@@ -1,98 +1,134 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap');
 
-* {
+*{
     font-family: 'Inter', sans-serif;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
 }
 
-html, body {
-    height: 780px;          /* altezza fissa della pagina */
-    overflow: hidden;        /* niente scroll globale */
-}
 
-body {
+
+
+body{
+   
+    top: 6%;
+    width: 412px;
+    height: 915px;
+    margin: 0 0;
+    position: relative;
     display: flex;
     flex-direction: column;
 }
 
-.footer {
-    background-color: white;  /* sfondo bianco */
-    color: black;             /* testo nero */
-    text-align: center;
-    padding: 1rem;
-    width: 105%;
-    position: fixed;          /* rimane sempre in basso */
-    bottom: 0;
-    left: 0;
-    box-shadow: 0 -1px 5px rgba(0,0,0,0.1); /* optional: piccolo bordo in ombra */
-    z-index: 1;
-}
-
-
-/* Footer nav centrato */
-.footer-nav {
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-}
-
-/* Footer nav centrato */
-.footer-nav {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-
-
-.main {
-    flex: 1;              /* cresce per riempire lo spazio */    /* scroll se serve */
-    margin-left: 45px;    /* come nel tuo CSS originale */
-    padding-bottom: 80px; /* spazio per footer fisso */
-}
-
-.navbar {
-    display: flex;
-    height: 50px;
+.navbar{
+    margin-left: 2%;
+    padding-top: 6%;
+    display:flex ;
     align-items: center;
     justify-content: space-between;
-    background-color: rgb(255, 255, 255);
 }
 
-.main::-webkit-scrollbar {
-    width: 6px;
-}
-
-.main::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,0.2);
-    border-radius: 3px;
-}
-
-#menu {
-
+#menu{
     width: 30px;
     height: 30px;
 }
 
-#bell {
-
+#profile{
     width: 30px;
     height: 30px;
 }
 
-.title {
-    width: 75px;
-    font-size: 20px;
+#bell{
+    margin-right: 5%;
+    width: 30px;
+    height: 30px; 
+}
+
+#title{
+    padding-left: 5%;
+    font-size: 7dvw;
     font-weight: bold;
-    color: #152C5C;
-    margin: 0 auto;
+    color: #0B4E92;
 }
+
+
+
+#tabBar{
+    left: 0%;
+    position:absolute;
+    bottom: -45%;
+}
+
+
+
+
+.hide {
+    margin-top: 3%;
+    padding-top: 0;
+}
+
+.show {
+    z-index: 1;
+    margin-top: 15%;
+    margin-bottom: 20%;
+}
+
+
+
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+.dropdown-content {
+    z-index: 999;
+    display: none;
+    position: absolute;
+    margin-top:-233%;
+    padding-top: 0%;
+    margin-left: -57%;
+    background-color: #0B4E92;
+    width: 200px;
+    height: 970px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+.dropdown-content a {
+  color: white;
+  padding: 15px 40px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content h2{
+  color: white;
+  padding-left: 15px;
+  padding-top: 10px;
+  display: block;
+}
+
+.back-arrow{
+    display: none;
+    position: absolute;
+    margin-top: -20px;
+    margin-left: 120px;
+    z-index: 9999;
+}
+
+
+.show-menu {display:block;}
+.hide-menu {display: none;}
+
+
+
+
+
+
 
 
 .wallet-summary {
-    width: 308px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 40px;
+    width: 310px;
     height: 160px;
     background: linear-gradient(90deg, #2A60BA 11%, #8451AC 100%);
     border-radius: 20px;
@@ -197,23 +233,23 @@ body {
 
 .account-list-label {
     color: #2A60BA;
-    position: absolute;
-    margin-left: 95px;
-    margin-top: 35px;
+    text-align: center;
+    margin-top: 50px;
     font-size: 20px;
 }
 
 .frame-account {
     display: flex;
     align-items: center;
-    margin: 0 auto;
     flex-direction: column;
+    margin-left: auto;
+    margin-right: auto;
     width: 300px;
     height: 220px;
-    margin-top: 80px;
-    border: #152C5C solid 2px;
+    margin-top: 30px;
+    border: #ffffff solid 2px;
     border-radius: 20px;
-    margin-left: 10px;
+   
     overflow-y: scroll;
     padding-bottom: 15px;
 }

@@ -2,6 +2,10 @@
     window.location.href = "homepage.html";
   }
 
+  function redirect(location){
+    window.location.href= location;
+ }
+
  function  openTransaction(){
   
   window.location.href ="/src/add_transaction.html";
