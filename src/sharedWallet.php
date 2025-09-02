@@ -1,4 +1,5 @@
 <?php
+  
 session_start();
 require_once "db_connection.php"; // include connection only once
 
@@ -9,8 +10,6 @@ require_once "db_connection.php"; // include connection only once
 // }
 
 //$user_id = $_SESSION['user_id'];
-$user_id ="1";
-
 
 ?>
 
@@ -20,6 +19,11 @@ $user_id ="1";
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="sharedWallet.css">
+    <script>
+  const userID = <?= json_encode($_SESSION['user_id'] ?? 1) ?>;
+</script>
+    <script src="sharedWallet.js"></script>
 </head>
 <body>
 
@@ -47,7 +51,7 @@ $user_id ="1";
         </div>
         
 
-        <div  id="title">FinanceTrack</div>
+        <div  id="title">Shared Wallets</div>
         
         <div style="display:flex; width:20%; justify-content:space-evenly">
             <!--NOTIFY BELL-->
@@ -67,6 +71,22 @@ $user_id ="1";
     </div>
 
     <div class="main">
+
+        <div class="account-list-label"> Account list</div>
+
+        <div class="frame-account" id="frame-account">
+            <div class="account-box">
+
+            </div>
+            <div class="account-box">
+
+            </div>
+
+        </div>
+
+        <!-- Bottone centrale -->
+        <button  class="add-account-btn">+ Add Account</button>
+
 
         <svg id="tabBar" width="410px"  height="100%" viewBox="0 0 370 70" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <g clip-path="url(#clip0_303_309)">

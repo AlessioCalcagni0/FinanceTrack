@@ -74,7 +74,7 @@ if ($path === "api/insights") {
                 $sql = "
                         SELECT EXTRACT(MONTH FROM date) as month, SUM(amount) AS total_outcome
                         FROM transactions 
-                        WHERE type=':type'
+                        WHERE type= :type
                         group by EXTRACT(MONTH FROM date)";
                     
             }
@@ -82,7 +82,7 @@ if ($path === "api/insights") {
                 $sql = "
                         SELECT EXTRACT(MONTH FROM date) as month, SUM(amount) AS total_outcome
                         FROM transactions 
-                        WHERE type=':type' and wallet_name=':account'
+                        WHERE type=:type and wallet_name=:account
                         group by EXTRACT(MONTH FROM date)";
             }
                     
@@ -93,7 +93,7 @@ if ($path === "api/insights") {
                 $sql = "
                         SELECT EXTRACT(WEEK FROM date) as month, SUM(amount) AS total_outcome
                         FROM transactions 
-                        WHERE type=':type'
+                        WHERE type=:type
                         group by EXTRACT(WEEK FROM date)";
                     
             }
@@ -101,7 +101,7 @@ if ($path === "api/insights") {
                 $sql = "
                         SELECT EXTRACT(WEEK FROM date) as month, SUM(amount) AS total_outcome
                         FROM transactions 
-                        WHERE type=':type' and wallet_name=':account'
+                        WHERE type= :type and wallet_name=:account
                         group by EXTRACT(WEEK FROM date)";
             }
                     
@@ -112,7 +112,7 @@ if ($path === "api/insights") {
                 $sql = "
                         SELECT EXTRACT(YEAR FROM date) as month, SUM(amount) AS total_outcome
                         FROM transactions 
-                        WHERE type=':type'
+                        WHERE type= :type
                         group by EXTRACT(YEAR FROM date)";
                     
             }
@@ -120,7 +120,7 @@ if ($path === "api/insights") {
                 $sql = "
                         SELECT EXTRACT(YEAR FROM date) as month, SUM(amount) AS total_outcome
                         FROM transactions 
-                        WHERE type=':type' and wallet_name=':account'
+                        WHERE type=:type and wallet_name= :account
                         group by EXTRACT(YEAR FROM date)";
             }
                     
@@ -128,7 +128,10 @@ if ($path === "api/insights") {
     }
 
     try {
-        $stmt = $pdo->query($sql);
+        $stmt = $pdo->prepare($sql);
+
+        // Cast to integer to match Postgres integer type
+        $stmt->execute(['type' => $type, 'account' => $account]);
         echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
     } catch(PDOException $e) {
         http_response_code(500);
@@ -136,4 +139,43 @@ if ($path === "api/insights") {
     }
     exit;
 }
+
+
+if ($path === "sharedAccounts") {
+    $user = $_GET["user"] ?? "";
+    try {
+        $sql = "
+            SELECT 
+                id,
+                name,
+                balance,
+                path,
+                color,
+                partecipant_num,
+                partecipant_name_surname1,
+                partecipant_name_surname2 ,
+                partecipant_name_surname3,
+                participant_role1,
+                participant_role2,
+                participant_role3,
+                participant_permissions1,
+                participant_permissions2,
+                participant_permissions3,
+                TO_CHAR(last_sync, 'YYYY-MM-DD') AS last_sync
+            FROM shared_wallets 
+            WHERE user_id= :user
+            ORDER BY name ASC
+        ";
+        $stmt = $pdo->prepare($sql);
+
+        $stmt->execute(['user' => (int)$user]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($rows ?: []);
+    } catch(PDOException $e) {
+        http_response_code(500);
+        echo json_encode(["error"=>$e->getMessage()]);
+    }
+    exit;
+}
+
 

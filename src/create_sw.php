@@ -8,27 +8,32 @@ session_start();
 // }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $wallet_name = $_POST['wallet_name'] ?? '';
+    $name = $_POST['walletName'] ?? '';
     $icon = $_POST['icon'] ?? '';
     $color = $_POST['color'] ?? '';
     $role = $_POST['role'] ?? '';
     $permissions = $_POST['permissions'] ?? [];
-    $participants = $_POST['participants'] ?? [];
+    $participants = $_POST['participant'] ?? [];
 
     $user_id = $_SESSION['user_id'] ?? 1; // placeholder for demo
 
     $stmt = $pdo->prepare("
-        INSERT INTO shared_wallets (user_id, wallet_name, icon, color,partecipant_num , partecipant_name_surname1,participant_role1, participant_permissions1) 
-        VALUES (:user_id, :wallet_name, :icon, :color,1,'chiara', 'editor', 'write')
+        INSERT INTO shared_wallets (user_id, name, path, color,partecipant_num , partecipant_name_surname1,participant_role1, participant_permissions1) 
+        VALUES (:user_id, :name, :icon, :color,1,'chiara', 'editor', 'write')
     ");
     $stmt->execute([
         ':user_id' => $user_id,
-        ':wallet_name' => $wallet_name,
+        ':name' => $name,
         ':icon' => $icon,
         ':color' => $color
     ]);
+    
+    header("Location:http://localhost:5500/src/sharedWallet.php", true, 301);
+    exit();
 }
+
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -44,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="container">
 
-            <button class="back-btn" onclick="goToSW()">
+            <button class="back-btn" onclick="showPopup('', 'return');">
                 <img src="./images/icons8-back-arrow-100.png" alt="">
                 <div class="title"> Create a Shared Wallet </div>
             </button>
@@ -70,23 +75,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label >Choose an icon:</label>
                         <div class="icon-grid" >
                             <label class="icon-option">
-                                <input type="radio" name="icon" value="icon1.png" required>
+                                <input type="radio" name="icon" value="sw1.png" required>
                                 <img src="./images/sw2.png" alt="icon1">
                             </label>
                             <label class="icon-option">
-                                <input type="radio" name="icon" value="icon2.png">
+                                <input type="radio" name="icon" value="sw2.png">
                                 <img src="./images/sw1.png" alt="icon2">
                             </label>
                             <label class="icon-option">
-                                <input type="radio" name="icon" value="icon3.png">
+                                <input type="radio" name="icon" value="sw3.png">
                                 <img src="./images/sw3.png" alt="icon3">
                             </label>
                             <label class="icon-option">
-                                <input type="radio" name="icon" value="icon3.png">
+                                <input type="radio" name="icon" value="sw4.png">
                                 <img src="./images/sw4.png" alt="icon3">
                             </label>
                             <label class="icon-option">
-                                <input type="radio" name="icon" value="icon3.png">
+                                <input type="radio" name="icon" value="sw5.png">
                                 <img src="./images/sw5.png" alt="icon3">
                             </label>
                         </div>
@@ -94,31 +99,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label>Select a color:</label>
                         <div class="color-grid" >
                             <label class="color-option">
-                                <input type="radio" name="color" value="color1.png" required>
+                                <input type="radio" name="color" value="white" required>
                                 <img src="./images/white50.png" alt="icon1">
                             </label>
                             <label class="color-option">
-                                <input type="radio" name="color" value="color2.png">
+                                <input type="radio" name="color" value="purple">
                                 <img src="./images/purple50.png" alt="icon2">
                             </label>
                             <label class="color-option">
-                                <input type="radio" name="color" value="color3.png">
+                                <input type="radio" name="color" value="blue">
                                 <img src="./images/blue100.png" alt="icon3">
                             </label>
                             <label class="color-option">
-                                <input type="radio" name="color" value="color4.png">
+                                <input type="radio" name="color" value="green">
                                 <img src="./images/green100.png" alt="icon3">
                             </label>
                             <label class="color-option">
-                                <input type="radio" name="color" value="color5.png">
+                                <input type="radio" name="color" value="yellow">
                                 <img src="./images/yellow.png" alt="icon3">
                             </label>
                             <label class="color-option">
-                                <input type="radio" name="color" value="color5.png">
+                                <input type="radio" name="color" value="red">
                                 <img src="./images/red.png" alt="icon3">
                             </label>
                             <label class="color-option">
-                                <input type="radio" name="color" value="color6.png">
+                                <input type="radio" name="color" value="black">
                                 <img src="./images/black.png" alt="icon3">
                             </label>
                         </div>

@@ -1,5 +1,5 @@
   function goToSW(){
-    window.location.href = "./src/sharedWallet.php";
+    showPopup("", "return");
   }
   
   // --- Popup function ---
@@ -17,6 +17,10 @@
     else if(type=="warning"){ 
        popup.innerHTML = " <span class='close-btn' onclick='hidePopup()'> <img src='./images/icons8-exit-button-50.png'> </span>"+
     "<h3>Warining!</h3> <h4>Incorrect field</h4> <ul>" + messages.map(m => `<li>${m}</li>`).join("") + "</ul> <button id='popupOk'>OK</button>";
+    }
+    if(type=="return"){
+       popup.innerHTML = " <span class='close-btn' onclick='hidePopup()'> <img src='./images/icons8-exit-button-50.png'> </span>"+
+    "<h3>Exit form?</h3> <h4>All your data will be lost</h4> <button id='popupOk'>Keep editing</button><button id='popupReset' >Lose changes</button>";
     }
    
     popup.style.display = "block";
@@ -51,6 +55,7 @@
       rolesSectionC.classList.add("hiddenName");
       
       hidePopup();
+      if(type=="return") window.location.href="./sharedWallet.php";
     };
     document.getElementById("popupOk").onclick = () => hidePopup();
   }
@@ -203,6 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     else{
       hidePopup();
+      
     }
   });
    
