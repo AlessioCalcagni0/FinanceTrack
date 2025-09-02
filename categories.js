@@ -48,7 +48,7 @@ const ctx = document.getElementById('myChart').getContext('2d');
     let chart;
 
     async function caricaDati(periodo = "anno") {
-      const res = await fetch(`http://192.168.1.12:8000/api.php?path=api/spese&periodo=${periodo}`);
+      const res = await fetch(`http://localhost:5500/api.php?path=api/spese&periodo=${periodo}`);
       const dati = await res.json();
 
       const labels = dati.map(d => d.categoria);
@@ -122,14 +122,14 @@ const ctx = document.getElementById('myChart').getContext('2d');
     }
 
     const categoryData = {
-        category_name: name,
+        name: name,
         path: `./${iconId}.png`,
         limite: limit,
         spent: spent
     };
 
     try {
-        const res = await fetch("http://192.168.1.12:8000/api.php?path=addCategory", {
+        const res = await fetch("http://localhost:5500/api.php?path=addCategory", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(categoryData)
@@ -223,7 +223,7 @@ async function loadCategories() {
         console.log("Inizio caricamento categorie...");
 
         // chiama il backend Node.js
-        const res = await fetch("http://192.168.1.12:8000/api.php?path=categories");
+        const res = await fetch("http://localhost:5500/api.php?path=categories");
         console.log("Fetch completato, status:", res.status);
 
         const categories = await res.json();
@@ -240,7 +240,7 @@ async function loadCategories() {
 
             categories.forEach((cat, index) => {
                 console.log("Elemento cat:", cat);
-                if (!cat.category_name) {
+                if (!cat.name) {
                     console.warn(`Elemento ${index} saltato: nome_categoria mancante`, cat);
                     return; // salta se nome_categoria non esiste
                 }
@@ -252,7 +252,7 @@ async function loadCategories() {
 
                 const iconDiv = document.createElement("div");
                 iconDiv.className = "icon";
-                iconDiv.id = cat.category_name ? cat.category_name.toLowerCase() : "unknown";
+                iconDiv.id = cat.name ? cat.name.toLowerCase() : "unknown";
 
                 if (cat.path_immagine) {
                     iconDiv.style.backgroundImage = `url('${cat.path_immagine}')`;
@@ -261,7 +261,7 @@ async function loadCategories() {
 
                 const nameDiv = document.createElement("div");
                 nameDiv.className = "category-name";
-                nameDiv.textContent = cat.category_name;
+                nameDiv.textContent = cat.name;
 
                 const limitDiv = document.createElement("div");
                 limitDiv.className = "category-limit";

@@ -37,26 +37,26 @@ if ($path === "api/spese") {
     switch ($periodo) {
         case "mese":
             $sql = "
-                SELECT categoria, SUM(importo) AS totale
-                FROM spese
-                WHERE EXTRACT(YEAR FROM data) = EXTRACT(YEAR FROM CURRENT_DATE)
-                  AND EXTRACT(MONTH FROM data) = EXTRACT(MONTH FROM CURRENT_DATE)
-                GROUP BY categoria";
+                SELECT category , SUM(amount) AS totale
+                FROM transactions
+                WHERE EXTRACT(YEAR FROM date) = EXTRACT(YEAR FROM CURRENT_DATE)
+                  AND EXTRACT(MONTH FROM date) = EXTRACT(MONTH FROM CURRENT_DATE)
+                GROUP BY category ";
             break;
         case "settimana":
             $sql = "
-                SELECT categoria, SUM(importo) AS totale
-                FROM spese
-                WHERE EXTRACT(WEEK FROM data) = EXTRACT(WEEK FROM CURRENT_DATE)
-                  AND EXTRACT(YEAR FROM data) = EXTRACT(YEAR FROM CURRENT_DATE)
-                GROUP BY categoria";
+                SELECT category , SUM(amount) AS totale
+                FROM transactions
+                WHERE EXTRACT(YEAR FROM date) = EXTRACT(YEAR FROM CURRENT_DATE)
+                  AND EXTRACT(WEEK FROM date) = EXTRACT(WEEK FROM CURRENT_DATE)
+                GROUP BY category ";
             break;
         default: // anno
             $sql = "
-                SELECT categoria, SUM(importo) AS totale
-                FROM spese
-                WHERE EXTRACT(YEAR FROM data) = EXTRACT(YEAR FROM CURRENT_DATE)
-                GROUP BY categoria";
+                SELECT category , SUM(amount) AS totale
+                FROM transactions
+                WHERE EXTRACT(YEAR FROM date) = EXTRACT(YEAR FROM CURRENT_DATE)
+                GROUP BY category ";
     }
 
     try {
@@ -74,7 +74,7 @@ if ($path === "api/spese") {
 -------------------------------- */
 if ($path === "categories") {
     try {
-        $stmt = $pdo->query("SELECT category_name, path, limite, spent FROM categories ORDER BY id");
+        $stmt = $pdo->query("SELECT name, path, limite, spent FROM categories ORDER BY id");
         echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
     } catch(PDOException $e) {
         http_response_code(500);
@@ -89,12 +89,12 @@ if ($path === "categories") {
 if ($path === "addCategory" && $_SERVER["REQUEST_METHOD"] === "POST") {
     $data = getJsonInput();
 
-    $category_name = $data["category_name"] ?? null;
+    $name = $data["name"] ?? null;
     $pathImg       = $data["path"] ?? null;
     $limite        = $data["limite"] ?? null;
     $spent         = $data["spent"] ?? 0;
 
-    if (!$category_name || !$pathImg || $limite === null) {
+    if (!$name || !$pathImg || $limite === null) {
         http_response_code(400);
         echo json_encode(["error" => "Dati mancanti"]);
         exit;
@@ -103,10 +103,10 @@ if ($path === "addCategory" && $_SERVER["REQUEST_METHOD"] === "POST") {
     try {
         $pdo->beginTransaction();
 
-        $stmt = $pdo->prepare("INSERT INTO categories (category_name, path, limite, spent) 
+        $stmt = $pdo->prepare("INSERT INTO categories (name, path, limite, spent) 
                                VALUES (:name, :path, :limite, :spent) RETURNING *");
         $stmt->execute([
-            ":name" => $category_name,
+            ":name" => $name,
             ":path" => $pathImg,
             ":limite" => $limite,
             ":spent" => $spent
@@ -116,7 +116,7 @@ if ($path === "addCategory" && $_SERVER["REQUEST_METHOD"] === "POST") {
         if ($spent > 0) {
             $stmt2 = $pdo->prepare("INSERT INTO spese (categoria, importo, data) VALUES (:cat, :imp, NOW()) RETURNING *");
             $stmt2->execute([
-                ":cat" => $category_name,
+                ":cat" => $name,
                 ":imp" => $spent
             ]);
         }
@@ -134,7 +134,7 @@ if ($path === "addCategory" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
 if ($path === "income_sum") {
     try {
-        $stmt = $pdo->query("SELECT SUM(importo) AS totale FROM income");
+        $stmt = $pdo->query("SELECT SUM(amount) AS totale FROM transactions WHERE type='income' group by id");
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         echo json_encode($result);
     } catch(PDOException $e) {
@@ -146,7 +146,7 @@ if ($path === "income_sum") {
 
 if ($path === "spent_sum") {
     try {
-        $stmt = $pdo->query("SELECT SUM(importo) AS totale FROM spese");
+        $stmt = $pdo->query("SELECT SUM(amount) AS totale FROM transactions WHERE type='outcome' group by id");
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         echo json_encode($result);
     } catch(PDOException $e) {
@@ -158,38 +158,22 @@ if ($path === "spent_sum") {
 
 if ($path === "today_transactions") {
     try {
-        // Spese con join su categories per prendere path immagine
-        $sqlSpese = "
-            SELECT 'spesa' AS tipo, 
-                   s.importo, 
-                   s.data, 
-                   s.orario AS orario,
-                   s.nome AS nome, 
-                   c.path AS path
-            FROM spese s
-            JOIN categories c ON LOWER(TRIM(s.categoria)) = LOWER(TRIM(c.category_name))
-            WHERE s.data::date = CURRENT_DATE
-        ";
-
         // Income con path fisso ./Cash.png
-        $sqlIncome = "
-            SELECT 'income' AS tipo, 
-                   i.importo, 
-                   i.data, 
-                   i.orario AS orario,
-                   i.nome AS nome, 
-                   './Cash.png' AS path
-            FROM income i
-            WHERE i.data::date = CURRENT_DATE
+        $sql = "
+            SELECT type, 
+                   s.amount, 
+                   s.date, 
+                   s.time AS orario,
+                   s.name AS nome, 
+                   c.path AS path
+            FROM transactions s
+            JOIN categories c ON LOWER(TRIM(s.category)) = LOWER(TRIM(c.name))
+            WHERE s.date::date = CURRENT_DATE 
+            ORDER BY time ASC
         ";
 
         // Unione e ordinamento basato sul timestamp completo
-        $stmt = $pdo->query("
-            ($sqlSpese) 
-            UNION ALL 
-            ($sqlIncome) 
-            ORDER BY orario ASC
-        ");
+        $stmt = $pdo->query($sql );
 
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -205,21 +189,18 @@ if ($path === "today_transactions") {
 if ($path === "last_week_transactions") {
     try {
         // Spese con join su categories
-        $sqlSpese = "
-        SELECT s.id, 'spesa' AS tipo, s.importo, s.data, s.nome AS nome, c.path AS path
-        FROM spese s
-        JOIN categories c ON s.categoria = c.category_name
-        WHERE s.data::date BETWEEN (CURRENT_DATE - INTERVAL '7 days') AND (CURRENT_DATE - INTERVAL '1 day')
+        $sql = "
+        SELECT s.id, 'spesa' AS tipo, s.amount, s.date, s.name AS nome, c.path AS path
+        FROM transactions s
+        JOIN categories c ON s.category = c.name
+        WHERE s.data::date BETWEEN (CURRENT_DATE - INTERVAL '7 days') AND (CURRENT_DATE - INTERVAL '1 day') 
+        ORDER BY date ASC
         ";
 
-    $sqlIncome = "
-        SELECT i.id, 'income' AS tipo, i.importo, i.data, i.nome AS nome, './Cash.png' AS path
-        FROM income i
-        WHERE i.data::date BETWEEN (CURRENT_DATE - INTERVAL '7 days') AND (CURRENT_DATE - INTERVAL '1 day')
-    ";
+   
 
         // Unione e ordinamento per data
-        $stmt = $pdo->query("($sqlSpese) UNION ALL ($sqlIncome) ORDER BY data ASC");
+        $stmt = $pdo->query($sql);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         echo json_encode($rows ?: []); 
@@ -240,7 +221,7 @@ if ($path === "accounts") {
                 balance,
                 path,
                 TO_CHAR(last_sync, 'YYYY-MM-DD') AS last_sync
-            FROM account
+            FROM wallets
             ORDER BY name ASC
         ";
         $stmt = $pdo->query($sql);
@@ -269,7 +250,7 @@ if ($path === "add_account") {
 
         // Inserimento in DB
         $stmt = $pdo->prepare("
-            INSERT INTO account (name, type, path, balance, last_sync)
+            INSERT INTO wallets (name, type, path, balance, last_sync)
             VALUES (:name, :type, :path, :balance, :last_sync)
             RETURNING id
         ");
@@ -306,7 +287,7 @@ if ($path === "update_account") {
 
         if(empty($fields)) throw new Exception("Nessun campo da aggiornare");
 
-        $sql = "UPDATE account SET ".implode(", ", $fields).", last_sync=NOW() WHERE id=:id";
+        $sql = "UPDATE wallets SET ".implode(", ", $fields).", last_sync=NOW() WHERE id=:id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
 
@@ -336,28 +317,28 @@ if ($path === "save_transaction" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
         if ($uncat) {
             // Inserimento transazione non categorizzata
-            $stmt = $pdo->prepare("INSERT INTO spese (categoria, importo, data, nome, orario) VALUES (?, ?, ?, ?, ?)");
+            $stmt = $pdo->prepare("INSERT INTO transactions (category, amount, date, name, time) VALUES (?, ?, ?, ?, ?)");
             $stmt->execute(["Uncategorized", $total, $nowDate, "Cash", $nowTime]);
         } else {
             foreach ($transactions as $tr) {
-                $catName = $tr['category_name'];
+                $catName = $tr['name'];
                 $amount = floatval($tr['amount']);
 
                 // Inserimento nella tabella spese
-                $stmt = $pdo->prepare("INSERT INTO spese (categoria, importo, data, nome, orario) VALUES (?, ?, ?, ?, ?)");
+                $stmt = $pdo->prepare("INSERT INTO transactions (category, amount, date, name, time) VALUES (?, ?, ?, ?, ?)");
                 $stmt->execute([$catName, $amount, $nowDate, "Cash", $nowTime]);
 
                 // Aggiorna spent nella tabella categories
-                $stmt = $pdo->prepare("UPDATE categories SET spent = spent + ? WHERE category_name = ?");
+                $stmt = $pdo->prepare("UPDATE categories SET spent = spent + ? WHERE name = ?");
                 $stmt->execute([$amount, $catName]);
 
                 // Controllo superamento limite e recupero path
-                $stmt = $pdo->prepare("SELECT limite, spent, path FROM categories WHERE category_name = ?");
+                $stmt = $pdo->prepare("SELECT limite, spent, path FROM categories WHERE name = ?");
                 $stmt->execute([$catName]);
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
                 if ($row && $row['spent'] > $row['limite']) {
                     $exceededCategories[] = [
-                        "category_name" => $catName,
+                        "name" => $catName,
                         "path" => $row['path'] // aggiunge il path dell'immagine
                     ];
                 }
