@@ -4,7 +4,7 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
-$host = "192.168.1.12";
+$host = "localhost"; //alessio 192.168.1.12
 
 $dbname = "financeTrack"; // alessio financeTrack
 $user = "postgres";
