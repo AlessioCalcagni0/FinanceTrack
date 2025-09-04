@@ -1,45 +1,386 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap');
-*{
-    font-family: 'Inter', sans-serif;
+
+* {
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  top: 6%;
+  height: 915px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar {
+  margin-left: 2%;
+  padding-top: 6%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#menu {
+  width: 30px;
+  height: 30px;
+}
+
+#profile {
+  width: 30px;
+  height: 30px;
+}
+
+#bell {
+  margin-right: 5%;
+  width: 30px;
+  height: 30px;
+}
+
+#title {
+  padding-left: 5%;
+  font-size: 7dvw;
+  font-weight: bold;
+  color: #0B4E92;
 }
 
 
-.footer{
-    margin-left: -15px;
+
+#tabBar {
+  left: 0%;
+  position: absolute;
+  bottom: -45%;
 }
 
-.main{
-    margin-left: 45px;
+
+
+
+.hide {
+  margin-top: 3%;
+  padding-top: 0;
 }
 
-.navbar{
-    display:flex ;
-    height: 50px;
-    align-items: center;
-    justify-content: space-between;
-    background-color: rgb(255, 255, 255);
+.show {
+  z-index: 1;
+  margin-top: 15%;
+  margin-bottom: 20%;
 }
 
-#menu{
-    width: 30px;
-    height: 30px;
+
+
+.dropdown {
+  position: relative;
+  display: inline-block;
 }
 
-#bell{
-    width: 30px;
-    height: 30px; 
+.dropdown-content {
+  z-index: 999;
+  display: none;
+  position: absolute;
+  margin-top: -233%;
+  padding-top: 0%;
+  margin-left: -57%;
+  background-color: #0B4E92;
+  width: 200px;
+  height: 970px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
 }
 
-.title{
-    font-size: 30px;
-    font-weight: bold;
-    color: #152C5C;
+.dropdown-content a {
+  color: white;
+  padding: 15px 40px;
+  text-decoration: none;
+  display: block;
 }
 
-#home{
-    cursor: pointer;
+.dropdown-content h2 {
+  color: white;
+  padding-left: 15px;
+  padding-top: 10px;
+  display: block;
 }
 
-#goals{
-    cursor: pointer;
+.back-arrow {
+  display: none;
+  position: absolute;
+  margin-top: -20px;
+  margin-left: 120px;
+  z-index: 9999;
+}
+
+
+.show-menu {
+  display: block;
+}
+
+.hide-menu {
+  display: none;
+}
+
+
+
+
+
+.home-container {
+
+  display: flex;
+  justify-content: space-around;
+  margin: 20px auto;
+  border-bottom: 2px solid #ddd;
+}
+
+.home {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #555;
+
+}
+
+.home.active {
+  color: #1e90ff;
+  border-bottom: 3px solid #1e90ff;
+}
+
+.goals-list{
+  display:flex;
+  gap:20px;
+  padding:10px 25px;
+  overflow-x:auto;              /* <-- abilita lo scroll */
+  overflow-y:hidden;
+  scroll-snap-type:x mandatory; /* snap opzionale */
+  -webkit-overflow-scrolling:touch;
+}
+
+/* ogni card deve rimanere “larga” e non comprimersi */
+.home-card{
+  flex:0 0 auto;               /* non restringere */
+  width:280px;                 /* larghezza fissa */
+  border:1px solid #ccc;
+  border-radius:10px;
+  padding:15px;
+  /* margin:10px auto;  <-- rimuovere! */
+  margin:10px 0;               /* ok */
+  scroll-snap-align:start;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+
+
+
+.home-content {
+  display: none;
+  padding: 10px;
+}
+
+.home-content.active {
+  display: block;
+}
+
+
+
+.progress {
+  background: #eee;
+  border-radius: 10px;
+  height: 10px;
+  margin: 8px 0;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background: #28a745;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.goal-thumb {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 15px;
+}
+
+
+.btn-trans {
+  margin-left: 30%;
+  margin-top: 4%;
+  margin-bottom: 0%;
+  padding: 12px 20px;
+  font-size: 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+
+.btn-trans:hover {
+  background: #0056b3;
+}
+
+
+
+
+
+section {
+  margin-top: -30px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  height: 220px;
+  width: 300px;
+  display: flex;
+  align-items: center;
+
+}
+
+.swiper {
+  width: 200px;
+
+}
+
+.card {
+  position: relative;
+  background: #fff;
+  border-radius: 20px;
+  min-height: 160px;
+  max-width: 194px;
+  margin: 30px 0;
+  right: 0.001px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  border-style: inset;
+  mask-border-width: 2px;
+  border-color: #0056b3;
+
+}
+
+.card::before {
+  content: "";
+  position: relative;
+  height: 40%;
+  width: 50%;
+  background: white;
+  border-radius: 20px 20px 0 0;
+}
+
+.card .card-content {
+  display: flex;
+  margin-left: 10px;
+  margin-right: 10px;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px;
+  position: relative;
+
+}
+
+section .card .image {
+  height: 30px;
+  width: 30px;
+  border-radius: 20%;
+  padding: 3px;
+  background: #ffffff;
+}
+
+section .card .image img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 20%;
+  border: 3px solid #fff;
+}
+
+
+.card .name-profession {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 10px;
+  color: black;
+}
+
+.name-profession .name {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.name-profession .profession {
+  padding-top: 3px;
+  ;
+  font-size: 12px;
+  font-weight: 50;
+}
+
+
+.card .button {
+  width: 100%;
+  display: flex;
+  height: 100%;
+  justify-content: space-around;
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.view {
+  width: 70px;
+  min-height: 50px;
+}
+
+.card .button button {
+  background: #8451AC;
+  height: 25px;
+  outline: none;
+  border: none;
+  color: #fff;
+  padding: auto 22px;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.button button:hover {
+  background: #8451AC;
+}
+
+.swiper-pagination {
+  position: absolute;
+  top: 10px;
+}
+
+.swiper-pagination-bullet {
+  height: 7px;
+  width: 26px;
+  border-radius: 25px;
+  background: #8451AC;
+}
+
+.button {
+  color: rgb(0, 0, 0);
+}
+
+.custom-next-button,
+.custom-prev-button {
+  opacity: 0.7;
+  color: rgb(0, 0, 0);
+  transition: all 0.3s ease;
+  z-index: 9999;
+}
+
+
+
+.custom-next-button:hover,
+.custom-prev-button:hover {
+  opacity: 1;
+  color: white;
 }

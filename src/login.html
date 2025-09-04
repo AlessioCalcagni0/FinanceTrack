@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Log In – FinanceTrack</title>
+  <link rel="stylesheet" href="login.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="login.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>FinanceTrack</h1>
+    <h2>Log into your account</h2>
+    <p>Enter your credentials to log in for this app</p>
+
+    <form class="login-form">
+      <label>Email</label>
+      <input type="email" placeholder="Enter your email" required />
+
+      <label>Password</label>
+      <div class="password-field">
+        <input type="password" id="password" placeholder="Enter your password" required />
+        <span class="eye-icon" onclick="togglePassword()">
+          <i class="fa-solid fa-eye" id="togglePasswordIcon"></i>
+        </span>
+      </div>
+
+      <button type="submit">Log In</button>
+    </form>
+
+    <div class="forgot">
+      <a href="#">Forgotten password?</a>
+    </div>
+
+    <div class="separator"><span>or</span></div>
+
+    <button class="social-button google">Continue with Google</button>
+    <button class="social-button apple">Continue with Apple</button>
+
+    <p class="signup-text">
+      Don't have an account?
+      <a href="signup.html">Sign up</a>
+    </p>
+
+  </div>
+
+  <script src="login.js"></script>
+</body>
+
+</html>
