@@ -144,13 +144,13 @@ body {
 }
 
 .goals-list{
-  display:flex;
+  display: flex;
+  width: 300px;
   gap:20px;
   padding:10px 25px;
-  overflow-x:auto;              /* <-- abilita lo scroll */
+  overflow-x:scroll;              /* <-- abilita lo scroll */
   overflow-y:hidden;
   scroll-snap-type:x mandatory; /* snap opzionale */
-  -webkit-overflow-scrolling:touch;
 }
 
 /* ogni card deve rimanere “larga” e non comprimersi */
@@ -162,10 +162,9 @@ body {
   padding:15px;
   /* margin:10px auto;  <-- rimuovere! */
   margin:10px 0;               /* ok */
-  scroll-snap-align:start;
+  
   box-shadow:0 2px 6px rgba(0,0,0,.1);
 }
-
 
 
 .home-content {

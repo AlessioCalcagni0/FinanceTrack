@@ -70,6 +70,7 @@ form h3 {
     border-radius: 8px;
     border: 1px solid #ccc;
     margin-top: 5px;
+    display: flex;
 }
 
 .section input[type="text"]:focus{
@@ -290,4 +291,67 @@ form{
   border-width: 6px;
   border-style: solid;
   border-color: transparent white transparent transparent;
+}
+
+
+.button{
+  width: 180px;
+  height: 40px;
+  background-color: #2A60BA;
+  text-align: center;
+  border-radius: 30px;
+  color: #fdf6e6;
+
+}
+
+.button-container{
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+
+#addParetcipant{
+
+}
+#participantsSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-partecipant {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 260px;
+  margin-left: 35px;
+}
+
+#input-partecipant{
+  width: 218px;
+  margin-left: -2px;
+}
+
+
+.input-partecipant input {
+  width: 240px;   /* stessa larghezza per tutti */
+  height: 20px;
+  padding: 0px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.red_bin {
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  margin-left: 10px;
+}
+
+.button-container button:disabled {
+  background-color: #ccc;   /* grigio */
+  cursor: not-allowed;
 }

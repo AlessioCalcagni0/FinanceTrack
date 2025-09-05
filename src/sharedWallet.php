@@ -25,19 +25,19 @@ $apiHost = $_ENV['DB_HOST']  ;
     <div class="navbar">
         <!--THREE BARS MENU-->
         <div class="dropdown">
-            <img id="menu" onclick="openMenu()" src="../src/images/icons8-menu-30.png" alt="menu missing">
-            <img onclick="closeMenu()" class="back-arrow" src="../src/images/icons8-back-arrow-50.png" >
+            <img id="menu" onclick="openMenu()" src="/images/icons8-menu-30.png" alt="menu missing">
+            <img onclick="closeMenu()" class="back-arrow" src="/images/icons8-back-arrow-50.png" >
 
             <div id="menu-content" class="dropdown-content">
-                <h2 style="margin-top: 50%;">Home</h2>
+                <h2 style="margin-top: 50%;"> Home</h2>
                 <h2>Wallets</h2>
-                <a href="../wallet_page.html">All Accounts</a>
+                <a href="../wallet_page.php">All Accounts</a>
                 <a href="./sharedWallet.php">Shared Wallets</a>
                 <a href="#">Cash Account</a>
                 <!-- la sezione "Add Transaction" è stata temporaneamente sostituita con un riferimento agli account di tipo "cash". -->
                 <h2>Insights</h2>
                 <a href="./insights.php">Dashboard</a>
-                <a href="./categories.html">Spending by Category</a>
+                <a href="./categories.php">Spending by Category</a>
                 <h2>Goals</h2>
                 <a href="#">Overview</a>
                 <a href="#">New Goal</a>
@@ -60,7 +60,7 @@ $apiHost = $_ENV['DB_HOST']  ;
                 </defs>
             </svg>    
              <!--PROFILE ICON-->
-            <img id="profile" src="../src/images/icons8-profile-24.png" alt="profile missing">
+            <img id="profile" src="images/icons8-profile-24.png" alt="profile missing">
         </div>
 
     </div>

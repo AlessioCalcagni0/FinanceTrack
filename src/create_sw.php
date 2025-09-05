@@ -37,7 +37,7 @@ $apiHost = $_ENV['DB_HOST'] ;
                  </div>
                  
                 <div class="section section-blue" style="margin-top: 7px;">
-                    <input type="text" name="walletName" placeholder="e.g. Wallet Name" id="walletName" required>
+                    <input type="text" name="walletName" placeholder="e.g. Wallet Name" id="walletName"required>
                 </div>
                 
                 
@@ -108,9 +108,14 @@ $apiHost = $_ENV['DB_HOST'] ;
                 <h3 class="hiddenName" id="selectPartecipants">Select participants</h3>
                 <!-- Participants (hiddenName) -->
                 <div class="section section-green hiddenName" id="participantsSection">
-                    <input type="text" name="participants[]" placeholder="Add participant email">
-                    <button type="button" id="addParticipant">+ Add new participant</button>
-                </div>
+                    <div id="input-partecipant">
+                        <input type="text" name="participants[]" placeholder="Add participant email">
+                        </div>
+                        <div class="button-container" id="button-container"> 
+                        <button class="button" type="button" id="addParticipant">+ Add participant</button>
+                        </div>
+                    </div>
+
 
                
                 <h3 class="hiddenContact"  id="selectRole">Select role and permissions</h3>
