@@ -335,6 +335,16 @@ async function loadAccounts() {
             modifyBtn.textContent = "Modify";
             modifyBtn.addEventListener("click", () => openModifyPopup(acc));
 
+            const viewBtn = document.createElement("button");
+            viewBtn.className = "account-view-btn";
+            viewBtn.textContent = "View";
+
+            const btnContainer = document.createElement("div");
+            btnContainer.className = "account-btns";
+
+            btnContainer.appendChild(modifyBtn);
+            btnContainer.appendChild(viewBtn);
+
             nameIcon.appendChild(nameDiv);
             nameIcon.appendChild(iconDiv);
             info.appendChild(typeDiv);
@@ -343,7 +353,8 @@ async function loadAccounts() {
 
             box.appendChild(nameIcon);
             box.appendChild(info);
-            box.appendChild(modifyBtn);
+            box.appendChild(btnContainer);
+        
             frame.appendChild(box);
         });
     } catch (err) {

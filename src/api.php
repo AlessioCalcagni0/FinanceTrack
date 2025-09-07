@@ -545,8 +545,9 @@ if ($path === "sharedAccounts") {
                 color,
                 partecipant_num,
                 partecipant_name_surname1,
-                partecipant_name_surname2 ,
+                partecipant_name_surname2,
                 partecipant_name_surname3,
+                user_role,
                 participant_role1,
                 participant_role2,
                 participant_role3,
@@ -555,11 +556,11 @@ if ($path === "sharedAccounts") {
                 participant_permissions3,
                 TO_CHAR(last_sync, 'YYYY-MM-DD') AS last_sync
             FROM shared_wallets 
-            WHERE user_id= :user
+            WHERE user_id = :user
             ORDER BY name ASC
         ";
-        $stmt = $pdo->prepare($sql);
 
+        $stmt = $pdo->prepare($sql);
         $stmt->execute(['user' => (int)$user]);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode($rows ?: []);
@@ -571,6 +572,395 @@ if ($path === "sharedAccounts") {
 }
 
 
+if ($path === "save_sw_changes") {
+    header('Content-Type: application/json; charset=utf-8');
+
+    $payload = json_decode(file_get_contents('php://input'), true) ?? [];
+    $walletId = (int)($payload['wallet_id'] ?? 0);
+    $participants = $payload['participants'] ?? []; // [{name, role}], ordine finale slot 1..3
+
+    if ($walletId <= 0 || !is_array($participants)) {
+        http_response_code(400);
+        echo json_encode(["error" => "Parametri non validi"]);
+        exit;
+    }
+
+    // normalizza array a 3 slot
+    $participants = array_values($participants);
+    $participants = array_slice($participants, 0, 3);
+    for ($i=0; $i<3; $i++) {
+        $participants[$i] = $participants[$i] ?? ["name" => null, "role" => null];
+        $participants[$i]["name"] = isset($participants[$i]["name"]) && trim($participants[$i]["name"]) !== "" ? trim($participants[$i]["name"]) : null;
+        $participants[$i]["role"] = isset($participants[$i]["role"]) && trim($participants[$i]["role"]) !== "" ? trim($participants[$i]["role"]) : null;
+    }
+
+    // conta i non-null
+    $num = 0;
+    foreach ($participants as $p) { if (!is_null($p["name"])) $num++; }
+
+    try {
+        // Leggi la riga attuale per preservare i permessi ed evitare NULL
+        $pdo->beginTransaction();
+
+        $sel = $pdo->prepare("
+            SELECT
+              partecipant_name_surname1, partecipant_name_surname2, partecipant_name_surname3,
+              participant_role1, participant_role2, participant_role3,
+              participant_permissions1, participant_permissions2, participant_permissions3
+            FROM shared_wallets
+            WHERE id = :id
+            FOR UPDATE
+        ");
+        $sel->execute(["id" => $walletId]);
+        $row = $sel->fetch(PDO::FETCH_ASSOC);
+        if (!$row) throw new PDOException("Wallet non trovato");
+
+        $oldNames = [
+            $row["partecipant_name_surname1"],
+            $row["partecipant_name_surname2"],
+            $row["partecipant_name_surname3"],
+        ];
+        $oldPerms = [
+            $row["participant_permissions1"] ?? '',
+            $row["participant_permissions2"] ?? '',
+            $row["participant_permissions3"] ?? '',
+        ];
+
+        // calcola i permessi nuovi per slot 1..3:
+        // se il nome esisteva prima, riusa i suoi permessi; altrimenti stringa vuota '' (NOT NULL safe)
+        $newPerms = ['', '', ''];
+        for ($i=0; $i<3; $i++) {
+            $name = $participants[$i]["name"];
+            if ($name !== null) {
+                $matchIndex = null;
+                for ($j=0; $j<3; $j++) {
+                    if ($oldNames[$j] !== null && trim($oldNames[$j]) === $name) {
+                        $matchIndex = $j; break;
+                    }
+                }
+                $newPerms[$i] = $matchIndex !== null ? ($oldPerms[$matchIndex] ?? '') : '';
+            } else {
+                $newPerms[$i] = ''; // colonne NOT NULL
+            }
+        }
+
+        $sql = "
+            UPDATE shared_wallets
+            SET
+                partecipant_num = :num,
+                partecipant_name_surname1 = :n1,
+                partecipant_name_surname2 = :n2,
+                partecipant_name_surname3 = :n3,
+                participant_role1 = :r1,
+                participant_role2 = :r2,
+                participant_role3 = :r3,
+                participant_permissions1 = :p1,
+                participant_permissions2 = :p2,
+                participant_permissions3 = :p3
+            WHERE id = :id
+        ";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            "num" => $num,
+            "n1" => $participants[0]["name"], "n2" => $participants[1]["name"], "n3" => $participants[2]["name"],
+            "r1" => $participants[0]["role"], "r2" => $participants[1]["role"], "r3" => $participants[2]["role"],
+            "p1" => $newPerms[0], "p2" => $newPerms[1], "p3" => $newPerms[2],
+            "id" => $walletId
+        ]);
+
+        $pdo->commit();
+        echo json_encode(["success" => true]);
+    } catch (PDOException $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
+        http_response_code(500);
+        echo json_encode(["error" => $e->getMessage()]);
+    }
+    exit;
+}
+
+if ($path === "friends") {
+    header('Content-Type: application/json; charset=utf-8');
+
+    $user = (int)($_GET["user"] ?? 0);
+    if ($user <= 0) {
+        http_response_code(400);
+        echo json_encode(["error" => "Missing/invalid user"]);
+        exit;
+    }
+
+    try {
+        // Verifica che la tabella esista (evita 500 inspiegabili)
+        $chk = $pdo->query("
+            SELECT to_regclass('public.friendship') AS exists_rel
+        ")->fetch(PDO::FETCH_ASSOC);
+        if (!$chk || !$chk['exists_rel']) {
+            http_response_code(500);
+            echo json_encode(["error" => "Table 'friendship' does not exist"]);
+            exit;
+        }
+
+        $sql = "
+            SELECT 
+                id,
+                friend_id,
+                friend_name
+            FROM friendship
+            WHERE user_id = :user
+            ORDER BY friend_name ASC
+        ";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['user' => $user]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($rows ?: []);
+    } catch (PDOException $e) {
+        // Log server-side se hai un file di log
+        error_log('[friends API] ' . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(["error" => $e->getMessage()]);
+    }
+    exit;
+}
+
+if ($path === "invitations") {
+    header('Content-Type: application/json; charset=utf-8');
+    $user = (int)($_GET["user"] ?? 0);
+    if ($user <= 0) { http_response_code(400); echo json_encode(["error"=>"Missing/invalid user"]); exit; }
+
+    try {
+        $sql = "
+          SELECT id,
+                 sender_first_name, sender_last_name,
+                 sent_day, sent_month, sent_year,
+                 wallet_id,                -- IMPORTANTE
+                 wallet_name, wallet_balance, participants_count
+          FROM invitations
+          WHERE receiver_id = :user
+          ORDER BY sent_year DESC, sent_month DESC, sent_day DESC, id DESC
+        ";
+        $st = $pdo->prepare($sql);
+        $st->execute(['user'=>$user]);
+        echo json_encode($st->fetchAll(PDO::FETCH_ASSOC) ?: []);
+    } catch (Throwable $e) {
+        error_log('[invitations GET] '.$e->getMessage());
+        http_response_code(500); echo json_encode(["error"=>$e->getMessage()]);
+    }
+    exit;
+}
+
+
+if ($path === 'invitation_accept' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    header('Content-Type: application/json; charset=utf-8');
+
+    $p          = json_decode(file_get_contents('php://input'), true) ?: [];
+    $invId      = (int)($p['invitation_id'] ?? 0);
+    $receiverId = (int)($p['receiver_id'] ?? 0);
+    $postedWId  = (int)($p['wallet_id'] ?? 0);
+
+    if ($invId <= 0 || $receiverId <= 0) {
+        http_response_code(400);
+        echo json_encode(['error'=>'Missing invitation_id or receiver_id']);
+        exit;
+    }
+
+    try {
+        $pdo->beginTransaction();
+
+        // 1) Lettura invito (LOCK)
+        $st = $pdo->prepare("SELECT * FROM invitations WHERE id=:id FOR UPDATE");
+        $st->execute(['id'=>$invId]);
+        $inv = $st->fetch(PDO::FETCH_ASSOC);
+        if (!$inv) throw new Exception('Invitation not found');
+        if ((int)$inv['receiver_id'] !== $receiverId) throw new Exception('Invitation not for this user');
+
+        // Nome completo receiver (fallback “Mario Rossi”)
+        $receiverFullName = trim(trim((string)($inv['receiver_first_name'] ?? '')) . ' ' . trim((string)($inv['receiver_last_name'] ?? '')));
+        if ($receiverFullName === '') $receiverFullName = 'Mario Rossi';
+
+        // 2) TROVA WALLET SORGENTE (robusto + debug)
+        $debug = [
+            'posted_wallet_id' => $postedWId,
+            'inv.wallet_id'    => $inv['wallet_id'] ?? null,
+            'inv.sender_id'    => $inv['sender_id'] ?? null,
+            'inv.wallet_name'  => $inv['wallet_name'] ?? null
+        ];
+
+        $w = null;
+
+        // 2a) per ID passato dal FE
+        if ($postedWId > 0) {
+            $q = $pdo->prepare("SELECT * FROM shared_wallets WHERE id=:id FOR UPDATE");
+            $q->execute(['id'=>$postedWId]);
+            $w = $q->fetch(PDO::FETCH_ASSOC);
+            if (!$w) $debug['miss_postedWId'] = 'not found';
+        }
+
+        // 2b) per ID presente sull’invito
+        if (!$w && !empty($inv['wallet_id'])) {
+            $q = $pdo->prepare("SELECT * FROM shared_wallets WHERE id=:id FOR UPDATE");
+            $q->execute(['id'=>(int)$inv['wallet_id']]);
+            $w = $q->fetch(PDO::FETCH_ASSOC);
+            if (!$w) $debug['miss_inv.wallet_id'] = 'not found';
+        }
+
+        // 2c) per owner+nome (case/space-insensitive)
+        if (!$w && !empty($inv['sender_id']) && !empty($inv['wallet_name'])) {
+            $q = $pdo->prepare("
+                SELECT * FROM shared_wallets
+                WHERE user_id = :owner
+                  AND lower(btrim(name)) = lower(btrim(:name))
+                ORDER BY id DESC
+                LIMIT 1
+                FOR UPDATE
+            ");
+            $q->execute(['owner'=>(int)$inv['sender_id'], 'name'=>(string)$inv['wallet_name']]);
+            $w = $q->fetch(PDO::FETCH_ASSOC);
+            if (!$w) $debug['miss_owner_name'] = 'not found';
+        }
+
+        // 2d) ultimo fallback: per solo nome (se unico o prendiamo l’ultimo)
+        if (!$w && !empty($inv['wallet_name'])) {
+            $q = $pdo->prepare("
+                SELECT * FROM shared_wallets
+                WHERE lower(btrim(name)) = lower(btrim(:name))
+                ORDER BY id DESC
+                LIMIT 1
+                FOR UPDATE
+            ");
+            $q->execute(['name'=>(string)$inv['wallet_name']]);
+            $w = $q->fetch(PDO::FETCH_ASSOC);
+            if (!$w) $debug['miss_name_only'] = 'not found';
+        }
+
+        if (!$w) {
+            throw new Exception('Source wallet not found | debug=' . json_encode($debug));
+        }
+
+        // 3) Aggiungi il receiver tra i partecipanti (max 3 slot) se non già presente
+        $p1 = trim((string)($w['partecipant_name_surname1'] ?? ''));
+        $p2 = trim((string)($w['partecipant_name_surname2'] ?? ''));
+        $p3 = trim((string)($w['partecipant_name_surname3'] ?? ''));
+
+        $alreadyThere = false;
+        foreach ([$p1,$p2,$p3] as $pname) {
+            if ($pname !== '' && mb_strtolower($pname) === mb_strtolower($receiverFullName)) { $alreadyThere = true; break; }
+        }
+
+        if (!$alreadyThere) {
+            $slotField=null; $roleField=null; $permField=null;
+            if ($p1==='')      { $slotField='partecipant_name_surname1'; $roleField='participant_role1'; $permField='participant_permissions1'; }
+            elseif ($p2==='')  { $slotField='partecipant_name_surname2'; $roleField='participant_role2'; $permField='participant_permissions2'; }
+            elseif ($p3==='')  { $slotField='partecipant_name_surname3'; $roleField='participant_role3'; $permField='participant_permissions3'; }
+            else               { throw new Exception('No free participant slot in this wallet'); }
+
+            $upd = $pdo->prepare("
+                UPDATE shared_wallets
+                SET $slotField = :name,
+                    $roleField = COALESCE($roleField, 'Viewer'),
+                    $permField = COALESCE($permField, 'view'),
+                    partecipant_num = LEAST(COALESCE(partecipant_num,0)+1, 3),
+                    last_sync = NOW()::date
+                WHERE id = :id
+            ");
+            $upd->execute(['name'=>$receiverFullName, 'id'=>(int)$w['id']]);
+        }
+
+        // 4) Crea/garantisce la copia per il receiver
+        $exists = $pdo->prepare("SELECT id FROM shared_wallets WHERE user_id=:u AND name=:n LIMIT 1");
+        $exists->execute(['u'=>$receiverId, 'n'=>(string)$w['name']]);
+        $existingId = $exists->fetchColumn();
+
+        if ($existingId) {
+            $copiedId = (int)$existingId;
+        } else {
+            $copy = $pdo->prepare("
+                INSERT INTO shared_wallets (
+                    user_id, name, spent, income, balance, path, color,
+                    partecipant_num,
+                    partecipant_name_surname1, partecipant_name_surname2, partecipant_name_surname3,
+                    user_role,
+                    participant_role1, participant_role2, participant_role3,
+                    participant_permissions1, participant_permissions2, participant_permissions3,
+                    last_sync, created_at
+                )
+                SELECT
+                    :uid, name, spent, income, balance, path, color,
+                    partecipant_num,
+                    partecipant_name_surname1, partecipant_name_surname2, partecipant_name_surname3,
+                    'Viewer',
+                    participant_role1, participant_role2, participant_role3,
+                    participant_permissions1, participant_permissions2, participant_permissions3,
+                    NOW()::date, NOW()
+                FROM shared_wallets
+                WHERE id = :src
+                RETURNING id
+            ");
+            $copy->execute(['uid'=>$receiverId, 'src'=>(int)$w['id']]);
+            $copiedId = (int)$copy->fetchColumn();
+        }
+
+        // 5) Rimuovi invito (o status='accepted')
+        $pdo->prepare("DELETE FROM invitations WHERE id=:id")->execute(['id'=>$invId]);
+
+        // 6) Ritorna la riga wallet formattata per il FE
+        $sel = $pdo->prepare("
+            SELECT 
+                id, name, balance, path, color,
+                partecipant_num,
+                partecipant_name_surname1, partecipant_name_surname2, partecipant_name_surname3,
+                user_role,
+                participant_role1, participant_role2, participant_role3,
+                participant_permissions1, participant_permissions2, participant_permissions3,
+                TO_CHAR(last_sync,'YYYY-MM-DD') AS last_sync
+            FROM shared_wallets
+            WHERE id = :id
+        ");
+        $sel->execute(['id'=>$copiedId]);
+        $wallet = $sel->fetch(PDO::FETCH_ASSOC);
+
+        $pdo->commit();
+        echo json_encode(['ok'=>true, 'wallet'=>$wallet]);
+
+    } catch (Throwable $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
+        http_response_code(400);
+        echo json_encode(['error'=>$e->getMessage()]);
+    }
+    exit;
+}
+
+if ($path === "api/stats") {
+    $period = $_GET["period"] ?? "year";
+
+    switch ($period) {
+        case "month":
+            $groupBy = "EXTRACT(DAY FROM date)";
+            break;
+        case "week":
+            $groupBy = "EXTRACT(DOW FROM date)";
+            break;
+        default: // year
+            $groupBy = "EXTRACT(MONTH FROM date)";
+    }
+
+    $sql = "
+        SELECT $groupBy as period,
+               SUM(CASE WHEN type='income' THEN amount ELSE 0 END) as income,
+               SUM(CASE WHEN type='outcome' THEN amount ELSE 0 END) as outcome
+        FROM transactions
+        WHERE EXTRACT(YEAR FROM date) = EXTRACT(YEAR FROM CURRENT_DATE)
+        GROUP BY period
+        ORDER BY period
+    ";
+
+    try {
+        $stmt = $pdo->query($sql);
+        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+    } catch(PDOException $e) {
+        http_response_code(500);
+        echo json_encode(["error" => "Query error: " . $e->getMessage()]);
+    }
+    exit;
+}
 
 
 // Se non trova corrispondenza

@@ -1,114 +1,278 @@
-function goHome(){
-    window.location.href="./homepage.php";
+let currentChart = null;
+let currentLineChart = null;
+let currentFilter = "both";
+
+async function fetchStats(period) {
+  const res = await fetch(`http://${API_HOST}:8000/api.php?path=api/stats&period=${period}`);
+  return await res.json();
 }
 
-function redirect(location){
-    window.location.href= location;
+function mapLabels(period, value) {
+  if (period === "week") {
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    return days[value];
+  }
+  if (period === "month") {
+    const weekNum = Math.ceil(value / 7);
+    return `Week ${weekNum}`;
+  }
+  if (period === "year") {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return months[value - 1];
+  }
+  return value;
 }
 
-function openMenu(){
-    document.getElementById("image1_303_309").classList.add("hide-menu");
-    document.getElementById("hh").classList.add("hide-menu");
-    document.getElementById("hhs").classList.add("hide-menu");
-    document.getElementById("ww").classList.add("hide-menu");
-    document.getElementsByClassName("back-arrow")[0].classList.add("show-menu");
-    document.getElementById("menu-content").classList.toggle("show-menu");
+function groupByWeeks(data) {
+  const weeks = {
+    "Week 1": { income: 0, outcome: 0 },
+    "Week 2": { income: 0, outcome: 0 },
+    "Week 3": { income: 0, outcome: 0 },
+    "Week 4": { income: 0, outcome: 0 },
+    "Week 5": { income: 0, outcome: 0 }
+  };
+
+  data.forEach(d => {
+    const day = parseInt(d.period, 10) || 0;
+    let weekLabel;
+    if (day >= 1 && day <= 7) weekLabel = "Week 1";
+    else if (day >= 8 && day <= 14) weekLabel = "Week 2";
+    else if (day >= 15 && day <= 21) weekLabel = "Week 3";
+    else if (day >= 22 && day <= 28) weekLabel = "Week 4";
+    else if (day >= 29) weekLabel = "Week 5";
+    else return;
+
+    weeks[weekLabel].income += Number(d.income) || 0;
+    weeks[weekLabel].outcome += Number(d.outcome) || 0;
+  });
+
+  return Object.entries(weeks)
+    .filter(([_, vals]) => vals.income > 0 || vals.outcome > 0)
+    .map(([label, vals]) => ({
+      period: label,
+      income: vals.income,
+      outcome: vals.outcome
+    }));
 }
 
-window.onclick = function(event) {
-  if (!event.target.matches('#menu') && !event.target.matches("menu-content")) {
-    document.getElementById("image1_303_309").classList.remove("hide-menu");
-    document.getElementById("hh").classList.remove("hide-menu");
-    document.getElementById("hhs").classList.remove("hide-menu");
-    document.getElementById("ww").classList.remove("hide-menu");
-    document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
+function createBarChart(canvasId, data, label, period) {
+  const ctx = document.getElementById(canvasId).getContext("2d");
+  if (currentChart) currentChart.destroy();
 
-    var dropdowns = document.getElementsByClassName("dropdown-content");
-    var i;
-    for (i = 0; i < dropdowns.length; i++) {
-      var openDropdown = dropdowns[i];
-      if (openDropdown.classList.contains('show-menu')) {
-        openDropdown.classList.remove('show-menu');
+  currentChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: data.map(d => (period === "month" ? d.period : mapLabels(period, d.period))),
+      datasets: getDatasets(data, "bar")
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: `${label} Statistics (Bar)`,
+          color: "#222",       // titolo più scuro
+          font: {
+            size: 16,
+            weight: "bold"
+          }
+        },
+        legend: {
+          labels: {
+            color: "#222",   // legenda più scura
+            font: {
+              size: 12,
+              weight: "bold"
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: "#222",   // etichette asse X
+            font: {
+              size: 12,
+              weight: "bold"
+            }
+          },
+          grid: {
+            color: "rgba(0,0,0,0.1)" // linee più definite
+          }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: "#222",   // etichette asse Y
+            font: {
+              size: 12,
+              weight: "bold"
+            }
+          },
+          grid: {
+            color: "rgba(0,0,0,0.1)"
+          }
+        }
       }
     }
+
+  });
+}
+
+function createLineChart(canvasId, data, label, period) {
+  const ctx = document.getElementById(canvasId).getContext("2d");
+  if (currentLineChart) currentLineChart.destroy();
+
+  currentLineChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: data.map(d => (period === "month" ? d.period : mapLabels(period, d.period))),
+      datasets: getDatasets(data, "line")
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: `${label} Statistics (Line)`,
+          color: "#222",       // titolo più scuro
+          font: {
+            size: 16,
+            weight: "bold"
+          }
+        },
+        legend: {
+          labels: {
+            color: "#222",   // legenda più scura
+            font: {
+              size: 12,
+              weight: "bold"
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: "#222",   // etichette asse X
+            font: {
+              size: 12,
+              weight: "bold"
+            }
+          },
+          grid: {
+            color: "rgba(0,0,0,0.1)" // linee più definite
+          }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: "#222",   // etichette asse Y
+            font: {
+              size: 12,
+              weight: "bold"
+            }
+          },
+          grid: {
+            color: "rgba(0,0,0,0.1)"
+          }
+        }
+      }
+    }
+  });
+}
+
+function getDatasets(data, chartType = "bar") {
+  const datasets = [];
+
+  if (currentFilter === "income" || currentFilter === "both") {
+    datasets.push({
+      label: "Income",
+      data: data.map(d => d.income),
+      backgroundColor: chartType === "bar" ? "rgba(54, 162, 235, 0.5)" : undefined,
+      borderColor: "rgba(54, 162, 235, 1)",
+      fill: chartType === "line" ? true : false,
+      tension: chartType === "line" ? 0.3 : 0
+    });
   }
+  if (currentFilter === "spent" || currentFilter === "both") {
+    datasets.push({
+      label: "Spent",
+      data: data.map(d => d.outcome),
+      backgroundColor: chartType === "bar" ? "rgba(255, 99, 132, 0.5)" : undefined,
+      borderColor: "rgba(255, 99, 132, 1)",
+      fill: chartType === "line" ? true : false,
+      tension: chartType === "line" ? 0.3 : 0
+    });
+  }
+
+  return datasets;
 }
 
-function closeMenu() {
-    document.getElementById("image1_303_309").classList.remove("hide-menu");
-    document.getElementById("hh").classList.remove("hide-menu");
-    document.getElementById("hhs").classList.remove("hide-menu");
-    document.getElementById("ww").classList.remove("hide-menu");
-    document.getElementById("menu-content").classList.remove("show-menu");
-    document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
-}
 
+
+async function showChart(period) {
+  // update active button
+  document.querySelectorAll(".chart-buttons button").forEach(btn => btn.classList.remove("active"));
+  document.getElementById(`btn-${period}`).classList.add("active");
+
+  let data;
+  if (period === "month") {
+    const rawMonthData = await fetchStats("month");
+    data = groupByWeeks(rawMonthData);
+  } else {
+    data = await fetchStats(period);
+  }
+
+  createBarChart("main-chart", data, period.charAt(0).toUpperCase() + period.slice(1), period);
+  createLineChart("line-chart", data, period.charAt(0).toUpperCase() + period.slice(1), period);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-  userID = 1; 
-  const select=document.getElementById("filtro2");
-  async function fetchAccounts(user = userID) {
-  try {
-    const res = await fetch(`http://${API_HOST}:8000/api.php?path=api/accounts&user=${user}`);
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
-    const dati = await res.json();
-    console.log(dati);
 
-    // ✅ use dati here
-    dati.forEach(account => {
-      const option = document.createElement("option");
-      option.value = account.name;
-      option.textContent = account.name;
-      select.appendChild(option);
-    });
+  // event listeners for buttons
+  document.getElementById("btn-week").addEventListener("click", () => showChart("week"));
+  document.getElementById("btn-month").addEventListener("click", () => showChart("month"));
+  document.getElementById("btn-year").addEventListener("click", () => showChart("year"));
 
-  } catch (error) {
-    console.error("Failed to fetch accounts:", error);
-    alert("Unable to connect to the server. Please try again later.");
+  document.getElementById("btn-income").addEventListener("click", () => {
+    currentFilter = "income";
+    updateFilterButtons("btn-income");
+    const activePeriod = document.querySelector(".chart-buttons button.active").id.replace("btn-", "");
+    showChart(activePeriod);
+  });
+
+  document.getElementById("btn-spent").addEventListener("click", () => {
+    currentFilter = "spent";
+    updateFilterButtons("btn-spent");
+    const activePeriod = document.querySelector(".chart-buttons button.active").id.replace("btn-", "");
+    showChart(activePeriod);
+  });
+
+  document.getElementById("btn-both").addEventListener("click", () => {
+    currentFilter = "both";
+    updateFilterButtons("btn-both");
+    const activePeriod = document.querySelector(".chart-buttons button.active").id.replace("btn-", "");
+    showChart(activePeriod);
+  });
+
+  function updateFilterButtons(activeId) {
+    document.querySelectorAll(".filter-buttons button").forEach(btn => btn.classList.remove("active"));
+    document.getElementById(activeId).classList.add("active");
   }
-}
-  fetchAccounts(1);
 
-  const ctx = document.getElementById('myChart').getContext('2d');
-    let chart;
+  // default chart
+  showChart("week");
 
-async function caricaDati(periodo = "anno", account="all",type="outcome") {
-
-      const res = await fetch(`/api.php?path=api/accounts&user=1`);
-      const dati = await res.json();
-
-      const labels = dati.map(d => d.categoria);
-      const values = dati.map(d => d.totale);
-
-      if (chart) chart.destroy();
-
-      chart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-          labels: labels,
-          datasets: [{
-            data: values,
-            backgroundColor: ['#FF6384','#36A2EB','#FFCE56','#4BC0C0','#9966FF']
-          }]
-        }
-      });
-    }
-
-    document.getElementById("filtro2").value
-  // Cambio filtro
-    document.getElementById('filtro1').addEventListener('change', (e) => {
-      caricaDati(e.target.value,document.getElementById("filtro2").value, document.getElementById("filtro3").value);
-    });
-
-  // Cambio filtro
-    document.getElementById('filtro2').addEventListener('change', (e) => {
-      caricaDati(document.getElementById("filtro1").value,e.target.value, document.getElementById("filtro3").value);
-    });
-
-  // Cambio filtro
-    document.getElementById('filtro3').addEventListener('change', (e) => {
-      caricaDati(document.getElementById("filtro1").value, document.getElementById("filtro2").value,e.target.value);
-    });
 });
+
+
+function goHome() {
+  window.location.href = "./homepage.php";
+}
+
+function redirect(location) {
+  window.location.href = location;
+}
+

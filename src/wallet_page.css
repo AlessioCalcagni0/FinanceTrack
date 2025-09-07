@@ -2,14 +2,14 @@
 
 * {
     font-family: 'Inter', sans-serif;
-    margin: 0;
-    padding: 0;
+
     box-sizing: border-box;
 }
 
-html, body {
-    height: 780px;          /* altezza fissa della pagina */
-    overflow: hidden;        /* niente scroll globale */
+html,
+body {
+    height: 780px;
+    overflow: hidden;
 }
 
 body {
@@ -18,39 +18,30 @@ body {
 }
 
 .footer {
-    background-color: white;  /* sfondo bianco */
-    color: black;             /* testo nero */
+    background-color: #fff;
+    color: #000;
     text-align: center;
     padding: 1rem;
     width: 105%;
-    position: fixed;          /* rimane sempre in basso */
+    position: fixed;
     bottom: 0;
     left: 0;
-    box-shadow: 0 -1px 5px rgba(0,0,0,0.1); /* optional: piccolo bordo in ombra */
+    box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
     z-index: 1;
 }
 
-
-/* Footer nav centrato */
-.footer-nav {
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-}
-
-/* Footer nav centrato */
 .footer-nav {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-
-
 .main {
-    flex: 1;              /* cresce per riempire lo spazio */    /* scroll se serve */
-    margin-left: 45px;    /* come nel tuo CSS originale */
-    padding-bottom: 80px; /* spazio per footer fisso */
+    flex: 1;
+    padding-bottom: 80px;
+    height: 800px;
+    overflow-y: scroll;
+    margin: 0px 0px;
 }
 
 .navbar {
@@ -58,7 +49,7 @@ body {
     height: 50px;
     align-items: center;
     justify-content: space-between;
-    background-color: rgb(255, 255, 255);
+    background: #fff;
 }
 
 .main::-webkit-scrollbar {
@@ -66,28 +57,23 @@ body {
 }
 
 .main::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,0.2);
+    background-color: rgba(0, 0, 0, 0.2);
     border-radius: 3px;
 }
 
-#menu {
-
-    width: 30px;
-    height: 30px;
-}
-
+#menu,
 #bell {
-
     width: 30px;
     height: 30px;
 }
 
 .title {
-    width: 75px;
+    width: 205px;
     font-size: 20px;
     font-weight: bold;
     color: #152C5C;
     margin: 0 auto;
+    margin-left: 110px;
 }
 
 
@@ -224,7 +210,7 @@ body {
     margin: 0 auto;
     flex-direction: column;
     width: 95%;
-    height: 100%;
+    height: fit-content;
     margin-top: 20px;
     border-radius: 20px;
     overflow-y: scroll;
@@ -253,7 +239,7 @@ body {
     margin: 0 auto;
     margin-top: 15px;
     width: 270px;
-    height: 70px;
+    height: 170px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -299,17 +285,27 @@ body {
 }
 
 .account-modify-btn {
-    border: 2px solid #808080;
+    border: 2px solid  #152C5C;
     /* bordo grigio */
     border-radius: 20px;
     /* arrotondato */
-    padding: 5px 15px;
     /* allungato orizzontalmente */
     background-color: transparent;
     /* sfondo trasparente */
-    color: #858585;
+    color: #152C5C;
     /* testo grigio */
     font-size: 14px;
+}
+
+
+.account-view-btn {
+    border: 2px solid #8451AC;
+    border-radius: 20px;
+    background-color: transparent;
+    color: #8451AC;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
 }
 
 .name-Icon {
@@ -729,4 +725,12 @@ body {
     border-radius: 5px;
     cursor: pointer;
     margin: 0 auto;
+}
+
+.account-btns {
+    display: flex;
+    flex-direction: column; /* disposizione verticale */
+    gap: 5px; /* distanza tra i bottoni */
+    margin-left: auto; /* spinge i bottoni a destra */
+    margin-right: 10px;
 }

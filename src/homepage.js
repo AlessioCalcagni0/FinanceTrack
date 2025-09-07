@@ -1,5 +1,5 @@
 function goToHomepage() {
-  window.location.href = "homepage.html";
+  window.location.href = "homepage.php";
 }
 
 function redirect(location) {
@@ -8,7 +8,7 @@ function redirect(location) {
 
 function openTransaction() {
 
-  window.location.href = "/src/add_transaction.html";
+  window.location.href = "/add_transaction.php";
 }
 
 
