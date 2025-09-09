@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap');
+*{ font-family: 'Inter', sans-serif; box-sizing: border-box; }
+:root{
+  --blue: #2d5cf6;
+  --border:#e5e7eb;
+  --text:#111;
+  --muted:#6b7280;
+  --bg:#fff;
+  --radius:14px;
+}
+
+html, body{ height:100%; }
+body{
+  margin:0; background: var(--bg); color: var(--text);
+  display:flex; flex-direction:column;
+}
+
+/* Header */
+.topbar{
+  display:flex; align-items:center; justify-content:center;
+  padding: 20px 16px 8px;
+  position: relative;
+}
+.topbar h1{
+  font-size: 26px; margin:0; font-weight: 800;
+  letter-spacing: .2px;
+}
+.topbar .close{
+  position:absolute; right: 18px; top: 18px;
+  background: transparent; border: none; font-size: 22px; cursor: pointer;
+}
+
+/* Form container */
+.container{
+  padding: 8px 16px 28px;
+  max-width: 440px; width: 100%;
+  margin: 0 auto;
+}
+
+.label{ display:block; font-weight:700; margin: 18px 0 8px; }
+.req{ color:#ef4444; margin-left:4px; }
+
+.field{ position:relative; display:block; }
+.field input, .field select{
+  width:100%; border:1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 14px; outline:none; font-size:16px; color:var(--text);
+  background:#fff;
+}
+.field input::placeholder{ color:#9ca3af; }
+
+/* currency suffix */
+.suffix{
+  position:absolute; right: 16px; top: 58px; color:#9ca3af; pointer-events:none;
+}
+
+/* custom select */
+.select{ position:relative; }
+.select select{
+  appearance:none; -webkit-appearance:none; -moz-appearance:none;
+  background:#fff;
+}
+.chev{
+  position:absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  pointer-events:none; color:#6b7280; font-size: 18px;
+}
+
+/* date field */
+.date-wrap{
+  position:relative;
+}
+.cal-ico{ position:absolute; left: 12px; top: 50%; transform: translateY(-50%); }
+.date-wrap input{ padding-left: 40px; }
+
+/* button */
+.primary{
+  margin-top: 24px;
+  width:100%;
+  border:none;
+  background: var(--blue);
+  color:#fff;
+  font-weight:700;
+  padding: 14px 16px;
+  border-radius: 12px;
+  cursor:pointer;
+}
+.primary:active{ transform: translateY(1px); }
