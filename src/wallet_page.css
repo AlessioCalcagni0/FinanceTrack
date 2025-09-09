@@ -41,7 +41,7 @@ body {
     padding-bottom: 80px;
     height: 800px;
     overflow-y: scroll;
-    margin: 0px 0px;
+    margin-left: 50px;
 }
 
 .navbar {
@@ -265,10 +265,6 @@ body {
     font-size: 13px;
 }
 
-.account-type {}
-
-.account-balance {}
-
 .account-lastsync {
     width: 70px;
 
@@ -317,7 +313,8 @@ body {
 .add-account-popup {
     background-color: white;
     width: 320px;
-    height: 620px;
+    min-height: 620px;
+    height: fit-content;
     border: 2px solid #152C5C;
     border-radius: 20px;
     margin: 0 auto;
@@ -346,7 +343,7 @@ body {
 
 .choose-icon {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     margin-bottom: 15px;
 }
 
@@ -393,6 +390,7 @@ body {
     display: flex;
     justify-content: space-evenly;
     margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .cancel_button {
@@ -448,6 +446,77 @@ body {
     cursor: pointer;
 }
 
+.choose-type {
+  display: flex;
+  justify-content: center;   /* icone tutte centrate */
+  gap: 20px;                 /* spazio uniforme tra blocchi */
+}
+
+.type-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;       /* centra sia icona che testo in colonna */
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.type-option .icon {
+  display: flex;
+  width: 50px;               /* stessa larghezza per tutte */
+  height: 50px;              /* stessa altezza */
+  margin-bottom: 6px;        /* spazio uniforme tra icona e testo */
+}
+
+.type-option .type-caption {
+  font-size: 16px;
+  line-height: 1.2;
+  margin-left: 10px;
+}
+
+.field-label {
+  display: block;
+  margin-left: 26px; /* stesso bordo laterale degli input */
+  font-size: 12px;
+  color: #444;
+  font-weight: 600;
+}
+
+/* Wrapper per tenere l'occhio dentro al campo */
+.input-wrap {
+  position: relative;
+  width: 250px;                 /* come .number_input */
+  margin: 0 25px 10px 25px;     /* come .number_input */
+}
+.input-wrap .number_input {
+  width: 100%;
+  margin: 0;                    /* il margin lo gestisce il wrapper */
+  padding-right: 36px;          /* spazio per l'occhietto */
+}
+
+/* Bottone occhio dentro l'input */
+.eye-toggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: .75;
+}
+.eye-toggle:hover { opacity: 1; }
+.eye-toggle svg { width: 18px; height: 18px; fill: #444; }
+
+/* Stato attivo (occhio sbarrato) */
+.eye-toggle.is-on svg { fill: #152C5C; }
+
 #bank {
     content: url("images/MoneyHouse.png");
 }
@@ -473,7 +542,7 @@ body {
     width: 320px;
     max-width: 90%;
     display: none;
-    z-index: 1001;
+    z-index: 1000;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 #modifyAccountPopup.addaccount-popupactive {
@@ -621,33 +690,6 @@ body {
     font-weight: bold;
 }
 
-.popup-warning {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #fff3cd;
-    color: #000000;
-    border: 1px solid #ffeeba;
-    border-radius: 8px;
-    padding: 20px;
-    width: 280px;
-    text-align: center;
-    z-index: 2000;
-    display: none;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.popup-warning button {
-    margin-top: 15px;
-    padding: 8px 16px;
-    background-color: #48ff00;
-    color: rgb(249, 249, 249);
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-}
 
 /* Popup errore */
 .popup-error {

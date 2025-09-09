@@ -47,8 +47,8 @@ $apiHost = $_ENV['DB_HOST'] ;
     
     <div class="main">
         <div class="account-summary">
-            <div class="name">
-                Main account
+            <div class="name"  id="account-name">
+                
             </div>
             <div class="balance">
                 Total Balance 

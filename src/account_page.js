@@ -1,27 +1,27 @@
+
+
+
 document.addEventListener('DOMContentLoaded', () => {
+
+    window.currentAccountId = getAccountIdFromURL();
+    console.log(window.currentAccountId);
     function UpdateDate() {
         const oggi = new Date();
-
-        // Giorno della settimana (es: Mon, Tue, Wed...)
         const options = { weekday: 'short' };
         const weekday = oggi.toLocaleDateString("en-US", options);
-
-        // Data numerica (es: 28/08/2025)
         const day = String(oggi.getDate()).padStart(2, "0");
         const month = String(oggi.getMonth() + 1).padStart(2, "0");
         const year = oggi.getFullYear();
-
-        // Componi stringa finale
         const fullDate = `${weekday} ${day}/${month}/${year}`;
-
         document.getElementById("today-date").textContent = fullDate;
     }
 
-    // aggiorna subito al caricamento
-    UpdateDate;
+    // ✅ invoca davvero la funzione
+    UpdateDate();
+    // ✅ aggiorna ogni minuto (60000 ms)
+    setInterval(UpdateDate, 60000);
 
-    // opzionale: aggiorna ogni minuto
-    setInterval(UpdateDate, 1);
+    loadName();
     loadIncome();
     loadSpent();
     loadBalance();
@@ -33,38 +33,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const notification = document.getElementById('notification');
 
     btn.addEventListener('click', () => {
-        // Mostra loader e disabilita bottone
         loader.style.display = 'block';
         btn.disabled = true;
         btn.style.opacity = 0.7;
 
-        // Simula caricamento di 2 secondi
         setTimeout(() => {
             loader.style.display = 'none';
             btn.disabled = false;
             btn.style.opacity = 1;
 
-             // Aggiorna le transazioni odierne dopo la sincronizzazione
+            // dopo sync ricarico i dati dell'account corrente
+            loadIncome();
+            loadSpent();
+            loadBalance();
             loadTodayTransactions();
+            loadLastWeekTransactions();
 
-            // Mostra notifica
             notification.style.display = 'block';
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 2000); // sparisce dopo 2 secondi
+            setTimeout(() => { notification.style.display = 'none'; }, 2000);
         }, 2000);
     });
 });
 
+// 🔻 Aggiungi accountId ai fetch per i totali (opzionale ma consigliato)
 async function loadIncome() {
     try {
-        // Somma
-        const resSum = await fetch(`http://${API_HOST}:8000/api.php?path=income_sum`);
-        const sumData = await resSum.json();
-        console.log(sumData);
-        document.getElementById("income-sum").textContent =
-            (sumData.totale ?? 0) + "€";
+        const accountId = getEffectiveAccountId();
+        console.log(accountId);
+        const url = new URL(`http://${API_HOST}:8000/api.php`);
+        url.searchParams.set("path", "income_sum");
+        if (accountId) url.searchParams.set("accountId", accountId);
 
+        const resSum = await fetch(url.toString());
+        const sumData = await resSum.json();
+
+        document.getElementById("income-sum").textContent =
+            ((sumData.totale ?? 0)) + "€";
     } catch (err) {
         document.getElementById("income-sum").textContent = "Errore caricamento entrate!";
         console.error(err);
@@ -73,25 +77,37 @@ async function loadIncome() {
 
 async function loadSpent() {
     try {
-        // Somma
-        const resSum = await fetch(`http://${API_HOST}:8000/api.php?path=spent_sum`);
-        const sumData = await resSum.json();
-        console.log(sumData);
-        document.getElementById("spent-sum").textContent =
-            (sumData.totale ?? 0) + "€";
+        const accountId = getEffectiveAccountId();
+        const url = new URL(`http://${API_HOST}:8000/api.php`);
+        url.searchParams.set("path", "spent_sum");
+        if (accountId) url.searchParams.set("accountId", accountId);
 
+        const resSum = await fetch(url.toString());
+        const sumData = await resSum.json();
+
+        document.getElementById("spent-sum").textContent =
+            ((sumData.totale ?? 0)) + "€";
     } catch (err) {
-        document.getElementById("spent-sum").textContent = "Errore caricamento entrate!";
+        document.getElementById("spent-sum").textContent = "Errore caricamento uscite!";
         console.error(err);
     }
 }
 
 async function loadBalance() {
     try {
-        // Chiamate parallele
+        const accountId = getEffectiveAccountId();
+
+        const urlIncome = new URL(`http://${API_HOST}:8000/api.php`);
+        urlIncome.searchParams.set("path", "income_sum");
+        if (accountId) urlIncome.searchParams.set("accountId", accountId);
+
+        const urlSpent = new URL(`http://${API_HOST}:8000/api.php`);
+        urlSpent.searchParams.set("path", "spent_sum");
+        if (accountId) urlSpent.searchParams.set("accountId", accountId);
+
         const [resIncome, resSpent] = await Promise.all([
-            fetch(`http://${API_HOST}:8000/api.php?path=income_sum`),
-            fetch(`http://${API_HOST}:8000/api.php?path=spent_sum`)
+            fetch(urlIncome.toString()),
+            fetch(urlSpent.toString())
         ]);
 
         const incomeData = await resIncome.json();
@@ -99,16 +115,10 @@ async function loadBalance() {
 
         const income = Number(incomeData.totale ?? 0);
         const spent = Number(spentData.totale ?? 0);
-
         const balance = income - spent;
 
-        // Mostra nel frontend
         const tot = document.getElementById("tot-balance");
-        if (tot) {
-            tot.textContent = balance + "€";
-
-        }
-
+        if (tot) tot.textContent = balance + "€";
     } catch (err) {
         const el = document.getElementById("tot-balance");
         if (el) el.textContent = "Errore calcolo saldo!";
@@ -116,15 +126,17 @@ async function loadBalance() {
     }
 }
 
+// OGGI: aggiungi accountId alla richiesta
 async function loadTodayTransactions() {
     try {
-        console.log("Inizio caricamento transazioni odierne...");
+        const accountId = getEffectiveAccountId();
+        const url = new URL(`http://${API_HOST}:8000/api.php`);
+        url.searchParams.set("path", "today_transactions");
+        if (accountId) url.searchParams.set("accountId", accountId);
 
-        const res = await fetch(`http://${API_HOST}:8000/api.php?path=today_transactions`);
-        console.log("Fetch completato, status:", res.status);
-
+        const res = await fetch(url.toString());
         const transactions = await res.json();
-        console.log("Dati ricevuti dal backend:", transactions);
+        console.log(transactions);
 
         if (!Array.isArray(transactions)) {
             console.error("Errore: transactions non è un array!", transactions);
@@ -134,7 +146,6 @@ async function loadTodayTransactions() {
         const container = document.getElementById("today-container");
         container.innerHTML = "";
 
-        // 🔹 Se non ci sono transazioni → messaggio
         if (transactions.length === 0) {
             const msg = document.createElement("div");
             msg.className = "no-transactions";
@@ -143,12 +154,10 @@ async function loadTodayTransactions() {
             return;
         }
 
-        // 🔹 Invertiamo ordine (ultimo inserito per primo)
         transactions.reverse().forEach((t) => {
             const box = document.createElement("div");
             box.className = "box-category";
 
-            // Icona
             const iconDiv = document.createElement("div");
             iconDiv.className = "icon";
             if (t.path) {
@@ -157,12 +166,10 @@ async function loadTodayTransactions() {
                 iconDiv.style.backgroundPosition = "center";
             }
 
-            // Nome
             const nameDiv = document.createElement("div");
             nameDiv.className = "transaction-name";
             nameDiv.textContent = t.nome ?? "Senza nome";
 
-            // Importo
             const amountDiv = document.createElement("div");
             amountDiv.className = "amount";
             if (t.tipo === "income") {
@@ -173,30 +180,26 @@ async function loadTodayTransactions() {
                 amountDiv.style.color = "#ff0000ff";
             }
 
-            // Append ordine: icona → nome → importo
             box.appendChild(iconDiv);
             box.appendChild(nameDiv);
             box.appendChild(amountDiv);
-
             container.appendChild(box);
         });
-
-        console.log("Caricamento transazioni odierne completato!");
     } catch (err) {
         console.error("Errore durante il caricamento transazioni odierne:", err);
     }
 }
 
-
+// 🔻 SETTIMANA SCORSA: aggiungi accountId alla richiesta
 async function loadLastWeekTransactions() {
     try {
-        console.log("Inizio caricamento transazioni settimana scorsa...");
+        const accountId = getEffectiveAccountId();
+        const url = new URL(`http://${API_HOST}:8000/api.php`);
+        url.searchParams.set("path", "last_week_transactions");
+        if (accountId) url.searchParams.set("accountId", accountId);
 
-        const res = await fetch(`http://${API_HOST}:8000/api.php?path=last_week_transactions`);
-        console.log("Fetch completato, status:", res.status);
-
+        const res = await fetch(url.toString());
         const transactions = await res.json();
-        console.log("Dati ricevuti dal backend:", transactions);
 
         if (!Array.isArray(transactions)) {
             console.error("Errore: transactions non è un array!", transactions);
@@ -221,7 +224,6 @@ async function loadLastWeekTransactions() {
             const box = document.createElement("div");
             box.className = "box-category";
 
-            // Icona
             const iconDiv = document.createElement("div");
             iconDiv.className = "icon";
             if (t.path) {
@@ -230,12 +232,10 @@ async function loadLastWeekTransactions() {
                 iconDiv.style.backgroundPosition = "center";
             }
 
-            // Nome
             const nameDiv = document.createElement("div");
             nameDiv.className = "transaction-name";
             nameDiv.textContent = t.nome ?? "Senza nome";
 
-            // Importo
             const amountDiv = document.createElement("div");
             amountDiv.className = "amount";
             if (t.tipo === "income") {
@@ -252,9 +252,56 @@ async function loadLastWeekTransactions() {
 
             container.prepend(box);
         });
-
-        console.log("Caricamento transazioni settimana scorsa completato!");
     } catch (err) {
         console.error("Errore durante il caricamento transazioni settimana scorsa:", err);
     }
+}
+function loadName() {
+    const qs = new URLSearchParams(window.location.search);
+    const name = qs.get("name") || "Account";
+
+    const nameDiv = document.getElementById("account-name");
+    if (nameDiv) {
+        nameDiv.textContent = name;
+    }
+}
+
+
+function getAccountIdFromURL() {
+  const qs = new URLSearchParams(window.location.search);
+  const id = qs.get("id");
+  console.log(id);
+  return id && id !== "all" ? id : null;
+}
+
+
+function getEffectiveAccountId() {
+  
+  return window.currentAccountId ?? getAccountIdFromURL();
+}
+
+async function setCurrentAccount(id) {
+  window.currentAccountId = id ? String(id) : null;
+
+  // (opzionale) aggiorna la UI delle card se usi .account-item
+  document.querySelectorAll(".account-item").forEach(el => {
+    const sel = String(el.dataset.id) === String(id);
+    el.classList.toggle("selected", sel);
+    el.setAttribute("aria-selected", sel ? "true" : "false");
+  });
+
+  // ricarica i dati con il nuovo account
+  await Promise.allSettled([
+    loadIncome(),
+    loadSpent(),
+    loadBalance(),
+    loadTodayTransactions(),
+    loadLastWeekTransactions()
+  ]);
+
+  // se in pagina hai anche i grafici con i bottoni periodo:
+  if (typeof showChart === "function") {
+    const activePeriod = document.querySelector(".chart-buttons button.active")?.id.replace("btn-","") || "week";
+    await showChart(activePeriod);
+  }
 }

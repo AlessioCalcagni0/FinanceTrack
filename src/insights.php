@@ -62,23 +62,38 @@ $apiHost = $_ENV['DB_HOST'] ;
     
     <div id="main" class="main">
         <div class="chart-container">
-        <!-- Bar Chart -->
-        <canvas id="main-chart"></canvas>
+            <!-- Account Selector -->
+            <section class="account-picker">
+            <h3 class="account-label">Select an account</h3>
 
-        <!-- Line Chart -->
-        <canvas id="line-chart" style="margin-top:30px;"></canvas>
+            <div id="account-list" class="account-list" role="listbox" aria-label="Account disponibili">
+                <!-- i blocchi account vengono inseriti via JS -->
+                <div class="account-skeleton"></div>
+                <div class="account-skeleton"></div>
+                <div class="account-skeleton"></div>
+            </div>
 
-        <!-- Buttons -->
-        <div class="chart-buttons">
+            <div id="account-status" class="account-status" aria-live="polite"></div>
+            </section>
+
+            <!-- Bar Chart -->
+            <canvas id="main-chart"></canvas>
+
+            <!-- Line Chart -->
+            <canvas id="line-chart" style="margin-top:30px;"></canvas>
+
+            <!-- Buttons -->
+            <div class="chart-buttons" style="margin-top:16px;">
             <button id="btn-week" class="active">Week</button>
             <button id="btn-month">Month</button>
             <button id="btn-year">Year</button>
-        </div>
+            </div>
 
-          <div class="filter-buttons">
+            <div class="filter-buttons" style="margin-top:8px;">
             <button id="btn-income">Income</button>
             <button id="btn-spent">Spent</button>
             <button id="btn-both" class="active">Both</button>
+            </div>
         </div>
     </div>
 

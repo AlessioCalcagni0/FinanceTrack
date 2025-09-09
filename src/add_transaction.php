@@ -46,9 +46,12 @@ $apiHost = $_ENV['DB_HOST'] ;
         <label class="label">Enter the amount</label>
         <input class="number_input" type="number" placeholder="Enter the amount spent"  min="0" max="9999">
         <div class="button-container">
-            <button type="button" class="Uncat_button" id="Uncat_button">Uncategorized transaction</button>
+        <h1 id="choose">Choose an option</h1>
+        <button type="button" class="Uncat_button" id="Uncat_button">Uncategorized transaction</button>
             <span id="or-separator" class="or-separator">or</span>
+            <button type="button" id="toggleSectionsBtn" class="toggle-sections-btn">Select categories</button>
         </div>
+
         <div class="div-label">
             <h1 id="select-label">Select categories</h1>
             <button id="tutorialBtn" class="help-btn">?</button>

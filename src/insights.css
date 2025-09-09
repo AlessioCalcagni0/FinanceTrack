@@ -186,3 +186,96 @@ body {
   margin: 0 auto;           /* centrato */
   display: flex;
 }
+
+/* Container centrato */
+.account-picker{
+  max-width: 860px;
+  margin: 0 auto 16px auto; /* centrato orizzontale */
+  padding: 0 12px;
+}
+
+/* Label centrata sopra al container */
+.account-label{
+  text-align: center;
+  font-weight: 700;
+  margin: 8px 0 10px 0;
+}
+
+/* Lista scrollabile verticale */
+.account-list{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 160px;            /* altezza visibile */
+  overflow-y: auto;             /* scroll verticale */
+  padding: 6px;    
+  width: 300px;       /* spazio per scrollbar */
+  margin: 0 auto;
+  border: #152C5C 2px solid;
+  border-radius: 10px;
+}
+
+/* Blocchi account (full-width del container) */
+.account-item{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;  /* nome a sx, balance/chevron a dx (se vuoi) */
+  padding: 14px 16px;
+  background: #152C5C;             /* blu */
+  color: #fff;                      /* nome bianco */
+  border: 2px solid transparent;    /* bordo che diventa verde quando selected */
+  border-radius: 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color .15s ease, transform .06s ease, box-shadow .15s ease;
+}
+
+.account-item:hover{
+  border-color: rgba(34,197,94,.5); /* verde semi-trasp. al hover */
+  box-shadow: 0 2px 10px rgba(0,0,0,.12);
+}
+
+.account-item:active{
+  transform: translateY(1px);
+}
+
+/* Stato selezionato = bordo verde pieno */
+.account-item.selected{
+  border-color: #22c55e;           /* verde */
+  box-shadow: 0 0 0 2px rgba(34,197,94,.2) inset;
+}
+
+/* Tipografia interna */
+.account-name{
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-meta{
+  font-size: 12px;
+  opacity: .9;
+}
+
+/* Placeholder mentre carica */
+.account-skeleton{
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #e8f0ff 0%, #dbe8ff 50%, #e8f0ff 100%);
+  animation: sk-pulse 1.2s ease-in-out infinite;
+}
+@keyframes sk-pulse{
+  0%{opacity:.6} 50%{opacity:1} 100%{opacity:.6}
+}
+
+/* Stato/info sotto la lista */
+.account-status{
+  margin-top: 6px;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+}

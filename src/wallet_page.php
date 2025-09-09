@@ -95,46 +95,55 @@ $apiHost = $_ENV['DB_HOST'] ;
 
         <div id="overlay" class="overlay"></div>
 
-        <!-- Popup Add Account -->
-        <div id="addAccountPopup" class="add-account-popup">
+         <div id="addAccountPopup" class="add-account-popup">
             <div class="account-popup">
-                <h1>Add Account</h1>
-                <h2>Select an icon</h2>
-                <div class="choose-icon">
-                    <div class="icon" id="bank" data-img="images/MoneyHouse.png"></div>
-                    <div class="icon" id="cash" data-img="images/Cash.png"></div>
-                    <div class="icon" id="card" data-img="images/CreditCard.png"></div>
+            <h1>Add Account</h1>
+
+            <!-- Select Type -->
+            <h2>Select Type</h2>
+            <div class="choose-type">
+                <div class="type-option" data-type="Bank">
+                <div class="icon" id="bank" data-img="images/MoneyHouse.png"
+                    style="background-image:url('images/MoneyHouse.png')"></div>
+                <div class="type-caption">Bank</div>
                 </div>
-
-                <h2>Account Name</h2>
-                <input type="text" id="accountName" class="number_input" placeholder="Enter account name">
-
-                <h2>Account Type</h2>
-                <input type="text" id="accountType" class="number_input" placeholder="Enter account type">
-
-                <h2>Income (optional) </h2>
-                <input type="number" id="accountIncome" class="number_input" placeholder="Enter income">
-
-                <h2>Spent (optional)</h2>
-                <input type="number" id="accountSpent" class="number_input" placeholder="Enter spent">
-
-                <h2>Total Balance</h2>
-                <div id="accountBalance" class="balance-box">0 €</div>
-
-                <div class="end_operation">
-                    <button class="cancel_button" id="cancel_button">Cancel</button>
-                    <button class="confirm_button" id="confirm_button">Confirm</button>
+                <div class="type-option" data-type="Cash">
+                <div class="icon" id="cash" data-img="images/Cash.png"
+                    style="background-image:url('images/Cash.png')"></div>
+                <div class="type-caption">Cash</div>
                 </div>
+                <div class="type-option" data-type="Card">
+                <div class="icon" id="card" data-img="images/CreditCard.png"
+                    style="background-image:url('images/CreditCard.png')"></div>
+                <div class="type-caption">Card</div>
+                </div>
+            </div>
+
+            <h2>Account Name</h2>
+            <input type="text" id="accountName" class="number_input" placeholder="Enter account name"/>
+
+            <!-- Campi dinamici -->
+            <div id="typeFields"></div>
+
+            <!-- Campi opzionali generali -->
+            <h2>Income (optional)</h2>
+            <input type="number" id="accountIncome" class="number_input" placeholder="Enter income"/>
+
+            <h2>Spent (optional)</h2>
+            <input type="number" id="accountSpent" class="number_input" placeholder="Enter spent"/>
+
+            <h2>Total Balance</h2>
+            <div id="accountBalance" class="balance-box">0 €</div>
+
+            <div class="end_operation">
+                <button class="cancel_button" id="cancel_button">Cancel</button>
+                <button class="confirm_button" id="confirm_button">Confirm</button>
+            </div>
             </div>
         </div>
 
-        <!-- Popup messaggio di errore -->
-        <div id="errorPopup" class="popup-error">
-            <div class="error-content">
-                <p id="errorText"></p>
-                <button id="errorOkBtn">OK</button>
-            </div>
-        </div>
+
+
 
         <div id="successPopup" class="popup" style="display:none;">
             <span id="successText"></span>
@@ -143,25 +152,11 @@ $apiHost = $_ENV['DB_HOST'] ;
 
 
 
-        <!-- Popup Warning -->
-        <div id="warningPopup" class="popup-warning">
-            <p id="warningMessage"></p>
-            <button id="warningCloseBtn">OK</button>
-        </div>
-
         <div id="modifyAccountPopup" class="popup">
             <div class="super-title" > 
                 <h2 class="popup-title">Modify Account</h2>
                 <button class="delete-account-btn" id="delete-account-btn">Delete account </button>
             </div>
-            <!-- Change Icon -->
-            <label>Change Icon</label>
-            <div class="choose-icon">
-                <div class="icon" id="bank" data-img="images/MoneyHouse.png"></div>
-                <div class="icon" id="cash" data-img="images/Cash.png"></div>
-                <div class="icon" id="card" data-img="images/CreditCard.png"></div>
-            </div>
-
             <!-- Account Name -->
             <label for="modifyAccountName">Account Name</label>
             <input type="text" id="modifyAccountName" placeholder="Enter account name">

@@ -581,7 +581,7 @@ function openModifyWalletPopup(w) {
     <div class="sw-footer">
       <div class="sw-footer-left"></div>
       <div class="sw-footer-right">
-        <button type="button" class="sw-quit" id="swQuitBtn" style="display:none">Quit</button>
+        <button type="button" class="sw-quit" id="swQuitBtn" style="display:none">Delete</button>
         <button class="sw-save" id="swSaveBtn">Save changes</button>
       </div>
     </div>
@@ -731,7 +731,7 @@ function openModifyWalletPopup(w) {
       if (!res.ok || out.error) throw new Error(out.error || `HTTP ${res.status}`);
       if (typeof showPopup === 'function') showPopup('Participants updated', 'success');
       closeModal();
-      // loadWallets(CURRENT_USER_ID || 1);
+      loadWallets(1);
     } catch (e) {
       console.error(e);
       if (typeof showPopup === 'function') showPopup('Errore salvataggio: ' + e.message, 'error');

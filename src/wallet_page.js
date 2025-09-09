@@ -41,6 +41,22 @@ document.addEventListener('DOMContentLoaded', () => {
         overlay.classList.remove("overlayactive");
     });
 
+    const typeOptions = document.querySelectorAll('.choose-type .type-option');
+    typeOptions.forEach(opt => {
+        opt.addEventListener('click', () => {
+            document.querySelectorAll('.choose-type .icon')
+                .forEach(i => i.classList.remove('icon-selected'));
+
+            const icon = opt.querySelector('.icon');
+            icon.classList.add('icon-selected');
+
+            selectedType = opt.dataset.type; // Bank | Card | Cash
+            selectedIconPath = icon.dataset.img || null;
+
+            renderTypeFields(selectedType);
+        });
+    });
+
     // Gestione icone selezionabili
     icons.forEach(icon => {
         icon.addEventListener("click", () => {
@@ -63,27 +79,72 @@ document.addEventListener('DOMContentLoaded', () => {
     incomeInput.addEventListener("input", updateBalance);
     spentInput.addEventListener("input", updateBalance);
 
-    // Conferma → salva dati
     confirmButton.addEventListener("click", async () => {
-        const selectedIcon = document.querySelector(".choose-icon .icon.icon-selected");
         const name = document.getElementById("accountName").value.trim();
-        const type = document.getElementById("accountType").value.trim();
-        const income = parseFloat(incomeInput.value) || 0;
-        const spent = parseFloat(spentInput.value) || 0;
+        const income = parseFloat(document.getElementById("accountIncome").value) || 0;
+        const spent = parseFloat(document.getElementById("accountSpent").value) || 0;
         const balance = income - spent;
 
-        if (!selectedIcon || !name || !type) {
-            showPopup("Compila tutti i campi e seleziona un'icona!", "error");
+        // validazioni base
+        if (!selectedType) {
+            showPopup("Seleziona un tipo di account (Bank, Card o Cash)!", { type: "error", lockOverlay: true });
+            return;
+        }
+        if (!name) {
+            showPopup("Inserisci un nome per l'account!", { type: "error", lockOverlay: true });
             return;
         }
 
+        // validazioni specifiche e details
+        const details = {};
+        if (selectedType === "Bank") {
+            const iban = (document.getElementById("iban")?.value || "").trim();
+            if (!iban) {
+                showPopup("Inserisci l'IBAN!", { type: "error", lockOverlay: true });
+                return;
+            }
+            details.iban = iban;
+
+        } else if (selectedType === "Card") {
+            const holder = (document.getElementById("cardHolder")?.value || "").trim();
+            const number = (document.getElementById("cardNumber")?.value || "").replace(/\s+/g, "");
+            const expiry = (document.getElementById("cardExpiry")?.value || "").trim();
+            const cvv = (document.getElementById("cardCvv")?.value || "").trim();
+
+            if (!holder || !number || !expiry || !cvv) {
+                showPopup("Compila tutti i campi della carta!", { type: "error", lockOverlay: true });
+                return;
+            }
+
+            // limiti e formati minimi
+            // se vuoi solo Visa/Mastercard, imposta max 16 anziché 19
+            if (!/^\d{12,19}$/.test(number)) {
+                showPopup("Numero carta non valido (12–19 cifre).", { type: "error", lockOverlay: true });
+                return;
+            }
+            if (!/^\d{2}\/\d{2}$/.test(expiry)) {
+                showPopup("Scadenza non valida. Usa formato MM/YY.", { type: "error", lockOverlay: true });
+                return;
+            }
+            if (!/^\d{3,4}$/.test(cvv)) {
+                showPopup("CVV non valido (3 o 4 cifre).", { type: "error", lockOverlay: true });
+                return;
+            }
+
+            details.card_holder = holder;
+            details.card_number = number; // ⚠️ in produzione: tokenizza, non salvare PAN completo
+            details.card_expiry = expiry;
+            details.card_cvv = cvv;    // ⚠️ non salvare lato server
+        }
+
         const accountData = {
-            name: name,
-            type: type,
-            path: selectedIcon.dataset.img,
-            income: income,
-            spent: spent,
-            balance: balance
+            name,
+            type: selectedType,
+            path: selectedIconPath,
+            income,
+            spent,
+            balance,
+            details
         };
 
         try {
@@ -92,21 +153,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(accountData)
             });
-
             const result = await res.json();
 
             if (res.ok && result.success) {
                 popup.classList.remove("addaccount-popupactive");
                 overlay.classList.remove("overlayactive");
                 resetAddAccountForm();
-                loadAccounts();
-                showPopup("Account creato con successo!", "success");
+                if (typeof loadAccounts === "function") loadAccounts();
+                showPopup("Account creato con successo!", { type: "success", autocloseMs: 1500 });
             } else {
-                showPopup("Errore salvataggio account: " + (result.error || res.status), "error");
+                showPopup("Errore salvataggio account: " + (result.error || res.status), { type: "error", lockOverlay: true });
             }
         } catch (err) {
             console.error("Errore fetch add_account:", err);
-            showPopup("Errore di connessione con il server!", "error");
+            showPopup("Errore di connessione con il server!", { type: "error", lockOverlay: true });
         }
     });
 
@@ -185,41 +245,41 @@ document.addEventListener('DOMContentLoaded', () => {
         deleteConfirmPopup.style.display = "none";
     }
 
-   function confirmDelete() {
-    if (!selectedAccountId) return;
+    function confirmDelete() {
+        if (!selectedAccountId) return;
 
-    fetch(`http://${API_HOST}:8000/api.php?path=delete_account`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: selectedAccountId })
-    })
-    .then(res => res.json())
-    .then(result => {
-        if (!result.success) throw new Error(result.error || "Errore eliminazione");
+        fetch(`http://${API_HOST}:8000/api.php?path=delete_account`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: selectedAccountId })
+        })
+            .then(res => res.json())
+            .then(result => {
+                if (!result.success) throw new Error(result.error || "Errore eliminazione");
 
-        // Aggiorna contenuto popup con OK
-        deletePopupTitle.textContent = `Account "${selectedAccountName}" deleted successfully.`;
-        deletePopupButtons.innerHTML = "";
-        const okBtn = document.createElement("button");
-        okBtn.className = "success";
-        okBtn.id ="deleteOkBtn"
-        okBtn.textContent = "OK";
-        deletePopupButtons.appendChild(okBtn);
+                // Aggiorna contenuto popup con OK
+                deletePopupTitle.textContent = `Account "${selectedAccountName}" deleted successfully.`;
+                deletePopupButtons.innerHTML = "";
+                const okBtn = document.createElement("button");
+                okBtn.className = "success";
+                okBtn.id = "deleteOkBtn"
+                okBtn.textContent = "OK";
+                deletePopupButtons.appendChild(okBtn);
 
-        // Listener OK chiude tutti i popup
-        okBtn.addEventListener("click", () => {
-            deleteConfirmPopup.style.display = "none";
-            modifyPopup.style.display = "none";
-            deleteOverlay.classList.remove("overlayactive");
-            document.getElementById("overlay").classList.remove("overlayactive");
-            loadAccounts();
-        });
-    })
-    .catch(err => {
-        console.error(err);
-        deletePopupTitle.textContent = "Errore durante l'eliminazione dell'account.";
-    });
-}
+                // Listener OK chiude tutti i popup
+                okBtn.addEventListener("click", () => {
+                    deleteConfirmPopup.style.display = "none";
+                    modifyPopup.style.display = "none";
+                    deleteOverlay.classList.remove("overlayactive");
+                    document.getElementById("overlay").classList.remove("overlayactive");
+                    loadAccounts();
+                });
+            })
+            .catch(err => {
+                console.error(err);
+                deletePopupTitle.textContent = "Errore durante l'eliminazione dell'account.";
+            });
+    }
 
     // Listener sul pulsante Delete nel Modify popup
     deleteBtn.addEventListener("click", () => {
@@ -267,8 +327,10 @@ async function loadSpent() {
 }
 
 async function loadBalance() {
+    console.log(`${API_HOST}`);
     try {
         const [resIncome, resSpent] = await Promise.all([
+            
             fetch(`http://${API_HOST}:8000/api.php?path=income_sum`),
             fetch(`http://${API_HOST}:8000/api.php?path=spent_sum`)
         ]);
@@ -339,6 +401,17 @@ async function loadAccounts() {
             viewBtn.className = "account-view-btn";
             viewBtn.textContent = "View";
 
+            // quando clicco, vado su account.html con name e balance in query string
+            viewBtn.addEventListener("click", () => {
+                const params = new URLSearchParams({
+                    id: acc.id,  
+                    name: acc.name || "",
+                    balance: String(acc.balance ?? "")
+                });
+                // cambia "account.html" con il path reale della tua pagina di dettaglio
+                window.location.href = `/account_page.php?${params.toString()}`;
+            });
+
             const btnContainer = document.createElement("div");
             btnContainer.className = "account-btns";
 
@@ -354,7 +427,7 @@ async function loadAccounts() {
             box.appendChild(nameIcon);
             box.appendChild(info);
             box.appendChild(btnContainer);
-        
+
             frame.appendChild(box);
         });
     } catch (err) {
@@ -376,17 +449,6 @@ function openModifyPopup(account) {
     nameInput.value = account.name || "";
     typeInput.value = account.type || "";
     idInput.value = account.id || "";
-
-    // Gestione icone selezionate
-    icons.forEach(icon => {
-        icon.classList.remove("icon-selected");
-        if (icon.dataset.img === account.path) icon.classList.add("icon-selected");
-
-        icon.onclick = () => {
-            icons.forEach(i => i.classList.remove("icon-selected"));
-            icon.classList.add("icon-selected");
-        };
-    });
 
     // Mostra popup e overlay
     popup.classList.add("addaccount-popupactive");
@@ -447,42 +509,272 @@ function openModifyPopup(account) {
     };
 }
 
-// --- RESET FORM ADD ACCOUNT ---
 function resetAddAccountForm() {
-    document.getElementById("accountName").value = "";
-    document.getElementById("accountType").value = "";
-    document.getElementById("accountIncome").value = "";
-    document.getElementById("accountSpent").value = "";
-    document.getElementById("accountBalance").textContent = "0 €";
+    // campi base
+    const nameEl = document.getElementById("accountName");
+    const incomeEl = document.getElementById("accountIncome");
+    const spentEl = document.getElementById("accountSpent");
+    const balanceEl = document.getElementById("accountBalance");
+    const typeFields = document.getElementById("typeFields");
 
-    const icons = document.querySelectorAll(".choose-icon .icon");
-    icons.forEach(icon => icon.classList.remove("icon-selected"));
+    if (nameEl) nameEl.value = "";
+    if (incomeEl) incomeEl.value = "";
+    if (spentEl) spentEl.value = "";
+    if (balanceEl) balanceEl.textContent = "0 €";
+    if (typeFields) typeFields.innerHTML = "";
+
+    // compat: se esiste ancora accountType nel DOM lo svuoto, ma non è più usato
+    const legacyType = document.getElementById("accountType");
+    if (legacyType) legacyType.value = "";
+
+    // deseleziona icone (nuovo e vecchio selettore)
+    document.querySelectorAll(".choose-type .icon, .choose-icon .icon")
+        .forEach(i => i.classList.remove("icon-selected"));
+
+    // reset stato selezione globale (se definite globalmente)
+    try {
+        if (typeof selectedType !== "undefined") selectedType = null;
+        if (typeof selectedIconPath !== "undefined") selectedIconPath = null;
+    } catch (_) { /* no-op */ }
 }
 
-function showPopup(message, type = "success") {
+function showPopup(message, options = {}) {
+    const {
+        type = "info",        // "success" | "error" | "info"
+        closeOverlay = false  // true: al click su OK si chiude anche overlay
+    } = options;
+
     const popup = document.getElementById("successPopup");
     const popupText = document.getElementById("successText");
     const overlay = document.getElementById("overlay");
+    const okBtn = document.getElementById("successOkBtn");
 
+    if (!popup || !popupText || !overlay || !okBtn) {
+        console.warn("Popup elements not found in DOM");
+        alert(message);
+        return;
+    }
+
+    // testo
     popupText.textContent = message;
-    popup.style.display = "flex";
 
-    // Assicurati overlay attivo
+    // classi di stato (per eventuali stili diversi)
+    popup.classList.remove("is-success", "is-error", "is-info");
+    popup.classList.add(
+        type === "success" ? "is-success" :
+            type === "error" ? "is-error" : "is-info"
+    );
+
+    // mostra popup + overlay
+    popup.style.display = "flex";
     overlay.classList.add("overlayactive");
 
-    // OK button
-    const okBtn = document.getElementById("successOkBtn");
-    okBtn.replaceWith(okBtn.cloneNode(true));
+    // rimuovi vecchi listener dall'OK
+    const okBtnClone = okBtn.cloneNode(true);
+    okBtn.parentNode.replaceChild(okBtnClone, okBtn);
     const newOkBtn = document.getElementById("successOkBtn");
 
+    // click OK → chiude il popup
     newOkBtn.onclick = () => {
         popup.style.display = "none";
-        overlay.classList.remove("overlayactive");
+        if (closeOverlay) {
+            overlay.classList.remove("overlayactive");
+        }
     };
 
-    // Overlay cliccabile per chiudere popup
-    overlay.onclick = () => {
-        popup.style.display = "none";
-        overlay.classList.remove("overlayactive");
+    // click overlay → non fa nulla (così l’utente deve premere OK)
+    overlay.onclick = (e) => {
+        if (e.target.id !== "overlay") return;
+        // lasciamo overlay attivo sempre, finché non chiudi da OK
     };
 }
+
+
+
+let selectedType = null;     // 'Bank' | 'Card' | 'Cash'
+let selectedIconPath = null; // path icona scelta
+
+// ===== Render dinamico campi (allineati al form) =====
+function renderTypeFields(type) {
+    const typeFields = document.getElementById('typeFields');
+    typeFields.innerHTML = '';
+
+    if (type === 'Bank') {
+        typeFields.innerHTML = `
+      <h2>IBAN</h2>
+      <label for="iban" class="field-label">IBAN</label>
+      <input
+        type="text"
+        id="iban"
+        class="number_input"
+        placeholder="Es. IT60 X054 2811 1010 0000 0123 456"
+        autocomplete="off"
+        inputmode="text"
+        maxlength="34">
+    `;
+    } else if (type === 'Card') {
+        typeFields.innerHTML = `
+      <h2>Card Details</h2>
+
+      <label for="cardHolder" class="field-label">Cardholder name</label>
+      <input
+        type="text"
+        id="cardHolder"
+        class="number_input"
+        placeholder="Nome come sulla carta"
+        autocomplete="cc-name"
+      >
+
+      <label for="cardNumber" class="field-label">Card number</label>
+      <input
+        type="text"
+        id="cardNumber"
+        class="number_input"
+        placeholder="1234 5678 9012 3456"
+        autocomplete="cc-number"
+        inputmode="numeric"
+        maxlength="23"   
+        >
+      
+
+      <label for="cardExpiry" class="field-label">Expiry (MM/YY)</label>
+      <input
+        type="text"
+        id="cardExpiry"
+        class="number_input"
+        placeholder="MM/YY"
+        autocomplete="cc-exp"
+        inputmode="numeric"
+        maxlength="5"
+      >
+
+      <label for="cardCvv" class="field-label">CVV</label>
+      <div class="input-wrap">
+        <input
+          type="password"
+          id="cardCvv"
+          class="number_input"
+          placeholder="CVV"
+          autocomplete="cc-csc"
+          inputmode="numeric"
+          maxlength="3"
+        >
+        <button
+          type="button"
+          class="eye-toggle"
+          aria-controls="cardCvv"
+          aria-label="Mostra CVV"
+          title="Mostra/Nascondi CVV"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 5c5 0 9.27 3.11 11 7-1.73 3.89-6 7-11 7S2.73 15.89 1 12c1.73-3.89 6-7 11-7zm0 3a4 4 0 100 8 4 4 0 000-8z"/>
+          </svg>
+        </button>
+      </div>
+    `;
+
+        // ------- Helper locali per cifre + cap massimo -------
+        const allowOnlyDigitsCap = (el, maxDigits) => {
+            const sanitize = () => {
+                const digits = el.value.replace(/\D/g, '').slice(0, maxDigits);
+                el.value = digits;
+            };
+            const onBeforeInput = (e) => {
+                if (e.inputType === 'insertFromPaste') return; // gestiamo nel paste
+                if (e.data && /\D/.test(e.data)) e.preventDefault();
+            };
+            el.addEventListener('beforeinput', onBeforeInput);
+            el.addEventListener('input', sanitize);
+            el.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text') || '';
+                const digits = paste.replace(/\D/g, '').slice(0, maxDigits);
+                const start = el.selectionStart ?? el.value.length;
+                const end = el.selectionEnd ?? el.value.length;
+                const current = el.value;
+                const next = (current.slice(0, start) + digits + current.slice(end)).replace(/\D/g, '').slice(0, maxDigits);
+                el.value = next;
+                // riposiziona il cursore
+                const pos = (start + digits.length);
+                requestAnimationFrame(() => el.setSelectionRange(pos, pos));
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+            // blocca alcune key non-digit ma consenti controlli base
+            el.addEventListener('keydown', (e) => {
+                const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
+                if (allowedKeys.includes(e.key) || (e.ctrlKey || e.metaKey)) return;
+                if (!/^\d$/.test(e.key)) e.preventDefault();
+            });
+        };
+
+        // ------- Numero carta: cifra-only + max 19 + spazi visuali -------
+        const numberEl = typeFields.querySelector('#cardNumber');
+        const formatCardNumber = () => {
+            const digits = numberEl.value.replace(/\D/g, '').slice(0, 19);
+            numberEl.value = digits.replace(/(.{4})/g, '$1 ').trim();
+        };
+        // per il cap ci appoggiamo a un dummy input "virtuale": gestiamo noi
+        numberEl.addEventListener('input', formatCardNumber);
+        numberEl.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const paste = (e.clipboardData || window.clipboardData).getData('text') || '';
+            const digits = paste.replace(/\D/g, '').slice(0, 19);
+            numberEl.value = digits.replace(/(.{4})/g, '$1 ').trim();
+        });
+        numberEl.addEventListener('beforeinput', (e) => {
+            if (e.inputType !== 'insertText') return;
+            if (e.data && /\D/.test(e.data)) e.preventDefault();
+            const digits = numberEl.value.replace(/\D/g, '');
+            if (digits.length >= 19) e.preventDefault();
+        });
+        numberEl.addEventListener('keydown', (e) => {
+            const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End', ' '];
+            if (allowedKeys.includes(e.key) || (e.ctrlKey || e.metaKey)) return;
+            if (!/^\d$/.test(e.key)) e.preventDefault();
+        });
+
+        // ------- Scadenza: solo cifre + max 4 + formato MM/YY -------
+        const expEl = typeFields.querySelector('#cardExpiry');
+        allowOnlyDigitsCap(expEl, 4);
+        const formatExpiry = () => {
+            const digits = expEl.value.replace(/\D/g, '').slice(0, 4);
+            expEl.value = digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits;
+        };
+        expEl.addEventListener('input', formatExpiry);
+        expEl.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const paste = (e.clipboardData || window.clipboardData).getData('text') || '';
+            const digits = paste.replace(/\D/g, '').slice(0, 4);
+            expEl.value = digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits;
+        });
+
+        // ------- CVV: solo cifre + max 4 -------
+        const cvvEl = typeFields.querySelector('#cardCvv');
+        allowOnlyDigitsCap(cvvEl, 4);
+
+        // ------- Toggle mostra/nascondi CVV + cambio icona -------
+        const eyeBtn = typeFields.querySelector('.eye-toggle');
+
+        const svgEyeOn = `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 5c5 0 9.27 3.11 11 7-1.73 3.89-6 7-11 7S2.73 15.89 1 12c1.73-3.89 6-7 11-7zm0 3a4 4 0 100 8 4 4 0 000-8z"/>
+      </svg>`;
+        const svgEyeOff = `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M2 3.27L3.28 2 22 20.72 20.73 22l-2.42-2.42A12.3 12.3 0 0112 19c-5 0-9.27-3.11-11-7a12.77 12.77 0 012.93-4.22L2 3.27zM7.12 8.4A9.74 9.74 0 003 12c1.73 3.89 6 7 11 7 1.43 0 2.8-.24 4.06-.68l-2.3-2.3A4.99 4.99 0 0112 17a5 5 0 01-4.88-6.1zm6.35 1.76l-2.73-2.73A4 4 0 0116 12c0 .54-.11 1.05-.31 1.52l-2.22-2.22z"/>
+      </svg>`;
+
+        eyeBtn?.addEventListener('click', () => {
+            const isPassword = cvvEl.type === 'password';
+            cvvEl.type = isPassword ? 'text' : 'password';
+            eyeBtn.setAttribute('aria-label', isPassword ? 'Nascondi CVV' : 'Mostra CVV');
+            eyeBtn.classList.toggle('is-on', isPassword);
+            eyeBtn.innerHTML = isPassword ? svgEyeOff : svgEyeOn;
+        });
+
+    } else if (type === 'Cash') {
+        typeFields.innerHTML = '';
+    }
+}
+
+
