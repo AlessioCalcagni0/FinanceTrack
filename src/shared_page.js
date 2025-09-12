@@ -1,31 +1,7 @@
-function goTo(){
 
-    const home = document.getElementById("home");
-    const wallet = document.getElementById("wallet-icon");
-    const goal = document.getElementById("goal-icon");
-    const insights = document.getElementById("insights-icon");
-
-    home.addEventListener('click', () => {
-        window.location.href = "../homepage.php"
-        }
-    );
-    wallet.addEventListener('click', () => {
-        window.location.href = "../wallet_page.php"
-        }
-    );
-    goal.addEventListener('click', () => {
-        window.location.href = "../goals.php"
-        }
-    );
-    insights.addEventListener('click', () => {
-        window.location.href = "../insights.php"
-        }
-    );
-}
 
 
 document.addEventListener('DOMContentLoaded', () => {
-
 
     const burger = document.getElementById("burger");
     const menu = document.getElementById("menu-content");
@@ -44,8 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     burger.addEventListener("click", openMenu);
     backArrow.addEventListener("click", closeMenu);
-    overlay.addEventListener("click", closeMenu); 
+    overlay.addEventListener("click", closeMenu);
 
+    
     window.currentAccountId = getAccountIdFromURL();
     console.log(window.currentAccountId);
     function UpdateDate() {
@@ -58,7 +35,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const fullDate = `${weekday} ${day}/${month}/${year}`;
         document.getElementById("today-date").textContent = fullDate;
     }
-    goTo();
+    const btn = document.getElementById("addbtn");
+    if (!btn) return;
+
+    // click → vai alla pagina
+    btn.addEventListener("click", () => {
+        window.location.href = "/add_transaction.php";
+    });
+
+    // mostra/nascondi in base al ruolo dalla querystring
+    const qs = new URLSearchParams(window.location.search);
+    const role = (qs.get("role") || "").toLowerCase();
+
+    if (role === "admin" || role === "editor") {
+        btn.style.display = "block"; // visibile
+    } else {
+        btn.style.display = "none";  // nascosto per Viewer o ruolo mancante
+    }
+
     // ✅ invoca davvero la funzione
     UpdateDate();
     // ✅ aggiorna ogni minuto (60000 ms)
@@ -71,31 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadTodayTransactions();
     loadLastWeekTransactions();
 
-    const btn = document.getElementById('syncBtn');
-    const loader = document.getElementById('loader');
-    const notification = document.getElementById('notification');
-
-    btn.addEventListener('click', () => {
-        loader.style.display = 'block';
-        btn.disabled = true;
-        btn.style.opacity = 0.7;
-
-        setTimeout(() => {
-            loader.style.display = 'none';
-            btn.disabled = false;
-            btn.style.opacity = 1;
-
-            // dopo sync ricarico i dati dell'account corrente
-            loadIncome();
-            loadSpent();
-            loadBalance();
-            loadTodayTransactions();
-            loadLastWeekTransactions();
-
-            notification.style.display = 'block';
-            setTimeout(() => { notification.style.display = 'none'; }, 2000);
-        }, 2000);
-    });
 });
 
 // 🔻 Aggiungi accountId ai fetch per i totali (opzionale ma consigliato)
@@ -138,6 +107,30 @@ async function loadSpent() {
 
 async function loadBalance() {
     try {
+        const qs = new URLSearchParams(window.location.search);
+        const pBalance = qs.get("balance");      // es: "123.45"
+        const pParts = qs.get("participants"); // es: "3"
+        const tot = document.getElementById("tot-balance");
+
+        // Se ho parametri in query → usali
+        if ((pBalance !== null) || (pParts !== null)) {
+            // balance
+            let balText = "";
+            if (pBalance !== null && pBalance !== "") {
+                const n = Number(pBalance);
+                balText = Number.isFinite(n)
+                    ? n.toLocaleString('it-IT', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + "€"
+                    : `${pBalance}€`;
+            }
+            if (tot) tot.textContent = balText;
+
+            // ► Participants tra "Total Balance" e data
+            upsertParticipantsLine(pParts);
+
+            return; // non chiamare API se i parametri sono presenti
+        }
+
+        // Fallback via API (nessun parametro in query)
         const accountId = getEffectiveAccountId();
 
         const urlIncome = new URL(`http://${API_HOST}:8000/api.php`);
@@ -160,8 +153,13 @@ async function loadBalance() {
         const spent = Number(spentData.totale ?? 0);
         const balance = income - spent;
 
-        const tot = document.getElementById("tot-balance");
-        if (tot) tot.textContent = balance + "€";
+        if (tot) {
+            tot.textContent = balance.toLocaleString('it-IT', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + "€";
+        }
+
+        // Nessun valore partecipanti in questo caso → nascondi la riga se esiste
+        upsertParticipantsLine(null);
+
     } catch (err) {
         const el = document.getElementById("tot-balance");
         if (el) el.textContent = "Errore calcolo saldo!";
@@ -169,7 +167,13 @@ async function loadBalance() {
     }
 }
 
-// OGGI: aggiungi accountId alla richiesta
+
+
+// Persone disponibili
+const PEOPLE = ["Mario Rossi", "Giulia Bianchi"];
+const getPersonByIndex = (i) => PEOPLE[i % PEOPLE.length];
+
+// ── OGGI ───────────────────────────────────────────────────────────────────────
 async function loadTodayTransactions() {
     try {
         const accountId = getEffectiveAccountId();
@@ -197,7 +201,8 @@ async function loadTodayTransactions() {
             return;
         }
 
-        transactions.reverse().forEach((t) => {
+        // Mostra dalla più recente alla meno recente
+        transactions.reverse().forEach((t, i) => {
             const box = document.createElement("div");
             box.className = "box-category";
 
@@ -211,7 +216,8 @@ async function loadTodayTransactions() {
 
             const nameDiv = document.createElement("div");
             nameDiv.className = "transaction-name";
-            nameDiv.textContent = t.nome ?? "Senza nome";
+            const who = getPersonByIndex(i);
+            nameDiv.textContent = `${t.nome ?? "Senza nome"} • by ${who}`;
 
             const amountDiv = document.createElement("div");
             amountDiv.className = "amount";
@@ -233,7 +239,7 @@ async function loadTodayTransactions() {
     }
 }
 
-// 🔻 SETTIMANA SCORSA: aggiungi accountId alla richiesta
+// ── SETTIMANA SCORSA ──────────────────────────────────────────────────────────
 async function loadLastWeekTransactions() {
     try {
         const accountId = getEffectiveAccountId();
@@ -263,7 +269,7 @@ async function loadLastWeekTransactions() {
             return;
         }
 
-        transactions.forEach((t) => {
+        transactions.forEach((t, i) => {
             const box = document.createElement("div");
             box.className = "box-category";
 
@@ -277,7 +283,16 @@ async function loadLastWeekTransactions() {
 
             const nameDiv = document.createElement("div");
             nameDiv.className = "transaction-name";
-            nameDiv.textContent = t.nome ?? "Senza nome";
+
+            const nameLine = document.createElement("div");
+            nameLine.textContent = t.nome ?? "Senza nome";
+
+            const personLine = document.createElement("div");
+            personLine.className = "transaction-person";
+            personLine.textContent = "by " + getPersonByIndex(i);
+
+            nameDiv.appendChild(nameLine);
+            nameDiv.appendChild(personLine);
 
             const amountDiv = document.createElement("div");
             amountDiv.className = "amount";
@@ -293,12 +308,14 @@ async function loadLastWeekTransactions() {
             box.appendChild(nameDiv);
             box.appendChild(amountDiv);
 
+            // prepend per avere la più recente in alto, come facevi già
             container.prepend(box);
         });
     } catch (err) {
         console.error("Errore durante il caricamento transazioni settimana scorsa:", err);
     }
 }
+
 function loadName() {
     const qs = new URLSearchParams(window.location.search);
     const name = qs.get("name") || "Account";
@@ -311,40 +328,52 @@ function loadName() {
 
 
 function getAccountIdFromURL() {
-  const qs = new URLSearchParams(window.location.search);
-  const id = qs.get("id");
-  console.log(id);
-  return id && id !== "all" ? id : null;
+    const qs = new URLSearchParams(window.location.search);
+    const id = qs.get("id");
+    console.log(id);
+    return id && id !== "all" ? id : null;
 }
 
 
 function getEffectiveAccountId() {
-  
-  return window.currentAccountId ?? getAccountIdFromURL();
+
+    return window.currentAccountId ?? getAccountIdFromURL();
 }
 
 async function setCurrentAccount(id) {
-  window.currentAccountId = id ? String(id) : null;
+    window.currentAccountId = id ? String(id) : null;
 
-  // (opzionale) aggiorna la UI delle card se usi .account-item
-  document.querySelectorAll(".account-item").forEach(el => {
-    const sel = String(el.dataset.id) === String(id);
-    el.classList.toggle("selected", sel);
-    el.setAttribute("aria-selected", sel ? "true" : "false");
-  });
+    // (opzionale) aggiorna la UI delle card se usi .account-item
+    document.querySelectorAll(".account-item").forEach(el => {
+        const sel = String(el.dataset.id) === String(id);
+        el.classList.toggle("selected", sel);
+        el.setAttribute("aria-selected", sel ? "true" : "false");
+    });
 
-  // ricarica i dati con il nuovo account
-  await Promise.allSettled([
-    loadIncome(),
-    loadSpent(),
-    loadBalance(),
-    loadTodayTransactions(),
-    loadLastWeekTransactions()
-  ]);
+    // ricarica i dati con il nuovo account
+    await Promise.allSettled([
+        loadIncome(),
+        loadSpent(),
+        loadBalance(),
+        loadTodayTransactions(),
+        loadLastWeekTransactions()
+    ]);
 
-  // se in pagina hai anche i grafici con i bottoni periodo:
-  if (typeof showChart === "function") {
-    const activePeriod = document.querySelector(".chart-buttons button.active")?.id.replace("btn-","") || "week";
-    await showChart(activePeriod);
-  }
+    // se in pagina hai anche i grafici con i bottoni periodo:
+    if (typeof showChart === "function") {
+        const activePeriod = document.querySelector(".chart-buttons button.active")?.id.replace("btn-", "") || "week";
+        await showChart(activePeriod);
+    }
+}
+function upsertParticipantsLine(value) {
+    const line = document.getElementById("participants-line");
+    if (!line) return;
+
+    if (value == null || value === "") {
+        line.textContent = "";
+        line.style.display = "none";
+    } else {
+        line.textContent = `Participants: ${value}`;
+        line.style.display = "";
+    }
 }

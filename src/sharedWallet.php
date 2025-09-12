@@ -32,17 +32,31 @@ $apiHost = $_ENV['DB_HOST'] ;
 
     <div class="navbar">
         <!--THREE BARS MENU-->
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M3.09998 6.00001C3.09998 5.50295 3.50292 5.10001 3.99998 5.10001H20C20.497 5.10001 20.9 5.50295 20.9 6.00001C20.9 6.49706 20.497 6.90001 20 6.90001H3.99998C3.50292 6.90001 3.09998 6.49706 3.09998 6.00001Z"
-                fill="black" />
-            <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M3.09961 12C3.09961 11.5029 3.41653 11.1 3.80747 11.1H16.3917C16.7827 11.1 17.0996 11.5029 17.0996 12C17.0996 12.4971 16.7827 12.9 16.3917 12.9H3.80747C3.41653 12.9 3.09961 12.4971 3.09961 12Z"
-                fill="black" />
-            <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M3.09998 18C3.09998 17.5029 3.50292 17.1 3.99998 17.1H20C20.497 17.1 20.9 17.5029 20.9 18C20.9 18.4971 20.497 18.9 20 18.9H3.99998C3.50292 18.9 3.09998 18.4971 3.09998 18Z"
-                fill="black" />
+        <svg id="burger" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M3.09998 6.00001C3.09998 5.50295 3.50292 5.10001 3.99998 5.10001H20C20.497 5.10001 20.9 5.50295 20.9 6.00001C20.9 6.49706 20.497 6.90001 20 6.90001H3.99998C3.50292 6.90001 3.09998 6.49706 3.09998 6.00001Z" fill="black"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M3.09961 12C3.09961 11.5029 3.41653 11.1 3.80747 11.1H16.3917C16.7827 11.1 17.0996 11.5029 17.0996 12C17.0996 12.4971 16.7827 12.9 16.3917 12.9H3.80747C3.41653 12.9 3.09961 12.4971 3.09961 12Z" fill="black"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M3.09998 18C3.09998 17.5029 3.50292 17.1 3.99998 17.1H20C20.497 17.1 20.9 17.5029 20.9 18C20.9 18.4971 20.497 18.9 20 18.9H3.99998C3.50292 18.9 3.09998 18.4971 3.09998 18Z" fill="black"/>
         </svg>
+
+
+         <div class="dropdown">
+            <div id="menu-content" class="dropdown-content">
+                <img id="back-arrow" class="back-arrow" src="/images/icons8-back-arrow-50.png" >
+                <h2>Home</h2>
+                <h2>Wallets</h2>
+                <a href="../wallet_page.php">All Accounts</a>
+                <a href="./sharedWallet.php">Shared Wallets</a>
+                <a href="#">Cash Account</a>
+                <!-- la sezione "Add Transaction" è stata temporaneamente sostituita con un riferimento agli account di tipo "cash". -->
+                <h2>Insights</h2>
+                <a href="./insights.php">Dashboard</a>
+                <a href="./categories.php">Spending by Category</a>
+                <h2>Goals</h2>
+                <a href="#">Overview</a>
+                <a href="#">New Goal</a>
+                <h2>Settings</h2>
+            </div>
+        </div>
 
         <div class="title">Shared wallet </div>
         <!--NOTIFY BELL-->
@@ -92,7 +106,7 @@ $apiHost = $_ENV['DB_HOST'] ;
                 <button class="fc-arrow fc-prev" aria-label="Previous">&lsaquo;</button>
 
                 <div class="fc-viewport">
-                    <div class="fc-track"><!-- friend-card generati via JS --></div>
+                    <div class="fc-track"><!-- friend-cards generate via JS --></div>
                 </div>
 
                 <button class="fc-arrow fc-next" aria-label="Next">&rsaquo;</button>

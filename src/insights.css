@@ -2,14 +2,13 @@
 
 * {
     font-family: 'Inter', sans-serif;
-
-    box-sizing: border-box;
 }
 
 html,
 body {
     height: 800px;
     overflow: hidden;
+    margin: 0 auto;
 }
 
 body {
@@ -27,7 +26,7 @@ body {
     bottom: 0;
     left: 0;
     box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
-    z-index: 1;
+    z-index: 0;
 }
 
 .footer-nav {
@@ -73,7 +72,7 @@ body {
     font-weight: bold;
     color: #152C5C;
     margin: 0 auto;
-    margin-left: 110px;
+    margin-left: 160px;
 }
 
 
@@ -84,37 +83,27 @@ body {
 }
 
 
-
-
-.hide {
-    margin-top: 3%;
-    padding-top: 0;
-}
-
-.show {
-    z-index: 1;
-    margin-top: 15%;
-    margin-bottom: 20%;
-}
-
-
-
-
 .dropdown {
-    position: relative;
-    display: inline-block;
+  position: relative;
+  display: inline-block;
+  margin-left: -26px;
+  margin-top: -60px;
 }
+
 .dropdown-content {
-    z-index: 999;
-    display: none;
-    position: absolute;
-    margin-top:-233%;
-    padding-top: 0%;
-    margin-left: -57%;
-    background-color: #0B4E92;
-    width: 200px;
-    height: 970px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  display: block;
+  position: absolute;
+  background-color: #0B4E92;
+  width: 200px;
+  height: 970px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  transform: translateX(-100%);   /* nascosto fuori schermo */
+  transition: transform 0.3s ease;
+  z-index: 2;
+}
+
+.dropdown-content.open {
+  transform: translateX(0);
 }
 
 .dropdown-content a {
@@ -124,24 +113,41 @@ body {
   display: block;
 }
 
-.dropdown-content h2{
+.dropdown-content h2 {
   color: white;
   padding-left: 15px;
   padding-top: 10px;
   display: block;
 }
 
-.back-arrow{
-    display: none;
-    position: absolute;
-    margin-top: -20px;
-    margin-left: 120px;
-    z-index: 9999;
+.back-arrow {
+  display: block;
+  margin-top: 0px;
+  margin-left: 120px;
+  margin-bottom: -30px;
+  margin-top: 30px;
 }
 
 
-.show-menu {display:block;}
-.hide-menu {display: none;}
+.show-menu {
+  display: block;
+}
+
+.hide-menu {
+  display: none;
+}
+
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;     /* nascosto di default */
+  z-index: 1;      /* sotto al menu */
+}
 
 
 .box-chart{

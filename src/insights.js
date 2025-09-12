@@ -6,10 +6,16 @@ let currentAccountId = null; // NEW
 // ================================
 // API
 // ================================
-async function fetchAccounts() {
-  const res = await fetch(`http://${API_HOST}:8000/api.php?path=api/accounts`);
-  if (!res.ok) throw new Error("Errore nel caricamento degli account");
-  return await res.json(); // [{id, name}]
+async function fetchAccounts(userId, token) {
+  const url = `http://${API_HOST}:8000/api.php?path=api/accounts&user=${encodeURIComponent(userId)}`;
+  const res = await fetch(url, {
+    credentials: "include",
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data?.error || "Errore nel caricamento degli account");
+  return data; // [{id, name}]
 }
 
 async function fetchStats(period, accountId) {
@@ -271,6 +277,25 @@ async function showChart(period) {
 // Boot
 // ================================
 document.addEventListener('DOMContentLoaded', async () => {
+
+  const burger = document.getElementById("burger");
+  const menu = document.getElementById("menu-content");
+  const overlay = document.getElementById("overlay");
+  const backArrow = document.getElementById("back-arrow");
+
+  function openMenu() {
+    menu.classList.add("open");
+    overlay.style.display = "block";
+  }
+
+  function closeMenu() {
+    menu.classList.remove("open");
+    overlay.style.display = "none";
+  }
+
+  burger.addEventListener("click", openMenu);
+  backArrow.addEventListener("click", closeMenu);
+  overlay.addEventListener("click", closeMenu); // c
   // Buttons periodo
   document.getElementById("btn-week").addEventListener("click", () => showChart("week"));
   document.getElementById("btn-month").addEventListener("click", () => showChart("month"));
@@ -316,11 +341,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error(e);
     status.textContent = "Impossibile caricare gli account";
   }
-
+  goTo();
 });
 
 // ================================
 // Navigation helpers (unchanged)
 // ================================
-function goHome() { window.location.href = "./homepage.php"; }
+function goTo() {
+
+  const home = document.getElementById("home");
+  const wallet = document.getElementById("wallet-icon");
+  const goal = document.getElementById("goal-icon");
+  const insights = document.getElementById("insights-icon");
+
+  home.addEventListener('click', () => {
+    window.location.href = "../homepage.php"
+  }
+  );
+  wallet.addEventListener('click', () => {
+    window.location.href = "../wallet_page.php"
+  }
+  );
+  goal.addEventListener('click', () => {
+    window.location.href = "../goals.php"
+  }
+  );
+  insights.addEventListener('click', () => {
+    window.location.href = "../insights.php"
+  }
+  );
+};
 function redirect(location) { window.location.href = location; }

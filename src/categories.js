@@ -1,13 +1,21 @@
- let categoryColors = {};
+let categoryColors = {};
+let currentPeriod = "settimana";   // periodo selezionato (week di default)
+let categoriesCache = [];          // cache categorie (per i "limit")
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- GRAFICO PIE ---
+
+
+
+
+
+
+    // --- GRAFICO PIE --- //
+
     const ctx = document.getElementById('myChart').getContext('2d');
     let pieChart;
-   
 
-    async function caricaDati(periodo = "anno") {
-        const res = await fetch(`http://${API_HOST}:8000/api.php?path=api/spese&periodo=${periodo}`);
+    async function caricaDati(periodo = currentPeriod) {
+        const res = await fetch(`http://${API_HOST}:8000/api.php?path=api/spese&periodo=${encodeURIComponent(periodo)}`);
         const dati = await res.json();
         console.log("risposta api/spese:", dati);
 
@@ -21,9 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("primo elemento:", dati[0], "chiavi:", Object.keys(dati[0] || {}));
         }
 
-        // mapping robusto: usa chiavi alternative se cambiano i nomi
+        // mapping robusto: chiavi alternative se cambiano i nomi
         const labels = dati.map(d => d.categoria ?? d.category ?? d.name ?? "(unknown)");
-        const values = dati.map(d => Number(d.totale ?? d.total ?? d.value ?? 0));
+        const values = dati.map(d => Number(d.totale ?? d.total ?? d.value ?? d.amount ?? 0));
 
         const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'];
 
@@ -40,50 +48,37 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // mappa categoria → colore (riusabile altrove)
         categoryColors = {};
         labels.forEach((lab, i) => {
             categoryColors[lab] = colors[i % colors.length];
         });
-
-
     }
 
-    
-
-
-    // Caricamento iniziale
-    caricaDati("anno");
-
-    // --- SCELTA PERIODO (Year / Month / Week) ---
+    // --- SCELTA PERIODO (Year / Month / Week) --- //
     const periodButtons = document.querySelectorAll(".period-btn");
 
     function aggiornaPeriodo(periodo) {
-        // ricarica i grafici in base al periodo
-        caricaDati(periodo);
-        // se vuoi anche il bar chart con stesso periodo:
-        // drawBudgetChart(periodo);
+        currentPeriod = periodo;
+        caricaDati(periodo);         // aggiorna pie
+        drawBudgetChart(periodo);    // aggiorna bar
     }
 
     periodButtons.forEach(btn => {
         btn.addEventListener("click", () => {
-            // reset attivi
             periodButtons.forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
-
-            // aggiorna grafico
             const periodo = btn.dataset.periodo;
             aggiornaPeriodo(periodo);
         });
     });
 
-    // Default → Week
+    // Default → Week (settimana)
     const defaultBtn = document.querySelector('.period-btn[data-periodo="settimana"]');
-    if (defaultBtn) {
-        defaultBtn.classList.add("active");
-        aggiornaPeriodo("settimana");
-    }
+    if (defaultBtn) defaultBtn.classList.add("active");
+    aggiornaPeriodo("settimana");
 
-    // --- SCELTA ICONA ---
+    // --- SCELTA ICONA --- //
     const icons = document.querySelectorAll(".choose-icon .icon");
     icons.forEach(icon => {
         icon.addEventListener("click", () => {
@@ -92,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- CONFERMA NUOVA CATEGORIA ---
+    // --- CONFERMA NUOVA CATEGORIA --- //
     const confirmButton = document.getElementById("confirm_button");
     if (confirmButton) {
         confirmButton.addEventListener("click", async () => {
@@ -110,12 +105,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const name = nameInput.value.trim();
             const limit = parseFloat(limitInput.value);
             const spent = spentInput.value ? parseFloat(spentInput.value) : 0;
+
+            // prova a leggere il path dalla CSS content, fallback su /images/<id>.png
             let iconPath = getComputedStyle(selectedIcon).content;
             iconPath = iconPath.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
-
-            if (!iconPath) {
-                iconPath = `./images/${iconId}.png`;
-            }
+            if (!iconPath) iconPath = `./images/${iconId}.png`;
 
             if (!name || isNaN(limit)) {
                 showWarningPopup("Inserisci un nome e un limite valido!");
@@ -123,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const categoryData = {
-                name: name,
+                name,
                 path: iconPath,
                 limite: limit,
                 spent
@@ -141,7 +135,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (res.ok) {
                     showWarningPopup("Categoria aggiunta con successo");
                     closePopup('category-popup', 'overlay');
-                    loadCategories();
+                    loadCategories();            // ricarica elenco categorie
+                    drawBudgetChart(currentPeriod); // riallinea bar chart
+                    caricaDati(currentPeriod);      // riallinea pie chart
                 } else {
                     showWarningPopup("Errore: " + result.error);
                 }
@@ -152,23 +148,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- WARNING POPUP ---
+    // --- WARNING POPUP --- //
     function showWarningPopup(message) {
         const overlay = document.getElementById("warning-overlay");
         const messageBox = document.getElementById("warning-message");
-
         if (messageBox) messageBox.textContent = message;
         if (overlay) overlay.style.display = "flex";
     }
-
     function hideWarningPopup() {
         const overlay = document.getElementById("warning-overlay");
         if (overlay) overlay.style.display = "none";
     }
+    const okBtn = document.getElementById("OK");
+    if (okBtn) okBtn.addEventListener("click", hideWarningPopup);
 
-    document.getElementById("OK").addEventListener("click", hideWarningPopup);
-
-    // --- TAB GRAFICI PIE / BAR ---
+    // --- TAB GRAFICI PIE / BAR --- //
     const tabs = document.querySelectorAll(".chart-tab");
     const pieBox = document.getElementById("chart-pie");
     const barBox = document.getElementById("chart-bar");
@@ -184,30 +178,54 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 pieBox.style.display = "none";
                 barBox.style.display = "flex";
+                drawBudgetChart(currentPeriod); // assicura refresh quando si passa al bar
             }
         });
     });
 
-
-
-
-    // --- CARICA CATEGORIE E DISEGNA GRAFICO BAR ---
+    // --- CARICA CATEGORIE E DISEGNA GRAFICO BAR --- //
     loadCategories();
+    goTo(); // popola cards e cache + disegna bar chart sul periodo corrente
+
+    const burger = document.getElementById("burger");
+    const menu = document.getElementById("menu-content");
+    const overlay = document.getElementById("overlay");
+    const backArrow = document.getElementById("back-arrow");
+
+
+    function openMenu() {
+        menu.classList.add("open");
+        overlay.classList.add("overlayactive");
+    }
+
+    function closeMenu() {
+        menu.classList.remove("open");
+        overlay.classList.remove("overlayactive");
+        console.log("ADAD");
+    }
+
+    burger.addEventListener("click", openMenu);
+    backArrow.addEventListener("click", closeMenu);
+    overlay.addEventListener("click", closeMenu);
+
+
 });
 
-
-
-
+// --------------------------
+// Utility popup open/close
+// --------------------------
 function openPopup(popup, overlay) {
     document.getElementById(popup).classList.add("category-popupactive");
     document.getElementById(overlay).classList.add("overlayactive");
 }
-
 function closePopup(popup, overlay) {
     document.getElementById(popup).classList.remove("category-popupactive");
     document.getElementById(overlay).classList.remove("overlayactive");
 }
 
+// --------------------------
+// Ricerca categorie
+// --------------------------
 function search() {
     const input = document.getElementById("search").value.toLowerCase();
     const categories = document.querySelectorAll(".box-category");
@@ -239,6 +257,9 @@ function search() {
     }
 }
 
+// --------------------------
+// Carica categorie (cache) e disegna BAR
+// --------------------------
 async function loadCategories() {
     try {
         const res = await fetch(`http://${API_HOST}:8000/api.php?path=categories`);
@@ -247,53 +268,63 @@ async function loadCategories() {
 
         if (!Array.isArray(categories)) return;
 
+        // salva in cache per i "limit"
+        categoriesCache = categories;
+
+        // render lista categorie
         const container = document.getElementById("container-category");
-        container.innerHTML = "";
+        if (container) {
+            container.innerHTML = "";
 
-        categories.forEach(cat => {
-            if (!cat.name) return;
+            categories.forEach(cat => {
+                if (!cat.name) return;
 
-            const box = document.createElement("div");
-            box.className = "box-category";
-            const color = categoryColors[cat.name] || "#ccc";
-            box.style.backgroundColor = `${color}`;
+                const box = document.createElement("div");
+                box.className = "box-category";
+                const color = categoryColors[cat.name] || "#ccc";
+                box.style.backgroundColor = `${color}`;
 
-            const iconDiv = document.createElement("div");
-            iconDiv.className = "icon";
-            iconDiv.id = cat.name.toLowerCase();
-            console.log(cat.path);
-            if (cat.path) {
-                iconDiv.style.backgroundImage = `url('${cat.path}')`;
-                iconDiv.style.backgroundSize = "cover";
-            }
+                const iconDiv = document.createElement("div");
+                iconDiv.className = "icon";
+                iconDiv.id = cat.name.toLowerCase();
+                if (cat.path) {
+                    iconDiv.style.backgroundImage = `url('${cat.path}')`;
+                    iconDiv.style.backgroundSize = "cover";
+                }
 
-            const nameDiv = document.createElement("div");
-            nameDiv.className = "category-name";
-            nameDiv.textContent = cat.name;
+                const nameDiv = document.createElement("div");
+                nameDiv.className = "category-name";
+                nameDiv.textContent = cat.name;
 
-            const limitDiv = document.createElement("div");
-            limitDiv.className = "category-limit";
-            limitDiv.textContent = cat.limite + " $";
+                const limitDiv = document.createElement("div");
+                limitDiv.className = "category-limit";
+                limitDiv.textContent = cat.limite + " $";
 
-            const spentDiv = document.createElement("div");
-            spentDiv.className = "category-spent";
-            spentDiv.textContent = cat.spent + " $";
+                const spentDiv = document.createElement("div");
+                spentDiv.className = "category-spent";
+                spentDiv.textContent = cat.spent + " $";
 
-            box.appendChild(iconDiv);
-            box.appendChild(nameDiv);
-            box.appendChild(limitDiv);
-            box.appendChild(spentDiv);
+                box.appendChild(iconDiv);
+                box.appendChild(nameDiv);
+                box.appendChild(limitDiv);
+                box.appendChild(spentDiv);
 
-            container.appendChild(box);
-        });
+                container.appendChild(box);
+            });
+        }
 
         checkSpentLimits();
-        drawBudgetChart();
+
+        // disegna/aggiorna bar chart con il periodo corrente
+        await drawBudgetChart(currentPeriod);
     } catch (err) {
         console.error("Errore durante il caricamento categorie:", err);
     }
 }
 
+// --------------------------
+// Highlight spese > limite (solo UI delle card)
+// --------------------------
 function checkSpentLimits() {
     const boxes = document.querySelectorAll(".box-category");
     boxes.forEach(box => {
@@ -315,43 +346,91 @@ function checkSpentLimits() {
     });
 }
 
+// --------------------------
+// BAR CHART collegato al periodo
+// --------------------------
 let budgetChart;
 
-function drawBudgetChart() {
-    const boxes = document.querySelectorAll(".box-category");
-    const labels = [];
-    const limits = [];
-    const spent = [];
-    const backgroundColors = [];
-
-    boxes.forEach(box => {
-        const name = box.querySelector(".category-name").textContent;
-        const limit = parseFloat(box.querySelector(".category-limit").textContent.replace(/\$/g, "").trim());
-        const spend = parseFloat(box.querySelector(".category-spent").textContent.replace(/\$/g, "").trim());
-
-        labels.push(name);
-        limits.push(limit);
-        spent.push(spend);
-
-        backgroundColors.push(spend > limit ? 'red' : 'green');
-    });
-
-    const ctx = document.getElementById('budgetChart').getContext('2d');
-
-    if (budgetChart) budgetChart.destroy();
-
-    budgetChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels,
-            datasets: [
-                { label: 'Limit', data: limits, backgroundColor: 'blue' },
-                { label: 'Spent', data: spent, backgroundColor: backgroundColors }
-            ]
-        },
-        options: {
-            responsive: true,
-            scales: { y: { beginAtZero: true } }
+async function drawBudgetChart(periodo = "settimana") {
+    try {
+        // 1) assicurati di avere le categorie (per i limiti)
+        if (!Array.isArray(categoriesCache) || categoriesCache.length === 0) {
+            const resCats = await fetch(`http://${API_HOST}:8000/api.php?path=categories`);
+            categoriesCache = await resCats.json();
         }
-    });
+
+        // 2) spese aggregate per categoria nel periodo selezionato
+        const res = await fetch(`http://${API_HOST}:8000/api.php?path=api/spese&periodo=${encodeURIComponent(periodo)}`);
+        const datiRaw = await res.json();
+
+        if (!Array.isArray(datiRaw)) {
+            console.error("api/spese non ha restituito un array");
+            return;
+        }
+
+        // Se l'API mischia entrate/uscite, tieni solo gli OUTCOME
+        const dati = datiRaw.filter(d => (d.type ?? d.tipo ?? 'outcome') === 'outcome');
+
+        // Mappe: limite per categoria (da categories) e speso per categoria (da api/spese)
+        const limitByCat = new Map(
+            categoriesCache.map(c => [c.name, Number(c.limite ?? 0)])
+        );
+        const spentByCat = new Map(
+            dati.map(d => [
+                (d.category ?? d.categoria ?? d.name ?? "(unknown)"),
+                Number(d.total ?? d.totale ?? d.value ?? d.amount ?? 0)
+            ])
+        );
+
+        // Etichette = tutte le categorie note
+        const labels = Array.from(limitByCat.keys());
+        const limits = labels.map(l => limitByCat.get(l) ?? 0);
+        const spent = labels.map(l => spentByCat.get(l) ?? 0);
+
+        const backgroundColors = spent.map((v, i) => v > limits[i] ? 'red' : 'red');
+
+        const ctx = document.getElementById('budgetChart').getContext('2d');
+        if (budgetChart) budgetChart.destroy();
+
+        budgetChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    { label: 'Limit', data: limits, backgroundColor: 'blue' },
+                    { label: 'Spent', data: spent, backgroundColor: backgroundColors }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    } catch (err) {
+        console.error("Errore drawBudgetChart:", err);
+    }
 }
+function goTo() {
+
+    const home = document.getElementById("home");
+    const wallet = document.getElementById("wallet-icon");
+    const goal = document.getElementById("goal-icon");
+    const insights = document.getElementById("insights-icon");
+
+    home.addEventListener('click', () => {
+        window.location.href = "../homepage.php"
+    }
+    );
+    wallet.addEventListener('click', () => {
+        window.location.href = "../wallet_page.php"
+    }
+    );
+    goal.addEventListener('click', () => {
+        window.location.href = "../goals.php"
+    }
+    );
+    insights.addEventListener('click', () => {
+        window.location.href = "../insights.php"
+    }
+    );
+};

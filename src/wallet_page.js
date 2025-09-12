@@ -1,4 +1,25 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+    const burger = document.getElementById("burger");
+    const menu = document.getElementById("menu-content");
+    const overlay = document.getElementById("overlay");
+    const backArrow = document.getElementById("back-arrow");
+
+    function openMenu() {
+        menu.classList.add("open");
+        overlay.style.opacity = "1";
+    }
+
+    function closeMenu() {
+        menu.classList.remove("open");
+        overlay.style.opacity = "0";
+    }
+
+    burger.addEventListener("click", openMenu);
+    backArrow.addEventListener("click", closeMenu);
+    overlay.addEventListener("click", closeMenu);
+
+
     function UpdateDate() {
         const oggi = new Date();
 
@@ -16,12 +37,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const popup = document.getElementById("addAccountPopup");
-    const overlay = document.getElementById("overlay");
     const openButton = document.getElementById("openAddAccount");
     const cancelButton = document.getElementById("cancel_button");
     const confirmButton = document.getElementById("confirm_button");
     const icons = document.querySelectorAll(".choose-icon .icon");
-
+    goTo();
     // APRI POPUP
     openButton.addEventListener("click", () => {
         popup.classList.add("addaccount-popupactive");
@@ -777,4 +797,27 @@ function renderTypeFields(type) {
     }
 }
 
+function goTo() {
 
+  const home = document.getElementById("home");
+  const wallet = document.getElementById("wallet-icon");
+  const goal = document.getElementById("goal-icon");
+  const insights = document.getElementById("insights-icon");
+
+  home.addEventListener('click', () => {
+    window.location.href = "../homepage.php"
+  }
+  );
+  wallet.addEventListener('click', () => {
+    window.location.href = "../wallet_page.php"
+  }
+  );
+  goal.addEventListener('click', () => {
+    window.location.href = "../goals.php"
+  }
+  );
+  insights.addEventListener('click', () => {
+    window.location.href = "../insights.php"
+  }
+  );
+};

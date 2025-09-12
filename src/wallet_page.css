@@ -15,6 +15,7 @@ body {
 body {
     display: flex;
     flex-direction: column;
+    margin: 0 auto;
 }
 
 .footer {
@@ -75,6 +76,55 @@ body {
     margin: 0 auto;
     margin-left: 110px;
 }
+
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  margin-left: -26px;
+  margin-top: -60px;
+}
+
+.dropdown-content {
+  display: block;
+  position: absolute;
+  background-color: #0B4E92;
+  width: 200px;
+  height: 970px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  transform: translateX(-100%);   /* nascosto fuori schermo */
+  transition: transform 0.3s ease;
+  z-index: 2;
+}
+
+.dropdown-content.open {
+  transform: translateX(0);
+}
+
+.dropdown-content a {
+  color: white;
+  padding: 15px 40px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content h2 {
+  color: white;
+  padding-left: 15px;
+  padding-top: 10px;
+  display: block;
+}
+
+.back-arrow {
+  display: block;
+  margin-top: 0px;
+  margin-left: 120px;
+  margin-bottom: -30px;
+  margin-top: 30px;
+}
+
+
+
 
 
 .wallet-summary {

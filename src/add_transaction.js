@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // -----------------------------
   // ELEMENTI UI – TUTORIAL
   // -----------------------------
+  goTo()
   const tutorialBtn = document.getElementById("tutorialBtn");
   const overlayTutorial = document.getElementById("overlay-tutorial");
   const popupTutorial = document.getElementById("popup-tutorial");
@@ -10,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const backBtn = document.getElementById("backBtn");
   const nextBtn = document.getElementById("nextBtn");
   const skipBtn = document.getElementById("skipButton");
-  
+
 
   // -----------------------------
   // ELEMENTI UI – SEZIONI / CATEGORIE
@@ -30,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ELEMENTI UI – CONFERMA / CANCEL
   // -----------------------------
   const confirmBtn = document.getElementById("confirm_button");
-  const cancelBtn  = document.getElementById("cancel_button");
+  const cancelBtn = document.getElementById("cancel_button");
 
   // -----------------------------
   // STATI
@@ -59,8 +60,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // -----------------------------
   // FUNZIONI UTILI
   // -----------------------------
-  const qs  = (sel, root=document) => root.querySelector(sel);
-  const qsa = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+  const qs = (sel, root = document) => root.querySelector(sel);
+  const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
   function updateTutorial() {
     tutorialImage.src = images[currentStep];
@@ -93,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (categoriesSection) categoriesSection.style.display = "block";
     if (percentageBar) percentageBar.style.display = "block";
     if (tutorialBtn) tutorialBtn.style.display = "block";
-    
+
     sectionsVisible = true;
 
     // Se era attivo l'uncategorized, disattivalo per coerenza
@@ -666,3 +667,28 @@ document.addEventListener("DOMContentLoaded", () => {
   loadCategories();
   attachInputListeners();
 });
+
+function goTo() {
+
+  const home = document.getElementById("home");
+  const wallet = document.getElementById("wallet-icon");
+  const goal = document.getElementById("goal-icon");
+  const insights = document.getElementById("insights-icon");
+
+  home.addEventListener('click', () => {
+    window.location.href = "../homepage.php"
+  }
+  );
+  wallet.addEventListener('click', () => {
+    window.location.href = "../wallet_page.php"
+  }
+  );
+  goal.addEventListener('click', () => {
+    window.location.href = "../goals.php"
+  }
+  );
+  insights.addEventListener('click', () => {
+    window.location.href = "../insights.php"
+  }
+  );
+}

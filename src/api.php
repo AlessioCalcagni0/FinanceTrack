@@ -97,10 +97,13 @@ if ($path === "categories") {
 if ($path === "addCategory" && $_SERVER["REQUEST_METHOD"] === "POST") {
     $data = getJsonInput();
 
-    $name = $data["name"] ?? null;
-    $pathImg       = $data["path"] ?? null;
-    $limite        = $data["limite"] ?? null;
-    $spent         = $data["spent"] ?? 0;
+    $name    = $data["name"]   ?? null;
+    $pathImg = $data["path"]   ?? null;
+    $limite  = $data["limite"] ?? null;
+    $spent   = $data["spent"]  ?? 0;
+
+    // opzionale: per associare la transazione a un wallet/account
+    $walletId = $data["wallet_id"] ?? ($data["accountId"] ?? "1");
 
     if (!$name || !$pathImg || $limite === null) {
         http_response_code(400);
@@ -111,33 +114,48 @@ if ($path === "addCategory" && $_SERVER["REQUEST_METHOD"] === "POST") {
     try {
         $pdo->beginTransaction();
 
-        $stmt = $pdo->prepare("INSERT INTO categories (name, path, limite, spent) 
-                               VALUES (:name, :path, :limite, :spent) RETURNING *");
+        // 1) Inserisci/crea la categoria
+        $stmt = $pdo->prepare("
+            INSERT INTO categories (name, path, limite, spent)
+            VALUES (:name, :path, :limite, :spent)
+            RETURNING *
+        ");
         $stmt->execute([
-            ":name" => $name,
-            ":path" => $pathImg,
+            ":name"   => $name,
+            ":path"   => $pathImg,
             ":limite" => $limite,
-            ":spent" => $spent
+            ":spent"  => $spent
         ]);
         $newCategory = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        // 2) Se c’è uno 'spent' iniziale, registra una TRANSAZIONE di tipo expense
         if ($spent > 0) {
-            $stmt2 = $pdo->prepare("INSERT INTO spese (categoria, importo, data) VALUES (:cat, :imp, NOW()) RETURNING *");
+
+            $txType = 'outcome';
+            $stmt2 = $pdo->prepare("
+                INSERT INTO transactions (name, wallet_id, category, type, date, time, amount)
+                VALUES (:name, :wallet_id, :category, 'outcome', CURRENT_DATE, CURRENT_TIME, :amount)
+                RETURNING *
+            ");
             $stmt2->execute([
-                ":cat" => $name,
-                ":imp" => $spent
+                ":name"      => $name,         // puoi cambiare in un titolo custom se preferisci
+                ":wallet_id" => $walletId,     // può essere null se non lo passi
+                ":category"  => $name,         // qui salvo il nome categoria come category
+                ":amount"    => $spent,
             ]);
+            // se ti serve: $insertedTx = $stmt2->fetch(PDO::FETCH_ASSOC);
         }
 
         $pdo->commit();
         echo json_encode($newCategory);
-    } catch(PDOException $e) {
+    } catch (PDOException $e) {
         $pdo->rollBack();
         http_response_code(500);
         echo json_encode(["error" => "Errore inserimento: " . $e->getMessage()]);
     }
     exit;
 }
+
 
 
 if ($path === "income_sum") {
@@ -449,28 +467,20 @@ if ($path === "api/goals") {
 }
 
 if ($path === "api/accounts") {
-    $user = $_GET["user"] ?? "";
-    if (strlen($user) == 0) {
-        http_response_code(400);
-        echo json_encode(["success" => false, "error" => "User not found"]);
-        exit;
-    }
-
     try {
-        $sql = "SELECT name FROM wallets WHERE user_id = :user";
+        $sql = "SELECT id, name FROM account ORDER BY name";
         $stmt = $pdo->prepare($sql);
-
-        // Cast to integer to match Postgres integer type
-        $stmt->execute(['user' => (int)$user]);
-
+        $stmt->execute();
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode($rows);
+
+        echo json_encode($rows); // es: [{id:1, name:"ING"}, ...]
     } catch (PDOException $e) {
         http_response_code(500);
         echo json_encode(["error" => "Errore query: " . $e->getMessage()]);
     }
     exit;
 }
+
 
 if ($path === "api/insights") {
     $periodo = $_GET["periodo"] ?? "anno";

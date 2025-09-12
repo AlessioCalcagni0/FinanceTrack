@@ -5,7 +5,7 @@
 }
 
 .footer {
-    z-index: 1;
+    z-index: 2;
     background-color: white;
 }
 
@@ -44,7 +44,7 @@
     align-items: center;
     justify-content: space-between;
     background-color: rgb(255, 255, 255);
-    z-index: 1;
+    z-index: 2;
 }
 
 
@@ -113,8 +113,6 @@
   margin-bottom: -30px;
   margin-top: 30px;
 }
-
-
 
 .overlay {
   position: fixed;
@@ -295,7 +293,7 @@
     margin: 0 auto;
     margin-top: 17px;
     width: 270px;
-    height: 50px;
+    height: 80px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -385,4 +383,64 @@
     margin-left: 60px;
     font-size: 20px;
     color: rgb(106, 106, 106);
+}
+/* Riga "Total Balance" con importo a destra */
+.balance {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* Colonna sinistra (titolo, participants, data) */
+.balance-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0; /* per evitare overflow su titoli lunghi */
+}
+
+.balance-title {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.participants-line {
+  font-size: 0.9em;
+  opacity: 0.9;
+}
+
+.balance-date {
+  font-size: 0.85em;
+  opacity: 0.8;
+}
+
+/* Importo a destra */
+.balance-amount {
+  margin-left: auto;          /* spinge l'importo a destra */
+  font-weight: 700;
+  white-space: nowrap;        /* evita l'andata a capo dell'importo */
+}
+
+#addbtn{
+    margin-left: 5px;
+    margin-top: 550px;
+    height: 60px;
+    width: 300px;
+    color: #ffffff;
+    background-color: #2a60ba;
+    font-size: 16px;
+    border-radius: 10px;
+    border: #2a60ba;
+    
+}
+
+/* Responsive: su schermi stretti, manda l'importo sotto ma allineato a destra */
+@media (max-width: 420px) {
+  .balance {
+    align-items: center;
+  }
+  .balance-amount {
+    align-self: flex-end;
+  }
 }
