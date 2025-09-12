@@ -86,75 +86,68 @@ document.addEventListener("DOMContentLoaded", () => {
   const cancel = document.getElementById("cancel");
   const confirm = document.getElementById("confirm");
 
-  // Reveal sections once wallet name is filled
-  // walletName.addEventListener("input", () => {
-  //   if (walletName.value.trim().length > 2) {
-  //       walletName.classList.remove("error");
-  //       h3_edit.classList.remove("hiddenName");
-  //       walletEdit.classList.remove("hiddenName");
-  //       h3_partecipants.classList.remove("hiddenName");
-  //       participantsSection.classList.remove("hiddenName");
-  //       rolesSectionC.classList.remove("hiddenName");
+  
 
-  //       h4_edit.classList.add("hiddenName");
-  //       h4_contact.classList.remove("hiddenName");
+  //Reveal sections once wallet name is filled
+  walletName.addEventListener("input", () => {
+    if (walletName.value.trim().length > 2) {
+        walletName.classList.remove("error");
+        h3_edit.classList.remove("hiddenName");
+        walletEdit.classList.remove("hiddenName");
+        h3_partecipants.classList.remove("hiddenName");
+        
+        participantsSection.classList.remove("hiddenName");
+        rolesSectionC.classList.remove("hiddenName");
 
-  //   } else {
-  //     walletName.classList.add("error");
-  //     errors = [];
-  //     errors.push("The wallet name must be at least 3 characters long.");
-  //     showPopup(errors, "warning");
-  //     walletEdit.classList.add("hiddenName");
-  //     participantsSection.classList.add("hiddenName");
-  //     h3_edit.classList.add("hiddenName");
-  //     h3_partecipants.classList.add("hiddenName");
-  //     h4_edit.classList.remove("hiddenName");
-  //     h4_contact.classList.add("hiddenName");
-  //     rolesSectionC.classList.add("hiddenName");
-
-  //   }
-  // });
-  walletName.classList.remove("error");
-  h3_edit.classList.remove("hiddenName");
-  walletEdit.classList.remove("hiddenName");
-  h3_partecipants.classList.remove("hiddenName");
-  participantsSection.classList.remove("hiddenName");
-  rolesSectionC.classList.remove("hiddenName");
-
-  h4_edit.classList.add("hiddenName");
-  h4_contact.classList.remove("hiddenName");
-
-
-
-  const input = participantsSection.querySelectorAll("input[name='participants[]']");
-
-  input.forEach(participant => {
-    participant.addEventListener("focusout", () => {
-
-      if (participant.value.trim().length > 0 && validateEmail(participant.value.trim())) {
-        participant.classList.remove("error");
-        h3_role.classList.remove("hiddenContact");
-        rolesSection.classList.remove("hiddenContact");
-
-
-        cancel.classList.remove("hiddenContact");
-        confirm.classList.remove("hiddenContact");
-        h4_contact.classList.add("hiddenName");
-
-
-      } else {
-        participant.classList.add("error");
-        const errors = [];
-        errors.push("The participants' email field is incorrect please make sure to insert a correct email.")
-        showPopup(errors, "warning");
-        rolesSection.classList.add("hiddenContact");
-        h3_role.classList.add("hiddenContact");
-        cancel.classList.add("hiddenContact");
-        confirm.classList.add("hiddenContact");
+        h4_edit.classList.add("hiddenName");
         h4_contact.classList.remove("hiddenName");
-      }
-    });
+
+      const input = participantsSection.querySelectorAll("input[name='participants[]']");
+
+      input.forEach(participant => {
+        participant.addEventListener("focusout", () => {
+
+          if (participant.value.trim().length > 0 && validateEmail(participant.value.trim())) {
+            participant.classList.remove("error");
+            h3_role.classList.remove("hiddenContact");
+            rolesSection.classList.remove("hiddenContact");
+            cancel.classList.remove("hiddenContact");
+            confirm.classList.remove("hiddenContact");
+            h4_contact.classList.add("hiddenName");
+
+
+          } else {
+            participant.classList.add("error");
+            const errors = [];
+            errors.push("The participants' email field is incorrect please make sure to insert a correct email.")
+            showPopup(errors, "warning");
+            rolesSection.classList.add("hiddenContact");
+            h3_role.classList.add("hiddenContact");
+            cancel.classList.add("hiddenContact");
+            confirm.classList.add("hiddenContact");
+            h4_contact.classList.remove("hiddenName");
+          }
+        });
+      });
+
+    } else {
+
+      walletName.classList.add("error");
+      errors = [];
+      errors.push("The wallet name must be at least 3 characters long.");
+      showPopup(errors, "warning");
+      walletEdit.classList.add("hiddenName");
+      participantsSection.classList.add("hiddenName");
+      h3_edit.classList.add("hiddenName");
+      h3_partecipants.classList.add("hiddenName");
+      h4_edit.classList.remove("hiddenName");
+      h4_contact.classList.add("hiddenName");
+      rolesSectionC.classList.add("hiddenName");
+
+    }
   });
+  
+  
 
 
 
