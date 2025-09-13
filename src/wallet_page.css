@@ -6,13 +6,17 @@
     box-sizing: border-box;
 }
 
+html,
+body {
+    height: 780px;
+    overflow: hidden;
+    
+}
 
 body {
     display: flex;
     flex-direction: column;
     margin: 0 auto;
-    height: 915px;
-    overflow: hidden;
 }
 
 .footer {
@@ -22,7 +26,7 @@ body {
     padding: 1rem;
     width: 105%;
     position: fixed;
-    bottom:0px;
+    bottom: 38px;
     left: 0;
     box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
     z-index: 1;
@@ -41,7 +45,7 @@ body {
     height: 800px;
     overflow-y: scroll;
     margin-left: 50px;
-    margin-top: 15px;
+    margin-top: 36px;
 }
 
 .navbar {
@@ -69,11 +73,11 @@ body {
 
 .title {
     width: 205px;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
-    color: #152C5C;
+    color: #1953cb;
     margin: 0 auto;
-    margin-left: 177px;
+    margin-left: 160px;
 }
 
 
@@ -89,6 +93,7 @@ body {
   position: absolute;
   background-color: #0b539a;
   width: 200px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   transform: translateX(-100%);   /* nascosto fuori schermo */
   transition: transform 0.3s ease;
   z-index: 2;
@@ -832,13 +837,9 @@ body {
 #topbar {
     height: 3px;
     background: linear-gradient(135deg, #2575fc, #6a11cb);
-
 }
 
 #bottombar{
     height: 3px;
-    margin-top: -20px;
-    margin-left: -20px;
-    min-width: 10%;
     background: linear-gradient(135deg, #6a11cb, #2575fc);
 }

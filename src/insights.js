@@ -172,8 +172,8 @@ function getDatasets(data, chartType = "bar") {
     datasets.push({
       label: "Income",
       data: data.map(d => d.income),
-      backgroundColor: chartType === "bar" ? "rgba(54, 162, 235, 0.5)" : undefined,
-      borderColor: "rgba(54, 162, 235, 1)",
+      backgroundColor: chartType === "bar" ? "#2A60BA" : undefined,
+      borderColor: "#2A60BA",
       fill: chartType === "line",
       tension: chartType === "line" ? 0.3 : 0
     });
@@ -182,8 +182,8 @@ function getDatasets(data, chartType = "bar") {
     datasets.push({
       label: "Spent",
       data: data.map(d => d.outcome),
-      backgroundColor: chartType === "bar" ? "rgba(255, 99, 132, 0.5)" : undefined,
-      borderColor: "rgba(255, 99, 132, 1)",
+      backgroundColor: chartType === "bar" ? "#ff0000" : undefined,
+      borderColor: "#ff0000",
       fill: chartType === "line",
       tension: chartType === "line" ? 0.3 : 0
     });
@@ -214,6 +214,9 @@ function renderAccountBlocks(accounts) {
 
     // Contenuto blocco
     item.innerHTML = `
+      <span class="account-avatar" aria-hidden="true">
+        <img class="icon-account" src="${acc.path || ''}" alt="" loading="lazy">
+      </span>
       <span class="account-name">${acc.name}</span>
     `;
 
