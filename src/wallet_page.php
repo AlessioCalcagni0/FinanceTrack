@@ -204,11 +204,14 @@ $apiHost = $_ENV['DB_HOST'] ;
 
         <!-- Overlay -->
         <div id="deleteOverlay" class="overlay"></div>
+    
+    
     </div>
 
-    <div id="bottombar"></div>
+    
 
     <footer class="footer">
+        <div id="bottombar"></div>
         <!--NAVIGATION BAR-->
         <nav class="footer-nav">
             <svg width="375" height="65" viewBox="0 0 375 65" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">

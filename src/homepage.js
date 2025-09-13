@@ -6,6 +6,12 @@ function redirect(location) {
   window.location.href = location;
 }
 
+function goToCreateGoal(){
+  window.location.href = "/create_goal.php";
+}
+function createWallet(){
+  window.location.href = "/create_sw.php";
+}
 function openTransaction() {
 
   window.location.href = "/add_transaction.php";
@@ -250,8 +256,8 @@ function renderGoals(goals) {
 
   if (!Array.isArray(goals) || goals.length === 0) {
     root.innerHTML = `
-      <p>You don't have any goal at the moment</p>
-      <a href="create_goal.php" class="btn-trans">Create a new Goal!</a>
+      <p style="margin-left:8%">You don't have any goal at the moment</p>
+      <button class="create_wallet" onclick="goToCreateGoal()"  >Create a new Goal!</button>
     `;
     return;
   }
@@ -271,7 +277,7 @@ function renderGoals(goals) {
       <div class="home-card">
         <div class="card-header">
           <img src="./images/icons8-trophy-96.png" alt="Goal Image" class="goal-thumb">
-          <h3>${escapeHtml(g.title||'')}</h3>
+          <h3>${escapeHtml(g.name||'')}</h3>
         </div>
         <p>Deadline: ${escapeHtml(formatted)}</p>
         <div class="progress"><div class="progress-bar" style="width:${progress.toFixed(2)}%"></div></div>
@@ -341,7 +347,7 @@ function renderWallets(wallets){
   if(!Array.isArray(wallets) || wallets.length===0){
     root.innerHTML = `
       <p style="color:#0B4E92">You don't have any shared wallet at the moment</p>
-      <button class="create_wallet" onclick="openTutorial()"  >Create a Shared Wallet!</button>
+      <button class="create_wallet" onclick="createWallet()"  >Create a Shared Wallet!</button>
 
     `;
     return;

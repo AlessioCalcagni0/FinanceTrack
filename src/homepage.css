@@ -5,24 +5,43 @@
 }
 
 body {
-  top: 6%;
-  height: 915px;
+  top: 0%;
+  min-height: 915px;
+  max-height: 915px;
+  min-width: 412px;
   position: relative;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
+ overflow-y: hidden;
+  margin-right: 0%;
 }
 
-main{
-  height: 500px;
-  overflow-y: scroll;
-  margin-top: 20px; 
-  position: relative;
+main {
+    flex: 1;
+    height: 800px;
+    padding-bottom: 80px;
+    overflow-y: hidden;
   overflow-x: hidden;
+    margin: 0px 0px;
 }
+
+main::-webkit-scrollbar {
+    width: 0px;
+    background-color: rgba(255, 255, 255, 0.2);
+
+}
+
+main::-webkit-scrollbar-thumb {
+    width: 0px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
 
 .navbar {
   margin-left: 2%;
-  padding-top: 6%;
+  padding-top: 2%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -48,15 +67,16 @@ main{
   padding-left: 5%;
   font-size: 7dvw;
   font-weight: bold;
-  color: #0B4E92;
+  color: #2A60BA;
 }
 
 
 
 #tabBar {
   position: absolute;
-  left: 0%;
-  bottom: -43%;
+  left: 2%;
+  bottom: 0%;
+  max-height: fit-content;
 
 }
 
@@ -173,13 +193,15 @@ main{
   padding:15px;
   /* margin:10px auto;  <-- rimuovere! */
   margin:10px 0px;               /* ok */
-  
+  margin-left: 5px;
   box-shadow:0 2px 6px rgba(0,0,0,.1);
 }
 
 
 .home-content {
   display: none;
+  min-width: 412px;
+  max-width: 412px;
   padding: 10px;
 }
 
@@ -221,23 +243,24 @@ main{
 
 
 .btn-trans {
-  margin-left: 30%;
-  margin-top: 4%;
-  margin-bottom: 0%;
-  padding: 12px 20px;
+  padding: 12px 25px;
   font-size: 16px;
-  background: #007bff;
+  background: #2A60BA;
   color: white;
   border: none;
   border-radius: 8px;
+  width: 200px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 15%;
 }
 
 .btn-trans:hover {
-  background: #0056b3;
+  background: #2A60BA;
 }
 
 .create_wallet{
-   margin-left: 20%;
+   margin-left: 22%;
    margin-right: auto;
   margin-top: 4%;
   margin-bottom: 40%;
@@ -412,9 +435,12 @@ section .card .image img {
 
 
 .wallets-list {
+  margin-left: 20px;
   display: flex;
-  overflow-x: auto;
-  gap: 1rem;
+  overflow-x: scroll;
+  gap: 20px;
+  width: 370px;
+  margin-right: 20px;
 }
 .wallets-list::-webkit-scrollbar {
   display: none; /* optional: hide scrollbar */
@@ -434,7 +460,7 @@ section .card .image img {
     border-radius: 5px;
     border: #8451AC 2px solid;
     color: #000;
-    margin-left: 12px;
+    margin-left: 20px;
     font-size: 10px;
 }
 
@@ -567,4 +593,22 @@ section .card .image img {
 
 .participant-meta {
     opacity: .8;
+}
+
+
+#topbar {
+  margin-top: 3%;
+    height: 3px;
+    background: linear-gradient(135deg, #2575fc, #6a11cb);
+
+}
+
+
+#bottombar{
+    height: 3px;
+    min-width: 412px;
+    width: 100%;
+    margin-left: 0px;
+    margin-bottom: 20%;
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
 }

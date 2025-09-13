@@ -68,8 +68,8 @@ $apiHost = $_ENV['DB_HOST'] ;
         </div>
 
     </div>
-    
-    <main style="height: 100%;">
+    <div id="topbar"></div>
+    <main >
 
         <div id="main" ></div>
      
@@ -92,10 +92,12 @@ $apiHost = $_ENV['DB_HOST'] ;
             </div>
         </div>
 
-       
-        <button class="btn-trans" onclick="openTransaction()">Add Transaction</button>
 
- 
+
+    </main>
+                          <button class="btn-trans" onclick="openTransaction()">Add Transaction</button>
+  
+    <div id="bottombar"></div>
 
         <svg id="tabBar" width="410px"  height="100%" viewBox="0 0 370 70" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <g clip-path="url(#clip0_303_309)">
@@ -128,7 +130,7 @@ $apiHost = $_ENV['DB_HOST'] ;
         </svg>
 
 
-    </main>
+    
 
 
 </body>

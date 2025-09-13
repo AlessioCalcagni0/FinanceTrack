@@ -450,7 +450,7 @@ if ($path === "api/goals") {
         exit;
     }
 
-    $sql = "SELECT id, title, TO_CHAR(deadline, 'DD MM YYYY') as deadline, saved_amount, saving_amount, created_at
+    $sql = "SELECT id, name, TO_CHAR(deadline, 'DD MM YYYY') as deadline, saved_amount , target_amount , created_at
             FROM goals
             WHERE user_id = :user_id
             ORDER BY created_at DESC";
@@ -571,7 +571,6 @@ if ($path === "sharedAccounts") {
                 name,
                 balance,
                 path,
-                color,
                 partecipant_num,
                 partecipant_name_surname1,
                 partecipant_name_surname2,
@@ -580,9 +579,6 @@ if ($path === "sharedAccounts") {
                 participant_role1,
                 participant_role2,
                 participant_role3,
-                participant_permissions1,
-                participant_permissions2,
-                participant_permissions3,
                 TO_CHAR(last_sync, 'YYYY-MM-DD') AS last_sync
             FROM shared_wallets 
             WHERE user_id = :user
