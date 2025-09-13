@@ -72,6 +72,8 @@ $apiHost = $_ENV['DB_HOST'] ;
 
     </div>
 
+    <div id="topbar"></div>
+
     <div class="main">
         <div class="wallet-summary">
             <div class="name">
@@ -204,6 +206,7 @@ $apiHost = $_ENV['DB_HOST'] ;
         <div id="deleteOverlay" class="overlay"></div>
     </div>
 
+    <div id="bottombar"></div>
 
     <footer class="footer">
         <!--NAVIGATION BAR-->

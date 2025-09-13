@@ -14,11 +14,11 @@ $apiHost = $_ENV['DB_HOST'] ;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>Account</title>
-    <link rel="stylesheet" href="account_page.css">
+    <link rel="stylesheet" href="cash_page.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="manifest" href="/manifest.json">
     <script> const API_HOST = "<?php echo $apiHost; ?>";</script>
-    <script src="account_page.js"></script>
+    <script src="cash_page.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -52,7 +52,7 @@ $apiHost = $_ENV['DB_HOST'] ;
             </div>
         </div>
         
-        <div class="title"> </div>
+        <div class="title">Physical Currency</div>
         <!--NOTIFY BELL-->
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <rect width="20" height="20" fill="url(#pattern0_30_198)"/>
@@ -68,6 +68,7 @@ $apiHost = $_ENV['DB_HOST'] ;
     
     <div class="main">
         <div class="account-summary">
+
             <div class="name"  id="account-name">
                 
             </div>
@@ -94,12 +95,11 @@ $apiHost = $_ENV['DB_HOST'] ;
         </div>
         <div id="last-week"> Last week </div>
         <div id="lastweek-container"></div>
-        <button id="syncBtn">
+        <button id="cashBtn">
             <div class="loader" id="loader"></div>
-            Synchronize account
+            Add cash transaction
         </button>
 
-        <div id="notification">Account has been syncronized!✅</div>
     </div>
 
     <footer class="footer">

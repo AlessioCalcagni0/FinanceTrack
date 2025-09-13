@@ -61,12 +61,11 @@
 }
 
 .title {
-    width: 140px;
+    width: 200px;
     font-size: 20px;
     font-weight: bold;
     color: #152C5C;
     margin: 0 auto;
-
 }
 
 
@@ -159,7 +158,7 @@
     font-size: 10px;
     position: absolute;
     top: 15%;
-    left: 18%;
+    left: 17%;
 }
 
 .income {
@@ -167,10 +166,15 @@
     font-size: 10px;
     position: absolute;
     top: 15%;
-    left: 60%;
+    left: 63%;
 }
 
-
+.amount{
+    background-color: #ff0000;
+    color: rgb(255 255 255);
+    border-radius: 7px;
+    padding: 6px;
+}
 
 .separator {
     width: 0.5px;
@@ -204,7 +208,7 @@
     transform: scale(30%);
     position: absolute;
     top: -25%;
-    left: 26%;
+    left: 24%;
 }
 
 #green-arrow {
@@ -212,21 +216,21 @@
     transform: scale(30%);
     position: absolute;
     top: -25%;
-    left: 72%;
+    left: 74%;
 }
 
 #income-sum {
-    font-size: 13px;
+    font-size: 14px;
     position: absolute;
     top: 45%;
-    left: 58%;
+    left: 66%;
 }
 
 #spent-sum {
-    font-size: 13px;
+    font-size: 14px;
     position: absolute;
     top: 45%;
-    left: 15%;
+    left: 18%;
 }
 
 #tot-balance {
@@ -318,7 +322,7 @@
 }
 
 
-#syncBtn {
+#cashBtn {
     width: 308px;
     height: 50px;
     background-color: #2a60ba;
@@ -387,3 +391,4 @@
     font-size: 20px;
     color: rgb(106, 106, 106);
 }
+

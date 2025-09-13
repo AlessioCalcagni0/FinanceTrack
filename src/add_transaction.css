@@ -7,6 +7,9 @@
 
 .footer {
     margin-left: 35px;
+    position: fixed;
+    bottom: 0px;
+    left: 0;
 }
 
 .main {
@@ -37,7 +40,9 @@
     color: #152C5C;
     display: flex;
     flex-direction: row;
-
+    margin: auto; 
+    margin-top: 10px;
+    margin-bottom: 20px;
 }
 
 #home {
@@ -105,7 +110,7 @@
     width: 400px;
     margin-top: 10px;
     margin-bottom: 10px;
-    background-color: #888888;
+    background-color: #000000;
     color: white;
     border-radius: 8px;
     border-width: 0px;
@@ -315,6 +320,7 @@
     content: url("images/Computer.png");
     filter: brightness(90%);
 }
+
 
 
 
