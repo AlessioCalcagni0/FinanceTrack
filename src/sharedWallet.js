@@ -478,9 +478,7 @@ async function loadWallets(userId) {
                 iconDiv.style.backgroundImage = `url('${w.path}')`;
                 iconDiv.style.backgroundSize = "cover";
                 iconDiv.style.backgroundPosition = "center";
-            } else if (w.color) {
-                iconDiv.style.background = w.color;
-            }
+            } 
 
             // Colonna info
             const info = document.createElement("div");
@@ -1104,8 +1102,6 @@ function appendWalletCard(w) {
         iconDiv.style.backgroundImage = `url('${w.path}')`;
         iconDiv.style.backgroundSize = "cover";
         iconDiv.style.backgroundPosition = "center";
-    } else if (w.color) {
-        iconDiv.style.background = w.color;
     }
 
     // Colonna info

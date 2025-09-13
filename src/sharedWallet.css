@@ -198,10 +198,7 @@ body {
     font-size: 10px;
 }
 
-/* Aggiunta: stile specifico per wallet */
-.wallet-box {
-    /* estende .account-box */
-}
+
 
 /* Icona generica + variante wallet usata in JS: class="icon wallet" */
 .icon {

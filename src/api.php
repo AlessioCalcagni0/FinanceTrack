@@ -449,7 +449,7 @@ if ($path === "api/goals") {
         exit;
     }
 
-    $sql = "SELECT id, title, deadline, saved_amount, saving_amount, created_at
+    $sql = "SELECT id, title, TO_CHAR(deadline, 'DD MM YYYY') as deadline, saved_amount, saving_amount, created_at
             FROM goals
             WHERE user_id = :user_id
             ORDER BY created_at DESC";

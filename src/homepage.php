@@ -17,6 +17,7 @@ $apiHost = $_ENV['DB_HOST'] ;
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css"/>
+    <script> const API_HOST = "<?php echo $apiHost; ?>";</script>
 
     <link rel="stylesheet" href="homepage.css">
     <script src="homepage.js"></script>
@@ -75,7 +76,6 @@ $apiHost = $_ENV['DB_HOST'] ;
          <div class="home-container">
             <div class="home active" onclick="openTab('goals', this)" id="goal">Goals</div>
             <div class="home" onclick="openTab('wallets', this)" id="wallet">Wallets</div>
-            <div class="home" onclick="openTab('friends', this)" id="friend">Friends</div>
         </div>
 
         <!-- Goals Content -->
@@ -86,114 +86,13 @@ $apiHost = $_ENV['DB_HOST'] ;
         </div>
 
         <!-- Wallets Content -->
-        <div id="wallets" class="home-content">
-            <div class="home-card">
-                <h3>Your Wallets</h3>
-                <p>Coming soon...</p>
+        <div id="wallets" class="home-content ">
+            <div id="wallets-root">
+                <p>Caricamento...</p>
             </div>
         </div>
 
-        <!-- Friends Content -->
-        <div id="friends" class="home-content">
-            <div class="home-card">
-                <h3>Current Friends</h3>
-                    <section>
-                        <div class="custom-prev-button">
-                            <svg width="20" height="20" viewBox="0 0 83 83" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                <rect width="83" height="83" transform="matrix(-1 0 0 1 83 0)" fill="url(#pattern0_423_272)"/>
-                                <defs>
-                                <pattern id="pattern0_423_272" patternContentUnits="objectBoundingBox" width="1" height="1">
-                                <use xlink:href="#image0_423_272" transform="scale(0.01)"/>
-                                </pattern>
-                                <image id="image0_423_272" width="100" height="100" preserveAspectRatio="none" xlink:href="data:image/png;base64,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"/>
-                                </defs>
-                            </svg>
-                        </div>
-                            
-                        <div class="swiper mySwiper container">
-                        <div class="swiper-wrapper content">
-
-                            <div class="swiper-slide card">
-                            <div class="card-content">
-                                <div class="image">
-                                <img src="/images/icons8-profile-24.png" alt="">
-                                </div>
-
-                                <div class="name-profession">
-                                <span class="name">Ally Pearson</span>
-                                <span class="profession">Web Developer</span>
-                                </div>
-
-                            
-
-                                <div class="button">
-                                <button class="aboutMe">Shared Wallet</button>
-                                </div>
-                            </div>
-                            </div>
-                            <div class="swiper-slide card">
-                            <div class="card-content">
-                                <div class="image">
-                                <img src="/images/icons8-profile-24.png" alt="">
-                                </div>
-
-                                
-
-                                <div class="name-profession">
-                                <span class="name">Dominic Wells</span>
-                                <span class="profession">Software Engineer</span>
-                                </div>
-
-                                
-
-                                <div class="button">
-                                <button class="aboutMe">About Me</button>
-                                </div>
-                            </div>
-                            </div>
-                            <div class="swiper-slide card">
-                            <div class="card-content">
-                                <div class="image">
-                                <img src="/images/icons8-profile-24.png" alt="">
-                                </div>
-                            
-                                <div class="name-profession">
-                                <span class="name">Kylie Smith</span>
-                                <span class="profession">UX/UI Desinger</span>
-                                </div>
-                            
-                                <div class="button">
-                                <button class="aboutMe">About Me</button>
-                                
-                                </div>
-                            </div>
-                            </div>
-                            
-                            
-
-                        </div>
-                        </div>
-
-                            
-                        <div class="custom-next-button">  
-                                <svg width="20" height="20" viewBox="0 0 83 83" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                <rect width="83" height="83" fill="url(#pattern0_423_272)"/>
-                                <defs>
-                                <pattern id="pattern0_423_272" patternContentUnits="objectBoundingBox" width="1" height="1">
-                                <use xlink:href="#image0_423_272" transform="scale(0.01)"/>
-                                </pattern>
-                                <image id="image0_423_272" width="100" height="100" preserveAspectRatio="none" xlink:href="data:image/png;base64,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"/>
-                                </defs>
-                                </svg>
-                        </div>
-                        <div class="swiper-pagination"></div>
-                    </section>
-
-                <button >Invite a firend</button>
-            </div>
-                
-        </div>
-
+       
         <button class="btn-trans" onclick="openTransaction()">Add Transaction</button>
 
  
