@@ -2,71 +2,138 @@ function goToSW() {
   showPopup("", "return");
 }
 
-// --- Popup function ---
-function showPopup(messages, type) {
-  let popup = document.getElementById("popup");
-  if (!popup) {
-    popup = document.createElement("div");
-    popup.id = "popup";
-    document.body.appendChild(popup);
+
+  function showPopup(message) {
+    // Overlay
+    const overlay = document.createElement("div");
+    Object.assign(overlay.style, {
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      backgroundColor: "rgba(0,0,0,0.5)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: "9999"
+    });
+
+    // Box popup
+    const popup = document.createElement("div");
+    Object.assign(popup.style, {
+      backgroundColor: "#ffffffff",
+      color: "black",
+      padding: "20px",
+      borderRadius: "10px",
+      maxWidth: "400px",
+      width: "90%",
+      maxHeight: "70%",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      overflowY: "auto",
+      boxSizing: "border-box",
+      textAlign: "center"
+    });
+
+    // Messaggio
+    const msg = document.createElement("p");
+    msg.textContent = message;
+    Object.assign(msg.style, {
+      marginBottom: "15px",
+      textAlign: "center",
+      fontSize: "16px"
+    });
+    popup.appendChild(msg);
+    
+    // Bottone OK
+    const btn = document.createElement("button");
+    btn.textContent = "OK";
+    Object.assign(btn.style, {
+      backgroundColor: "#07e90e",
+      border: "none",
+      padding: "8px 16px",
+      marginTop: "15px",
+      cursor: "pointer",
+      borderRadius: "5px",
+      alignSelf: "center"
+    });
+    btn.addEventListener("click", () => document.body.removeChild(overlay));
+
+    popup.appendChild(btn);
+    overlay.appendChild(popup);
+    document.body.appendChild(overlay);
+    
+    }
+
+
+
+function showCancelPopup(value) {
+
+    let overlay = document.getElementById("overlay-cancel");
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = "overlay-cancel";
+      overlay.className = "overlay";
+      overlay.style.zIndex = "90";
+      document.body.appendChild(overlay);
+    }
+
+    const popup = document.getElementById("popup-cancel");
+    if (!popup) return;
+
+    if (!popup.dataset.initHidden) {
+      popup.style.display = "none";
+      popup.dataset.initHidden = "1";
+    }
+
+    const keepBtn = document.getElementById("keep");
+    const loseBtn = document.getElementById("lose");
+
+    const closeAll = () => {
+      overlay.classList.remove("overlayactive");
+      popup.style.display = "none";
+    };
+
+    const clearAllFieldsAndClose = () => {
+       document.getElementById("walletForm").reset();
+      const h4_edit = document.getElementById("h4_edit");
+      const h4_contact = document.getElementById("h4_contact");
+      const walletEdit = document.getElementById("walletEdit");
+      const participantsSection = document.getElementById("participantsSection");
+      const h3_partecipants = document.getElementById("selectPartecipants");
+      const h3_edit = document.getElementById("edit");
+      const h3_role = document.getElementById("selectRole");
+      const rolesSection = document.getElementById("rolesSection");
+      const rolesSectionC = document.getElementById("rolesSectionC");
+      const cancel = document.getElementById("cancel");
+      const confirm = document.getElementById("confirm");
+
+      walletEdit.classList.add("hiddenName");
+      participantsSection.style.display="none";      participantsSection.classList.add("hiddenName");
+      h3_edit.classList.add("hiddenName");
+      h3_partecipants.style.display="none";
+      h3_partecipants.classList.add("hiddenName");
+      h4_edit.classList.remove("hiddenName");
+      rolesSection.classList.add("hiddenContact");
+      h3_role.classList.add("hiddenName");
+      cancel.classList.add("hiddenContact");
+      confirm.classList.add("hiddenContact");
+      h4_contact.classList.remove("hiddenName");
+      h4_contact.classList.add("hiddenName");
+      rolesSectionC.classList.add("hiddenName");
+      if(value) window.location.href="/sharedWallet.php";
+      overlay.classList.remove("overlayactive");
+      popup.style.display="none";
+    };
+
+    if (keepBtn) keepBtn.addEventListener("click", closeAll, { once: true });
+    if (loseBtn) loseBtn.addEventListener("click", clearAllFieldsAndClose, { once: true });
+
+    overlay.classList.add("overlayactive");
+    popup.style.display = "block";
   }
-  if (type == "reset") {
-    popup.innerHTML = " <span class='close-btn' onclick='hidePopup()'> <img src='./images/icons8-exit-button-50.png'> </span>" +
-      "<h3>Cancel form?</h3> <h4>All your data will be lost</h4> <button id='popupOk'>Keep editing</button><button  id='popupReset' >Lose changes</button>";
-  }
-  else if (type == "warning") {
-    popup.innerHTML = " <span class='close-btn' onclick='hidePopup()'> <img src='./images/icons8-exit-button-50.png'> </span>" +
-      "<h3>Warining!</h3> <h4>Incorrect field</h4> <ul>" + messages.map(m => `<li>${m}</li>`).join("") + "</ul> <button id='popupOk'>OK</button>";
-  }
-  if (type == "return") {
-    popup.innerHTML = " <span class='close-btn' onclick='hidePopup()'> <img src='./images/icons8-exit-button-50.png'> </span>" +
-      "<h3>Exit form?</h3> <h4>All your data will be lost</h4> <button id='popupOk'>Keep editing</button><button id='popupReset' >Lose changes</button>";
-  }
-
-  popup.style.display = "block";
-  popup.classList.add("popup-error");
-
-  const resetBtn = document.getElementById("popupReset");
-  if (resetBtn) resetBtn.onclick = () => {
-    document.getElementById("walletForm").reset();
-    const h4_edit = document.getElementById("h4_edit");
-    const h4_contact = document.getElementById("h4_contact");
-    const walletEdit = document.getElementById("walletEdit");
-    const participantsSection = document.getElementById("participantsSection");
-    const h3_partecipants = document.getElementById("selectPartecipants");
-    const h3_edit = document.getElementById("edit");
-    const h3_role = document.getElementById("selectRole");
-    const rolesSection = document.getElementById("rolesSection");
-    const rolesSectionC = document.getElementById("rolesSectionC");
-    const cancel = document.getElementById("cancel");
-    const confirm = document.getElementById("confirm");
-
-    walletEdit.classList.add("hiddenName");
-    participantsSection.classList.add("hiddenName");
-    h3_edit.classList.add("hiddenName");
-    h3_partecipants.classList.add("hiddenName");
-    h4_edit.classList.remove("hiddenName");
-    rolesSection.classList.add("hiddenContact");
-    h3_role.classList.add("hiddenContact");
-    cancel.classList.add("hiddenContact");
-    confirm.classList.add("hiddenContact");
-    h4_contact.classList.remove("hiddenName");
-    h4_contact.classList.add("hiddenName");
-    rolesSectionC.classList.add("hiddenName");
-
-    hidePopup();
-    if (type == "return") window.location.href = "./sharedWallet.php";
-  };
-  document.getElementById("popupOk").onclick = () => hidePopup();
-}
-
-function hidePopup() {
-  const popup = document.getElementById("popup");
-  if (popup) {
-    popup.style.display = "none";
-  }
-}
-
 
 
 
@@ -94,22 +161,22 @@ document.addEventListener("DOMContentLoaded", () => {
         walletName.classList.remove("error");
         h3_edit.classList.remove("hiddenName");
         walletEdit.classList.remove("hiddenName");
+        h3_partecipants.style.display="flex";
         h3_partecipants.classList.remove("hiddenName");
-        
+        participantsSection.style.display="flex";
         participantsSection.classList.remove("hiddenName");
         rolesSectionC.classList.remove("hiddenName");
-
+        h3_role.classList.remove("hiddenName");
         h4_edit.classList.add("hiddenName");
         h4_contact.classList.remove("hiddenName");
 
       const input = participantsSection.querySelectorAll("input[name='participants[]']");
 
       input.forEach(participant => {
-        participant.addEventListener("focusout", () => {
+        participant.addEventListener("input", () => {
 
           if (participant.value.trim().length > 0 && validateEmail(participant.value.trim())) {
             participant.classList.remove("error");
-            h3_role.classList.remove("hiddenContact");
             rolesSection.classList.remove("hiddenContact");
             cancel.classList.remove("hiddenContact");
             confirm.classList.remove("hiddenContact");
@@ -117,34 +184,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
           } else {
-            participant.classList.add("error");
-            const errors = [];
-            errors.push("The participants' email field is incorrect please make sure to insert a correct email.")
-            showPopup(errors, "warning");
+            
             rolesSection.classList.add("hiddenContact");
-            h3_role.classList.add("hiddenContact");
             cancel.classList.add("hiddenContact");
             confirm.classList.add("hiddenContact");
             h4_contact.classList.remove("hiddenName");
           }
         });
+        participant.addEventListener("focusout", ()=>{
+          if (! validateEmail(participant.value.trim())) {
+            participant.classList.add("error");
+            const errors=("The participants' email field is incorrect please make sure to insert a correct email.")
+            showPopup(errors);
+          }
+        })
       });
 
     } else {
-
-      walletName.classList.add("error");
-      errors = [];
-      errors.push("The wallet name must be at least 3 characters long.");
-      showPopup(errors, "warning");
-      walletEdit.classList.add("hiddenName");
+      participantsSection.style.display="none";
       participantsSection.classList.add("hiddenName");
+      walletEdit.classList.add("hiddenName");
       h3_edit.classList.add("hiddenName");
+      h3_role.classList.add("hiddenName");
+      h3_partecipants.style.display="none";
       h3_partecipants.classList.add("hiddenName");
       h4_edit.classList.remove("hiddenName");
       h4_contact.classList.add("hiddenName");
       rolesSectionC.classList.add("hiddenName");
 
     }
+  });
+
+  walletName.addEventListener("focusout",()=>{
+    if(walletName.value.trim().length < 3){
+      participantsSection.classList.add("hiddenName");
+      walletName.classList.add("error");
+      const errors="The wallet name must be at least 3 characters long.";
+      showPopup(errors);
+    }
+    else{
+        walletName.classList.remove("error");
+
+    }
+     
   });
   
   
@@ -159,8 +241,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const cancelBtn = document.getElementById("cancel");
   if (cancelBtn) {
     cancelBtn.addEventListener("click", (e) => {
-      e.preventDefault(); // evita reset immediato del form
-      showPopup([], "reset");
+      showCancelPopup();
     });
   }
 });
@@ -180,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let allFilled = true;
 
     inputs.forEach(input => {
-      if (input.value.trim() === "") {
+      if ( !validateEmail(input.value)) {
         allFilled = false;
       }
     });
@@ -194,10 +275,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --- Rimozione partecipante ---
-  function attachRemoveListener(bin) {
+  function attachRemoveListener(bin, label, select) {
     bin.addEventListener("click", () => {
       const parentDiv = bin.parentElement;
       parentDiv.remove();
+      document.getElementById(label).remove();
+      document.getElementById(select).remove();
       x--;
       if (x < 3) {
         document.getElementById("button-container").style.display = "flex";
@@ -210,11 +293,13 @@ document.addEventListener("DOMContentLoaded", () => {
   addParticipantBtn.addEventListener("click", () => {
     if (x < 3) {
       const div = document.createElement("div");
+      const label = document.createElement("label");
       const input = document.createElement("input");
       const bin = document.createElement("img");
-
+      let y= x+2;
       div.className = "input-partecipant";
-
+      label.style.marginTop="5px";
+      label.innerHTML= "Partecipant "+ y +" ";
       input.type = "text";
       input.name = "participants[]";
       input.placeholder = "Add participant email";
@@ -222,19 +307,46 @@ document.addEventListener("DOMContentLoaded", () => {
       bin.className = "red_bin";
       bin.src = "../images/Red_bin.png";
 
-      div.appendChild(input);
+      label.appendChild(input);
+      div.appendChild(label);
       div.appendChild(bin);
 
       participantsSection.insertBefore(div, document.getElementById("button-container"));
 
-      attachInputListeners(input);
-      attachRemoveListener(bin);
+      
+      
+      const container=document.getElementById("rolesSection")
+      const label1=document.createElement("label");
+      const select= document.createElement("select");
+      const option1 = document.createElement("option");
+      const option2 = document.createElement("option");
+
+      label1.innerHTML= "Partecipant "+ y ;
+      label1.id="label"+y;
+      select.className="role";
+      select.id="select"+y;
+      option1.value="editor";
+      option1.innerHTML="Editor";
+      option2.value="viewer";
+      option2.innerHTML="Viewer";
+
+      select.appendChild(option1);
+      select.appendChild(option2);
+      
+
+      container.appendChild(label1);
+     container.appendChild(select);
+
 
       x++;
       checkInputs();
+
+      attachInputListeners(input);
+      attachRemoveListener(bin, label1.id, select.id);
+
     }
 
-    if (x === 3) {
+    if (x === 2) {
       document.getElementById("button-container").style.display = "none";
     }
   });
@@ -246,7 +358,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   checkInputs();
 
-
+  
 
   // --- Validation on submit ---
   form.addEventListener("submit", (e) => {
@@ -285,7 +397,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (errors.length > 0) {
       e.preventDefault();
-      showPopup(errors, "warning");
+      showPopup(errors);
     }
     else {
       hidePopup();

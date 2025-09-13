@@ -92,7 +92,8 @@ $apiHost = $_ENV['DB_HOST'] ;
             </div>
         </div>
 
-
+     <div id="swOverlay"></div>
+        <div id="swEditPopup"></div>
 
     </main>
                           <button class="btn-trans" onclick="openTransaction()">Add Transaction</button>

@@ -630,8 +630,7 @@ if ($path === "save_sw_changes") {
         $sel = $pdo->prepare("
             SELECT
               partecipant_name_surname1, partecipant_name_surname2, partecipant_name_surname3,
-              participant_role1, participant_role2, participant_role3,
-              participant_permissions1, participant_permissions2, participant_permissions3
+              participant_role1, participant_role2, participant_role3
             FROM shared_wallets
             WHERE id = :id
             FOR UPDATE
@@ -645,29 +644,8 @@ if ($path === "save_sw_changes") {
             $row["partecipant_name_surname2"],
             $row["partecipant_name_surname3"],
         ];
-        $oldPerms = [
-            $row["participant_permissions1"] ?? '',
-            $row["participant_permissions2"] ?? '',
-            $row["participant_permissions3"] ?? '',
-        ];
-
-        // calcola i permessi nuovi per slot 1..3:
-        // se il nome esisteva prima, riusa i suoi permessi; altrimenti stringa vuota '' (NOT NULL safe)
-        $newPerms = ['', '', ''];
-        for ($i=0; $i<3; $i++) {
-            $name = $participants[$i]["name"];
-            if ($name !== null) {
-                $matchIndex = null;
-                for ($j=0; $j<3; $j++) {
-                    if ($oldNames[$j] !== null && trim($oldNames[$j]) === $name) {
-                        $matchIndex = $j; break;
-                    }
-                }
-                $newPerms[$i] = $matchIndex !== null ? ($oldPerms[$matchIndex] ?? '') : '';
-            } else {
-                $newPerms[$i] = ''; // colonne NOT NULL
-            }
-        }
+        
+        
 
         $sql = "
             UPDATE shared_wallets
@@ -679,9 +657,7 @@ if ($path === "save_sw_changes") {
                 participant_role1 = :r1,
                 participant_role2 = :r2,
                 participant_role3 = :r3,
-                participant_permissions1 = :p1,
-                participant_permissions2 = :p2,
-                participant_permissions3 = :p3
+                
             WHERE id = :id
         ";
         $stmt = $pdo->prepare($sql);
@@ -689,7 +665,6 @@ if ($path === "save_sw_changes") {
             "num" => $num,
             "n1" => $participants[0]["name"], "n2" => $participants[1]["name"], "n3" => $participants[2]["name"],
             "r1" => $participants[0]["role"], "r2" => $participants[1]["role"], "r3" => $participants[2]["role"],
-            "p1" => $newPerms[0], "p2" => $newPerms[1], "p3" => $newPerms[2],
             "id" => $walletId
         ]);
 
@@ -697,49 +672,6 @@ if ($path === "save_sw_changes") {
         echo json_encode(["success" => true]);
     } catch (PDOException $e) {
         if ($pdo->inTransaction()) $pdo->rollBack();
-        http_response_code(500);
-        echo json_encode(["error" => $e->getMessage()]);
-    }
-    exit;
-}
-
-if ($path === "friends") {
-    header('Content-Type: application/json; charset=utf-8');
-
-    $user = (int)($_GET["user"] ?? 0);
-    if ($user <= 0) {
-        http_response_code(400);
-        echo json_encode(["error" => "Missing/invalid user"]);
-        exit;
-    }
-
-    try {
-        // Verifica che la tabella esista (evita 500 inspiegabili)
-        $chk = $pdo->query("
-            SELECT to_regclass('public.friendship') AS exists_rel
-        ")->fetch(PDO::FETCH_ASSOC);
-        if (!$chk || !$chk['exists_rel']) {
-            http_response_code(500);
-            echo json_encode(["error" => "Table 'friendship' does not exist"]);
-            exit;
-        }
-
-        $sql = "
-            SELECT 
-                id,
-                friend_id,
-                friend_name
-            FROM friendship
-            WHERE user_id = :user
-            ORDER BY friend_name ASC
-        ";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute(['user' => $user]);
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode($rows ?: []);
-    } catch (PDOException $e) {
-        // Log server-side se hai un file di log
-        error_log('[friends API] ' . $e->getMessage());
         http_response_code(500);
         echo json_encode(["error" => $e->getMessage()]);
     }

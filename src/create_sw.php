@@ -23,7 +23,7 @@ $apiHost = $_ENV['DB_HOST'] ;
 
         <div class="container">
 
-            <button class="back-btn" onclick="showPopup('', 'return');">
+            <button class="back-btn" onclick="showCancelPopup('true');">
                 <img src="./images/icons8-back-arrow-100.png" alt="">
                 <div class="title"> Create a Shared Wallet </div>
             </button>
@@ -31,22 +31,21 @@ $apiHost = $_ENV['DB_HOST'] ;
 
                 <!-- Wallet Name -->
                  <div style="display: flex; flex-direction:row">
-                    <h3>Insert a name</h3>
-                    <img src="./images/icons8-info-squared-96.png" class="info-btn" data-info="Enter your real name here">
-                
+                    <h3>Insert a name</h3> 
+                    <button id="tutorialBtn" class="help-btn" style="display: block;">?</button>                
                  </div>
                  
                 <div class="section section-blue" style="margin-top: 7px;">
-                    <input type="text" name="walletName" placeholder="e.g. Wallet Name" id="walletName"required>
+                    <input type="text" name="walletName" placeholder="e.g. Wallet Name" id="walletName"required> 
                 </div>
                 
                 
                 <h3 class="hiddenName" id="edit">Edit the wallet</h3>
                 <!-- Edit Wallet (hiddenName until walletName filled) -->
                 <div class="section section-purple " >
-                    <h4 class="showName" id="h4_edit">Choose a name for the shared wallet to proceed</h4>
+                    <h4  style="text-align:center; color:white;" class="showName" id="h4_edit">Choose a name for the shared wallet to proceed</h4>
                     <div class="hiddenName" id="walletEdit">
-                        <label >Choose an icon:</label>
+                        <label >Choose an icon (optional)</label>
                         <div class="icon-grid" >
                             <label class="icon-option">
                                 <input type="radio" name="icon" value="sw1.png" required>
@@ -69,47 +68,20 @@ $apiHost = $_ENV['DB_HOST'] ;
                                 <img src="./images/sw5.png" alt="icon3">
                             </label>
                         </div>
-
-                        <label>Select a color:</label>
-                        <div class="color-grid" >
-                            <label class="color-option">
-                                <input type="radio" name="color" value="white" required>
-                                <img src="./images/white50.png" alt="icon1">
-                            </label>
-                            <label class="color-option">
-                                <input type="radio" name="color" value="purple">
-                                <img src="./images/purple50.png" alt="icon2">
-                            </label>
-                            <label class="color-option">
-                                <input type="radio" name="color" value="blue">
-                                <img src="./images/blue100.png" alt="icon3">
-                            </label>
-                            <label class="color-option">
-                                <input type="radio" name="color" value="green">
-                                <img src="./images/green100.png" alt="icon3">
-                            </label>
-                            <label class="color-option">
-                                <input type="radio" name="color" value="yellow">
-                                <img src="./images/yellow.png" alt="icon3">
-                            </label>
-                            <label class="color-option">
-                                <input type="radio" name="color" value="red">
-                                <img src="./images/red.png" alt="icon3">
-                            </label>
-                            <label class="color-option">
-                                <input type="radio" name="color" value="black">
-                                <img src="./images/black.png" alt="icon3">
-                            </label>
-                        </div>
+                        
                     </div>
                 </div>
 
+                <div class="hiddenName"  id="selectPartecipants" style=" flex-direction:row">
+                    <h3 >Select participants</h3>
+                    <button id="tutorialBtn" class="help-btn" style="display: block;">?</button>                
+                </div>
                 
-                <h3 class="hiddenName" id="selectPartecipants">Select participants</h3>
                 <!-- Participants (hiddenName) -->
                 <div class="section section-green hiddenName" id="participantsSection">
                     <div id="input-partecipant">
-                        <input type="text" name="participants[]" placeholder="Add participant email">
+                        <label for="">Participant 1
+                        <input type="text" name="participants[]" placeholder="Add participant email"> </label>
                         </div>
                         <div class="button-container" id="button-container"> 
                         <button class="button" type="button" id="addParticipant">+ Add participant</button>
@@ -118,24 +90,18 @@ $apiHost = $_ENV['DB_HOST'] ;
 
 
                
-                <h3 class="hiddenContact"  id="selectRole">Select role and permissions</h3>
+                <h3 class="hiddenName"  id="selectRole">Select role </h3>
                 <!-- Roles and Permissions (hiddenName) -->
                 <div class="section section-yellow hiddenName" id="rolesSectionC" >
-                    <h4 class="showName hiddenName" id="h4_contact">Select at least a participant to proceed</h4>
+                    <h4 class="showName hiddenName" style="text-align:center;color:white" id="h4_contact">Select at least a participant to proceed</h4>
                     <div class="hiddenContact " id="rolesSection">
-                        <label>Select Role:</label>
-                        <select name="role">
-                            <option value="admin">Admin</option>
+                        <label>Partecipant 1</label>
+                        <select name="role" class="role">
                             <option value="editor">Editor</option>
                             <option value="viewer">Viewer</option>
                         </select>
 
-                        <label>Select Permissions:</label>
-                        <div>
-                            <label><input type="checkbox" name="permissions[]" value="add"> Add</label>
-                            <label><input type="checkbox" name="permissions[]" value="edit"> Edit</label>
-                            <label><input type="checkbox" name="permissions[]" value="delete"> Delete</label>
-                        </div>
+                        
                     </div>
                 </div>
 
@@ -145,6 +111,13 @@ $apiHost = $_ENV['DB_HOST'] ;
                     <button type="submit" class="btn-confirm hiddenContact" id="confirm">Confirm</button>
                 </div>
             </form>
+
+    <div id="overlay-cancel" class="overlay " style="z-index: 90;"></div> 
+    <div class="popup-cancel" id="popup-cancel">
+        <h1>Are you sure to cancel the operation?</h1>
+        <button class="confirm" id="keep" >Keep data</button>
+        <button class="cancel"  id="lose" >Lose changes</button>
+    </div> 
         </div>
     </body>
 </html>

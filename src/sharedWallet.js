@@ -1,24 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-
-    const burger = document.getElementById("burger");
-    const menu = document.getElementById("menu-content");
-    const overlay = document.getElementById("overlay");
-    const backArrow = document.getElementById("back-arrow");
-
-    function openMenu() {
-        menu.classList.add("open");
-        overlay.style.opacity = "1";
-    }
-
-    function closeMenu() {
-        menu.classList.remove("open");
-        overlay.style.opacity = "0";
-    }
-
-    burger.addEventListener("click", openMenu);
-    backArrow.addEventListener("click", closeMenu);
-    overlay.addEventListener("click", closeMenu);
-
     const openButton = document.getElementById("createSwBtn");
 
     openButton.addEventListener("click", () => {
@@ -55,75 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    (function () {
-        const root = document.querySelector('#friends .friends-carousel');
-        if (!root) return;
-
-        const track = root.querySelector('.fc-track');
-        const prev = root.querySelector('.fc-prev');
-        const next = root.querySelector('.fc-next');
-        const dotsWrap = document.querySelector('#friends .fc-dots');
-
-        let index = 0;
-
-        const cards = () => Array.from(track.children);
-
-        function buildDots() {
-            dotsWrap.innerHTML = '';
-            cards().forEach((_, i) => {
-                const d = document.createElement('div');
-                d.className = 'fc-dot' + (i === index ? ' is-active' : '');
-                d.role = 'button';
-                d.tabIndex = 0;
-                d.addEventListener('click', () => go(i));
-                d.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') go(i); });
-                dotsWrap.appendChild(d);
-            });
-        }
-
-        function update() {
-            const n = cards().length;
-            if (n === 0) {
-                track.style.transform = 'translateX(0)';
-                prev.disabled = true; next.disabled = true;
-                dotsWrap.innerHTML = '';
-                return;
-            }
-            index = (index + n) % n;
-            track.style.transform = `translateX(${-index * 100}%)`;
-            dotsWrap.querySelectorAll('.fc-dot').forEach((el, i) =>
-                el.classList.toggle('is-active', i === index)
-            );
-            const disable = n <= 1;
-            prev.disabled = disable; next.disabled = disable;
-        }
-
-        function go(i) { index = (i + cards().length) % Math.max(cards().length, 1); update(); }
-
-        prev.addEventListener('click', () => go(index - 1));
-        next.addEventListener('click', () => go(index + 1));
-
-        // Swipe mobile
-        let startX = null;
-        root.addEventListener('touchstart', e => startX = e.touches[0].clientX, { passive: true });
-        root.addEventListener('touchend', e => {
-            if (startX == null) return;
-            const dx = e.changedTouches[0].clientX - startX;
-            if (Math.abs(dx) > 30) go(index + (dx < 0 ? 1 : -1));
-            startX = null;
-        }, { passive: true });
-
-        // Ricostruisce quando i dati sono pronti
-        document.querySelector('#friends')?.addEventListener('friends:loaded', (e) => {
-            index = 0;
-            buildDots();
-            update();
-        });
-
-        // Prima init (se ci sono già card in HTML)
-        buildDots(); update();
-    })();
-
+  
 
 
 
@@ -412,7 +324,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     loadWallets(1);
-    loadFriends(1);
     loadInvitations(1);
 });
 
@@ -456,10 +367,6 @@ async function loadWallets(userId) {
         const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        /** @type {Array<{
-         *  id:number, name:string, balance:number, path?:string, color?:string,
-         *  partecipant_num?:number, last_sync?:string
-         * }>} */
         const wallets = await res.json();
 
         frame.innerHTML = "";
@@ -891,58 +798,6 @@ function showBottomToast(message, variant = 'success') {
     showBottomToast._t = setTimeout(() => toast.classList.remove('show'), 2200);
 }
 
-async function loadFriends(userId) {
-    const uid = userId ?? (typeof CURRENT_USER_ID !== "undefined" ? CURRENT_USER_ID : null);
-    if (!uid) { console.error("loadFriends: userId mancante"); return; }
-
-    const root = document.querySelector('#friends');
-    if (!root) return;
-
-    const track = root.querySelector('.fc-track');
-    const dotsWrap = root.querySelector('.fc-dots');
-    if (!track || !dotsWrap) return;
-
-    try {
-        const url = `http://${API_HOST}:8000/api.php?path=friends&user=${encodeURIComponent(uid)}`;
-        const res = await fetch(url);
-
-        if (!res.ok) {
-            let errText = '';
-            try { errText = await res.text(); } catch { }
-            console.error('friends API error payload:', errText);
-            throw new Error(`HTTP ${res.status}`);
-        }
-
-        /** @type {Array<{id:number, friend_id:number, friend_name:string}>} */
-        const friends = await res.json();
-
-        track.innerHTML = "";
-        dotsWrap.innerHTML = "";
-
-        if (!friends.length) {
-            const empty = document.createElement('div');
-            empty.className = 'iv-empty';
-            empty.textContent = 'No friends yet';
-            dotsWrap.insertAdjacentElement('afterend', empty);
-            root.dispatchEvent(new CustomEvent('friends:loaded', { detail: { count: 0 } }));
-            return;
-        }
-
-        friends.forEach(f => {
-            const card = document.createElement('div');
-            card.className = 'friend-card';
-            card.innerHTML = `
-        <div class="fc-avatar"><img src="/images/icons8-profile-24.png" alt=""></div>
-        <div class="fc-name"></div>`;
-            card.querySelector('.fc-name').textContent = f.friend_name;
-            track.appendChild(card);
-        });
-
-        root.dispatchEvent(new CustomEvent('friends:loaded', { detail: { count: friends.length } }));
-    } catch (e) {
-        console.error("Errore loadFriends:", e);
-    }
-}
 
 async function loadInvitations(userId) {
     const uid = userId ?? (typeof CURRENT_USER_ID !== "undefined" ? CURRENT_USER_ID : null);
@@ -1139,7 +994,7 @@ function appendWalletCard(w) {
 
     const metaDiv = document.createElement("div");
     metaDiv.className = "account-type";
-    metaDiv.textContent = `Partecipanti: ${participantsCount}`;
+    metaDiv.textContent = `Partecipants: ${participantsCount}`;
 
     // Ruolo
     const roleDiv = document.createElement("div");
@@ -1200,4 +1055,53 @@ function buildSharedPageUrl({ name, participants, role, balance }) {
         balance: normBalance
     });
     return `/shared_page.php?${params.toString()}`;
+}
+
+
+function redirect(location) {
+  window.location.href = location;
+}
+
+
+
+function openMenu() {
+  document.getElementById("image1_303_309").classList.add("hide-menu");
+  document.getElementById("hh").classList.add("hide-menu");
+  document.getElementById("hhs").classList.add("hide-menu");
+  document.getElementById("ww").classList.add("hide-menu");
+  document.getElementsByClassName("back-arrow")[0].classList.add("show-menu");
+
+  document.getElementById("menu-content").classList.toggle("show-menu");
+
+
+}
+
+window.onclick = function (event) {
+  if (!event.target.matches('#menu') && !event.target.matches("menu-content")) {
+    document.getElementById("image1_303_309").classList.remove("hide-menu");
+    document.getElementById("hh").classList.remove("hide-menu");
+    document.getElementById("hhs").classList.remove("hide-menu");
+    document.getElementById("ww").classList.remove("hide-menu");
+
+    document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
+
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show-menu')) {
+        openDropdown.classList.remove('show-menu');
+      }
+    }
+  }
+}
+
+function closeMenu() {
+  document.getElementById("image1_303_309").classList.remove("hide-menu");
+  document.getElementById("hh").classList.remove("hide-menu");
+  document.getElementById("hhs").classList.remove("hide-menu");
+  document.getElementById("ww").classList.remove("hide-menu");
+  document.getElementById("menu-content").classList.remove("show-menu");
+  document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
+
 }

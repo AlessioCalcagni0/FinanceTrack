@@ -4,6 +4,7 @@
     font-family: 'Inter', sans-serif;
 }
 
+html,
 body {
     height: 800px;
     overflow: hidden;
@@ -15,13 +16,29 @@ body {
     flex-direction: column;
 }
 
+.footer {
+    background-color: #fff;
+    color: #000;
+    text-align: center;
+    padding: 1rem;
+    width: 105%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+    z-index: 0;
+}
 
-
-
+.footer-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 .main {
     flex: 1;
     padding-bottom: 80px;
+    height: 579px;
     overflow-y: scroll;
     margin: 0px 0px;
 }
@@ -39,7 +56,7 @@ body {
 }
 
 .main::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(0, 0, 0, 0.2);
     border-radius: 3px;
 }
 
@@ -51,9 +68,9 @@ body {
 
 .title {
     width: 205px;
-    font-size: 20px;
+    font-size: 23px;
     font-weight: bold;
-    color: #152C5C;
+    color: #2A60BA;
     margin: 0 auto;
     margin-left: 160px;
 }
@@ -79,6 +96,7 @@ body {
   background-color: #0B4E92;
   width: 200px;
   height: 970px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   transform: translateX(-100%);   /* nascosto fuori schermo */
   transition: transform 0.3s ease;
   z-index: 2;
@@ -197,20 +215,20 @@ body {
   max-height: 160px;            /* altezza visibile */
   overflow-y: auto;             /* scroll verticale */
   padding: 6px;    
-  width: 300px;       /* spazio per scrollbar */
+  width: 175px;     /* spazio per scrollbar */
   margin: 0 auto;
-  border: #152C5C 2px solid;
+  border: #000000 2px solid;
   border-radius: 10px;
 }
 
 /* Blocchi account (full-width del container) */
 .account-item{
   width: 100%;
+  height: 65px;
   display: flex;
   align-items: center;
-  justify-content: space-between;  /* nome a sx, balance/chevron a dx (se vuoi) */
   padding: 14px 16px;
-  background: #152C5C;             /* blu */
+  background: #2A60BA;         /* blu */
   color: #fff;                      /* nome bianco */
   border: 2px solid transparent;    /* bordo che diventa verde quando selected */
   border-radius: 12px;
@@ -230,8 +248,7 @@ body {
 
 /* Stato selezionato = bordo verde pieno */
 .account-item.selected{
-  border-color: #22c55e;           /* verde */
-  box-shadow: 0 0 0 2px rgba(34,197,94,.2) inset;
+  background-color: blueviolet;
 }
 
 /* Tipografia interna */
@@ -242,6 +259,7 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+      margin: 0 auto;
 }
 
 .account-meta{
@@ -266,4 +284,22 @@ body {
   font-size: 12px;
   color: #666;
   text-align: center;
+}
+
+.icon-account{
+    width: 40px;
+    background: white;
+    border-radius: 50%;
+    padding: 2px
+}
+
+#topbar {
+    height: 3px;
+    background: linear-gradient(135deg, #2575fc, #6a11cb);
+
+}
+
+#bottombar{
+    height: 3px;
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
 }
