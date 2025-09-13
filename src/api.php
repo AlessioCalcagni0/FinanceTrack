@@ -469,7 +469,7 @@ if ($path === "api/goals") {
 
 if ($path === "api/accounts") {
     try {
-        $sql = "SELECT id, name FROM account ORDER BY name";
+        $sql = "SELECT id, name, path FROM account ORDER BY name";
         $stmt = $pdo->prepare($sql);
         $stmt->execute();
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
