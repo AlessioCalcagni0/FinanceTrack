@@ -64,7 +64,7 @@ $apiHost = $_ENV['DB_HOST'] ;
                 </defs>
             </svg>    
              <!--PROFILE ICON-->
-            <img id="profile" src="/images/icons8-profile-24.png" alt="profile missing">
+            <img id="profile" src=""  alt="profile missing">
         </div>
 
     </div>
