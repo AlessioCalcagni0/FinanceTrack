@@ -13,6 +13,11 @@ function openTransaction() {
 
 
 document.addEventListener('DOMContentLoaded', function () {
+  const profileBtn = document.getElementById("profile");
+  profileBtn.addEventListener("click", () => {
+    redirect("../account.php");
+  });
+
   var element = document.createElement("div");
   element.id = "overview";
   element.classList.add("show");
@@ -238,22 +243,22 @@ function openTab(tabName, element) {
 
 const GOALS_ENDPOINT = './api.php?path=api/goals';
 
-function formatEuro(v){
-  try{ return new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR'}).format(v??0); }
-  catch{ const n=Number(v||0).toFixed(2).replace('.',','); return '€'+n.replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
+function formatEuro(v) {
+  try { return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(v ?? 0); }
+  catch { const n = Number(v || 0).toFixed(2).replace('.', ','); return '€' + n.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
 }
 
-function escapeHtml(s){
-  return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;')
-                  .replaceAll('>','&gt;').replaceAll('"','&quot;')
-                  .replaceAll("'","&#039;");
+function escapeHtml(s) {
+  return String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;').replaceAll('"', '&quot;')
+    .replaceAll("'", "&#039;");
 }
 
-function renderGoals(goals){
-  const root=document.getElementById('goals-root');
-  if(!root) return;
+function renderGoals(goals) {
+  const root = document.getElementById('goals-root');
+  if (!root) return;
 
-  if(!Array.isArray(goals) || goals.length===0){
+  if (!Array.isArray(goals) || goals.length === 0) {
     root.innerHTML = `
       <p>Nessun obiettivo trovato.</p>
       <a href="create_goal.php" class="btn-trans">Crea un nuovo obiettivo</a>
@@ -261,22 +266,22 @@ function renderGoals(goals){
     return;
   }
 
-  const cards = goals.map(g=>{
-    const saved=Number(g.saved_amount||0);
-    const target=Number(g.saving_amount||0);
-    const progress= target>0 ? Math.min(100,(saved/target)*100) : 0;
-    const deadline=g.deadline?String(g.deadline):'';
+  const cards = goals.map(g => {
+    const saved = Number(g.saved_amount || 0);
+    const target = Number(g.saving_amount || 0);
+    const progress = target > 0 ? Math.min(100, (saved / target) * 100) : 0;
+    const deadline = g.deadline ? String(g.deadline) : '';
     return `
       <div class="home-card">
         <div class="card-header">
           <img src="./images/goal_home.png" alt="Goal Image" class="goal-thumb">
-          <h3>${escapeHtml(g.title||'')}</h3>
+          <h3>${escapeHtml(g.title || '')}</h3>
         </div>
         <p>Deadline: ${escapeHtml(deadline)}</p>
         <div class="progress"><div class="progress-bar" style="width:${progress.toFixed(2)}%"></div></div>
         <p style="display:flex;justify-content:space-between;">
           <span style="color:green">${formatEuro(saved)}</span>
-          <span>${formatEuro(Math.max(0,target-saved))}</span>
+          <span>${formatEuro(Math.max(0, target - saved))}</span>
         </p>
       </div>
     `;
@@ -286,27 +291,27 @@ function renderGoals(goals){
 
   // Abilita lo scroll orizzontale anche con la rotellina del mouse
   const scroller = document.getElementById('goals-scroll');
-  scroller.addEventListener('wheel', (e)=>{
-    if(Math.abs(e.deltaY) > Math.abs(e.deltaX)){   // solo quando scorri in verticale
+  scroller.addEventListener('wheel', (e) => {
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {   // solo quando scorri in verticale
       scroller.scrollLeft += e.deltaY;
       e.preventDefault();                          // evita lo scroll verticale della pagina
     }
-  }, {passive:false});
+  }, { passive: false });
 }
 
-async function loadGoals(userId=1){
-  const root=document.getElementById('goals-root');
-  if(root) root.innerHTML='<p>Caricamento...</p>';
+async function loadGoals(userId = 1) {
+  const root = document.getElementById('goals-root');
+  if (root) root.innerHTML = '<p>Caricamento...</p>';
 
-  try{
+  try {
     const res = await fetch(`${GOALS_ENDPOINT}&user_id=${encodeURIComponent(userId)}`);
     const text = await res.text();
     let data;
-    try{ data = JSON.parse(text); }
-    catch{ throw new Error('Risposta non-JSON:\n'+text); }
-    if(!res.ok) throw new Error(data?.error || ('Errore HTTP '+res.status));
+    try { data = JSON.parse(text); }
+    catch { throw new Error('Risposta non-JSON:\n' + text); }
+    if (!res.ok) throw new Error(data?.error || ('Errore HTTP ' + res.status));
     renderGoals(data);
-  }catch(err){
+  } catch (err) {
     root.innerHTML = `
       <p style="color:#b00">Errore nel caricamento dei goal.</p>
       <pre style="white-space:pre-wrap;background:#f6f6f6;padding:.5rem;border-radius:.5rem">${String(err)}</pre>

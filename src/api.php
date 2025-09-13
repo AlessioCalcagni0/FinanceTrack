@@ -380,6 +380,7 @@ if ($path === "save_transaction" && $_SERVER["REQUEST_METHOD"] === "POST") {
     $total = isset($data['total']) ? floatval($data['total']) : 0;
     $uncat = $data['uncat'] ?? false;
     $transactions = $data['transactions'] ?? [];
+    $name = $data['name'];
 
     $exceededCategories = [];
 
@@ -391,7 +392,7 @@ if ($path === "save_transaction" && $_SERVER["REQUEST_METHOD"] === "POST") {
         if ($uncat) {
             // Inserimento transazione non categorizzata
             $stmt = $pdo->prepare("INSERT INTO transactions (type, category, amount, date, name, time, wallet_id) VALUES (?, ?, ?, ?, ?, ?, ?) ");
-            $stmt->execute(["outcome","Uncategorized", $total, $nowDate, "Cash", $nowTime, 1]);
+            $stmt->execute(["outcome","Uncategorized", $total, $nowDate, $name, $nowTime, 1]);
         } else {
             foreach ($transactions as $tr) {
                 $catName = $tr['name'];
@@ -399,7 +400,7 @@ if ($path === "save_transaction" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
                 // Inserimento nella tabella spese
                 $stmt = $pdo->prepare("INSERT INTO transactions (type, category, amount, date, name, time,wallet_id) VALUES (?, ?, ?, ?, ?, ?,?) ");
-                $stmt->execute(["outcome", $catName, $amount, $nowDate, "Cash", $nowTime , 1]);
+                $stmt->execute(["outcome", $catName, $amount, $nowDate, $name, $nowTime , 1]);
 
                 // Aggiorna spent nella tabella categories
                 $stmt = $pdo->prepare("UPDATE categories SET spent = spent + ? WHERE name = ?");
@@ -760,7 +761,8 @@ if ($path === "invitations") {
                  sender_first_name, sender_last_name,
                  sent_day, sent_month, sent_year,
                  wallet_id,                -- IMPORTANTE
-                 wallet_name, wallet_balance, participants_count
+                 wallet_name, wallet_balance, participants_count,
+                 role_name
           FROM invitations
           WHERE receiver_id = :user
           ORDER BY sent_year DESC, sent_month DESC, sent_day DESC, id DESC

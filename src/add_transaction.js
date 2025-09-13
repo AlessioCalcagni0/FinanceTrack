@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // -----------------------------
   // ELEMENTI UI – TUTORIAL
   // -----------------------------
-  goTo()
+
   const tutorialBtn = document.getElementById("tutorialBtn");
   const overlayTutorial = document.getElementById("overlay-tutorial");
   const popupTutorial = document.getElementById("popup-tutorial");
@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // STATI
   // -----------------------------
   let uncatActive = false;     // stato bottone "Uncategorized transaction"
-  let sectionsVisible = true;  // stato visibilità label/categorie/barra
+  let sectionsVisible = false;  // stato visibilità label/categorie/barra
   let expanded = false;        // stato espansione contenitore categorie
   let currentStep = 0;         // wizard tutorial
 
@@ -101,7 +101,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (uncatActive) {
       uncatActive = false;
       uncatBtn.style.backgroundColor = "#888888";
-      uncatBtn.style.color = "";
       orSeparator.style.display = "inline-block";
     }
   }
@@ -539,6 +538,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       resetAllCategories();
       closeAll();
+      window.location.href = "../cash_page.php"
     };
 
     if (keepBtn) keepBtn.addEventListener("click", closeAll, { once: true });
@@ -597,7 +597,7 @@ document.addEventListener("DOMContentLoaded", () => {
       uncatActive = !uncatActive;
 
       if (uncatActive) {
-        uncatBtn.style.backgroundColor = "black";
+        uncatBtn.style.backgroundColor = "#888888";
         uncatBtn.style.color = "white";
         orSeparator.style.display = "none";
         if (selectLabel) selectLabel.style.display = "none";
@@ -606,14 +606,15 @@ document.addEventListener("DOMContentLoaded", () => {
         if (tutorialBtn) tutorialBtn.style.display = "none"
         if (toggleSectionsBtn) toggleSectionsBtn.style.display = "none"
         resetAllCategories();
-      } else {
-        uncatBtn.style.backgroundColor = "#888888";
-        uncatBtn.style.color = "";
+      } 
+      else {
+        uncatBtn.style.backgroundColor = "black";
+
         orSeparator.style.display = "inline-block";
-        if (selectLabel) selectLabel.style.display = "block";
-        if (categoriesSection) categoriesSection.style.display = "block";
-        if (percentageBar) percentageBar.style.display = "block";
-        if (tutorialBtn) tutorialBtn.style.display = "block"
+        if (selectLabel) selectLabel.style.display = "none";
+        if (categoriesSection) categoriesSection.style.display = "none";
+        if (percentageBar) percentageBar.style.display = "none";
+        if (tutorialBtn) tutorialBtn.style.display = "none"
         if (toggleSectionsBtn) toggleSectionsBtn.style.display = "block"
       }
     });
@@ -624,10 +625,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // -----------------------------
   if (toggleSectionsBtn) {
     // Stato iniziale: mostrate
-    showSections();
+    hideSections();
 
     toggleSectionsBtn.addEventListener("click", () => {
-      sectionsVisible ? hideSections() : showSections();
+      sectionsVisible ?   hideSections() : showSections() ;
     });
   }
 
@@ -674,6 +675,7 @@ function goTo() {
   const wallet = document.getElementById("wallet-icon");
   const goal = document.getElementById("goal-icon");
   const insights = document.getElementById("insights-icon");
+  const backarrow = document.getElementById("back-arrow"); 
 
   home.addEventListener('click', () => {
     window.location.href = "../homepage.php"
@@ -689,6 +691,8 @@ function goTo() {
   );
   insights.addEventListener('click', () => {
     window.location.href = "../insights.php"
-  }
-  );
+  });
+  backarrow.addEventListener('click', () => {
+    window.location.href = "../cash_page.php"
+  });
 }

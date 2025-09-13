@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     burger.addEventListener("click", openMenu);
     backArrow.addEventListener("click", closeMenu);
-    overlay.addEventListener("click", closeMenu); 
+    overlay.addEventListener("click", closeMenu);
 
     const openButton = document.getElementById("createSwBtn");
 
@@ -645,10 +645,20 @@ function openModifyWalletPopup(w) {
 
     function refreshQuitButton() {
         const rows = Array.from(list.querySelectorAll('.sw-person'));
+
         if (rows.length === 0) {
-            quitBtn.style.display = '';
+            // sposto quitBtn dentro la lista
+            if (!list.contains(quitBtn)) {
+                quitBtn.textContent = 'Delete account';  // cambio label
+                quitBtn.className = 'sw-quit';
+                quitBtn.style.display="block"     // cambio stile se vuoi
+                list.appendChild(quitBtn);              // lo sposto dentro la lista
+            }
         } else {
-            quitBtn.style.display = 'none';
+            // ci sono persone → tolgo il bottone dalla lista e lo nascondo
+            if (list.contains(quitBtn)) {
+                quitBtn.remove();
+            }
         }
     }
 
@@ -775,6 +785,7 @@ function openModifyWalletPopup(w) {
 
     overlay.classList.add('active');
     modal.classList.add('active');
+    
 }
 
 
@@ -1026,6 +1037,7 @@ async function loadInvitations(userId) {
             const mm = String(inv.sent_month).padStart(2, '0');
             const balance = Number(inv.wallet_balance ?? 0);
             const balanceFmt = isNaN(balance) ? `${inv.wallet_balance} €` : balance.toLocaleString('it-IT', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ' €';
+            const role = `${inv.role_name}`;
 
             const card = document.createElement('div');
             card.className = 'invite-card';
@@ -1041,6 +1053,7 @@ async function loadInvitations(userId) {
         <div class="iv-stats">
           <span class="iv-balance"></span>
           <span class="iv-participants"></span>
+          <span class="iv-role"></span>
         </div>
 
         <div class="iv-actions">
@@ -1054,6 +1067,7 @@ async function loadInvitations(userId) {
             card.querySelector('.iv-wallet strong').textContent = inv.wallet_name ?? '—';
             card.querySelector('.iv-balance').textContent = `Balance: ${balanceFmt}`;
             card.querySelector('.iv-participants').textContent = `Participants: ${inv.participants_count ?? 1}`;
+            card.querySelector('.iv-role').textContent = `Role: ${role}`;
 
             attachActions(card);
             track.appendChild(card);
