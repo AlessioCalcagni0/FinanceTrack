@@ -33,6 +33,36 @@ function goTo(){
 
 document.addEventListener('DOMContentLoaded', () => {
     goTo();
+async function fetchImage(userid) {
+    try {
+        const res = await fetch(`http://${API_HOST}:8000/api.php?path=image&user_id=${encodeURIComponent(userid)}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        const out = await res.json().catch(() => ({}));
+        if (!res.ok || out.error) throw new Error(out.error || `HTTP ${res.status}`);
+
+        return out.url; // return only the image URL
+    } catch (e) {
+        console.error(e);
+        if (typeof showPopup === 'function') showPopup('Errore caricamento immagine: ' + e.message, 'error');
+        return null;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async function () {
+ const profileBtn = document.getElementById("profile");
+
+    const imageUrl = await fetchImage(1);
+    if (imageUrl) {
+        profileBtn.src = imageUrl;  // <-- set src, no background needed
+    }
+
+    profileBtn.addEventListener("click", () => {
+        redirect("../account.php");
+    });
+
     const openButton = document.getElementById("createSwBtn");
 
     openButton.addEventListener("click", () => {
@@ -1139,3 +1169,4 @@ function closeMenu() {
   document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
 
 }
+});

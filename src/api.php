@@ -561,6 +561,30 @@ if ($path === "api/insights") {
     exit;
 }
 
+if ($path === "image") {
+    $userId = $_GET["user_id"] ?? "";
+    try {
+        $st = $pdo->prepare("SELECT photo FROM users WHERE id = :id");
+        $st->execute([":id" => $userId]);
+        $u = $st->fetch(PDO::FETCH_ASSOC);
+
+        if (!$u) {
+            http_response_code(404);
+            echo json_encode(["error" => "User not found"]);
+            exit;
+        }
+
+        // Return full URL (adjust base path to match your setup)
+        $photoUrl = $u["photo"];
+        echo json_encode(["url" => $photoUrl]);
+
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(["error" => $e->getMessage()]);
+    }
+    exit;
+}
+
 
 if ($path === "sharedAccounts") {
     $user = $_GET["user"] ?? "";
@@ -674,7 +698,6 @@ if ($path === "save_sw_changes") {
     }
     exit;
 }
-
 
 if ($path === "invitations") {
     header('Content-Type: application/json; charset=utf-8');

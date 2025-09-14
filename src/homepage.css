@@ -94,6 +94,7 @@ main::-webkit-scrollbar-thumb {
 #profile {
   width: 33px;
   height: 33px;
+  
   border-radius: 50%;  /* makes it circular */
   object-fit: cover;  
 }
@@ -133,8 +134,10 @@ main::-webkit-scrollbar-thumb {
 
 .show {
   z-index: 1;
-  margin: 0 auto;
-  margin-left: 4px;
+  margin-top: 15%;
+  margin-bottom: 20%;
+  margin-right: auto;
+  margin-left: 6%;
 }
 
 

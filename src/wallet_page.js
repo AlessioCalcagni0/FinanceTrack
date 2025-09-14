@@ -1,78 +1,106 @@
 
 function openMenu() {
-  document.getElementsByClassName("back-arrow")[0].classList.add("show-menu");
+    document.getElementsByClassName("back-arrow")[0].classList.add("show-menu");
 
-  document.getElementById("menu-content").classList.toggle("show-menu");
-  const overlay = document.getElementById("overlay");
-  overlay.classList.add("overlayactive");
+    document.getElementById("menu-content").classList.toggle("show-menu");
+    const overlay = document.getElementById("overlay");
+    overlay.classList.add("overlayactive");
 
 }
 
-function goTo(){
+function goTo() {
     const home = document.getElementById("home");
     const wallet = document.getElementById("wallet-icon");
     const goal = document.getElementById("goal-icon");
     const insights = document.getElementById("insights-icon");
 
-    if(home){
-      home.addEventListener('click', () => {
-          window.location.href = "../homepage.php";
-      });
+    if (home) {
+        home.addEventListener('click', () => {
+            window.location.href = "../homepage.php";
+        });
     }
 
-    if(wallet){
-      wallet.addEventListener('click', () => {
-          window.location.href = "../wallet_page.php";
-      });
+    if (wallet) {
+        wallet.addEventListener('click', () => {
+            window.location.href = "../wallet_page.php";
+        });
     }
 
-    if(goal){
-      goal.addEventListener('click', () => {
-          window.location.href = "../goals.php";
-      });
+    if (goal) {
+        goal.addEventListener('click', () => {
+            window.location.href = "../goals.php";
+        });
     }
 
-    if(insights){
-      insights.addEventListener('click', () => {
-          window.location.href = "../insights.php";
-      });
+    if (insights) {
+        insights.addEventListener('click', () => {
+            window.location.href = "../insights.php";
+        });
     }
 }
 
 window.onclick = function (event) {
-  if (!event.target.matches('#menu') && !event.target.matches("menu-content")) {
+    if (!event.target.matches('#menu') && !event.target.matches("menu-content")) {
 
 
-    document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
-    const overlay = document.getElementById("overlay");
-    overlay.classList.remove("overlayactive");
-    var dropdowns = document.getElementsByClassName("dropdown-content");
-    var i;
-    for (i = 0; i < dropdowns.length; i++) {
-      var openDropdown = dropdowns[i];
-      if (openDropdown.classList.contains('show-menu')) {
-        openDropdown.classList.remove('show-menu');
-      }
+        document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
+        const overlay = document.getElementById("overlay");
+        overlay.classList.remove("overlayactive");
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show-menu')) {
+                openDropdown.classList.remove('show-menu');
+            }
+        }
     }
-  }
 }
 
 function closeMenu() {
-  document.getElementById("image1_303_309").classList.remove("hide-menu");
-  document.getElementById("hh").classList.remove("hide-menu");
-  document.getElementById("hhs").classList.remove("hide-menu");
-  document.getElementById("ww").classList.remove("hide-menu");
-  document.getElementById("menu-content").classList.remove("show-menu");
-  document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
-const overlay = document.getElementById("overlay");
-overlay.classList.remove("overlayactive");
+    document.getElementById("image1_303_309").classList.remove("hide-menu");
+    document.getElementById("hh").classList.remove("hide-menu");
+    document.getElementById("hhs").classList.remove("hide-menu");
+    document.getElementById("ww").classList.remove("hide-menu");
+    document.getElementById("menu-content").classList.remove("show-menu");
+    document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
+    const overlay = document.getElementById("overlay");
+    overlay.classList.remove("overlayactive");
 }
 
 
-document.addEventListener('DOMContentLoaded', () => {
+async function fetchImage(userid) {
+    try {
+        const res = await fetch(`http://${API_HOST}:8000/api.php?path=image&user_id=${encodeURIComponent(userid)}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        const out = await res.json().catch(() => ({}));
+        if (!res.ok || out.error) throw new Error(out.error || `HTTP ${res.status}`);
+
+        return out.url; // return only the image URL
+    } catch (e) {
+        console.error(e);
+        if (typeof showPopup === 'function') showPopup('Errore caricamento immagine: ' + e.message, 'error');
+        return null;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async function () {
+    const profileBtn = document.getElementById("profile");
+
+    const imageUrl = await fetchImage(1);
+    if (imageUrl) {
+        profileBtn.src = imageUrl;  // <-- set src, no background needed
+    }
+
+    profileBtn.addEventListener("click", () => {
+        redirect("../account.php");
+    });
 
     goTo();
-    
+
 
     function UpdateDate() {
         const oggi = new Date();
@@ -95,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const cancelButton = document.getElementById("cancel_button");
     const confirmButton = document.getElementById("confirm_button");
     const icons = document.querySelectorAll(".choose-icon .icon");
-    
+
     // APRI POPUP
     openButton.addEventListener("click", () => {
         popup.classList.add("addaccount-popupactive");
@@ -404,7 +432,7 @@ async function loadBalance() {
     console.log(`${API_HOST}`);
     try {
         const [resIncome, resSpent] = await Promise.all([
-            
+
             fetch(`http://${API_HOST}:8000/api.php?path=income_sum`),
             fetch(`http://${API_HOST}:8000/api.php?path=spent_sum`)
         ]);
@@ -456,7 +484,7 @@ async function loadAccounts() {
 
             const typeDiv = document.createElement("div");
             typeDiv.className = "account-type";
-            typeDiv.textContent = acc.type + ":    " +acc.balance + " €";
+            typeDiv.textContent = acc.type + ":    " + acc.balance + " €";
 
             const lastSyncDiv = document.createElement("div");
             lastSyncDiv.className = "account-lastsync";
@@ -474,7 +502,7 @@ async function loadAccounts() {
             // quando clicco, vado su account.html con name e balance in query string
             viewBtn.addEventListener("click", () => {
                 const params = new URLSearchParams({
-                    id: acc.id,  
+                    id: acc.id,
                     name: acc.name || "",
                     balance: String(acc.balance ?? "")
                 });
@@ -847,5 +875,5 @@ function renderTypeFields(type) {
 }
 
 function redirect(location) {
-  window.location.href = location;
+    window.location.href = location;
 }

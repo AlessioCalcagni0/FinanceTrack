@@ -59,7 +59,6 @@ form h3 {
     margin-top: 25px;
     color: #2A60BA;
     margin-bottom: 8px;
-    font-size: 17px;
     font-size: 21px;
 }
 
@@ -90,10 +89,6 @@ form{
 }
 
 
-.section-blue { background: rgba(66, 133, 244, 0.68); }
-.section-purple { background: #d8b3ff; }
-.section-green { background: rgba(73, 201, 107, 0.55); }
-.section-yellow { background: rgba(247, 159, 0, 0.53); }
 .section-blue { background:  #2A60BA}
 .section-purple { background: #475BB5; }
 .section-green { background:#7254AE; }
@@ -118,22 +113,6 @@ form{
 
 }
 
-/* Default icon look */
-.color-option img {
-  width: 30px;
-  height: 30px;
-  border: 4px solid #fdf6e6;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: border 0.2s;
-  margin: 1px 0;
-}
-
-/* Highlight selected icon */
-.color-option input:checked + img {
-  border: 4px solid #2A60BA; /* blue border */
-  margin: 0px;
-}
 
 
 .icon-grid {
@@ -161,7 +140,6 @@ form{
   width: 40px;
   padding: 3px;
   height: 40px;
-  border: 4px solid #fdf6e6;
   border: 4px solid #475BB5;
   border-radius: 8px;
   cursor: pointer;
@@ -171,7 +149,6 @@ form{
 
 /* Highlight selected icon */
 .icon-option input:checked + img {
-  border: 4px solid #2A60BA; /* blue border */
   border: 4px solid #ffffff; /* blue border */
   margin: 0px;
 }
@@ -320,11 +297,8 @@ form{
 }
 
 
-#addParetcipant{
 
-}
 #participantsSection {
-  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -356,7 +330,6 @@ form{
   cursor: pointer;
   width: 24px;
   height: 24px;
-  margin-left: 10px;
   margin-top: 12%;
   margin-left: 15px;
 }
@@ -365,7 +338,6 @@ form{
   background-color: #ccc;   /* grigio */
   cursor: not-allowed;
 }
-
 
 .role{
   margin-left: 10%;
