@@ -668,9 +668,7 @@ if ($path === "save_sw_changes") {
             $row["partecipant_name_surname2"],
             $row["partecipant_name_surname3"],
         ];
-        
-        
-
+    
         $sql = "
             UPDATE shared_wallets
             SET
@@ -680,8 +678,7 @@ if ($path === "save_sw_changes") {
                 partecipant_name_surname3 = :n3,
                 participant_role1 = :r1,
                 participant_role2 = :r2,
-                participant_role3 = :r3,
-                
+                participant_role3 = :r3
             WHERE id = :id
         ";
         $stmt = $pdo->prepare($sql);
@@ -1502,6 +1499,29 @@ if ($path === "update_user" && $_SERVER["REQUEST_METHOD"] === "POST") {
    END GOALS API
    =============================== */
 
+if ($path === "image") {
+    $userId = $_GET["user_id"] ?? "";
+    try {
+        $st = $pdo->prepare("SELECT photo FROM users WHERE id = :id");
+        $st->execute([":id" => $userId]);
+        $u = $st->fetch(PDO::FETCH_ASSOC);
+
+        if (!$u) {
+            http_response_code(404);
+            echo json_encode(["error" => "User not found"]);
+            exit;
+        }
+
+        // Return full URL (adjust base path to match your setup)
+        $photoUrl = $u["photo"];
+        echo json_encode(["url" => $photoUrl]);
+
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(["error" => $e->getMessage()]);
+    }
+    exit;
+}
 
 
 // Se non trova corrispondenza

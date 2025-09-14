@@ -8,8 +8,7 @@
 
 body {
   top: 0%;
-  min-height: 915px;
-  max-height: 915px;
+  max-height: 800px;
   min-width: 412px;
   position: relative;
   display: flex;
@@ -57,14 +56,6 @@ body {
 
 
 
-#tabBar {
-  position: absolute;
-  left: 2%;
-  bottom: 0%;
-  max-height: fit-content;
-
-}
-
 
 .main::-webkit-scrollbar {
     width: 6px;
@@ -108,6 +99,7 @@ body {
   padding: 15px 40px;
   text-decoration: none;
   display: block;
+  margin-left: 10px;
 }
 
 .dropdown-content h2 {
@@ -115,6 +107,7 @@ body {
   padding-left: 15px;
   padding-top: 10px;
   display: block;
+  margin-left: 10px;
 }
 
 .back-arrow {
@@ -1314,11 +1307,38 @@ section .card .image img {
 }
 
 
-#bottombar{
+#bottombar {
     height: 3px;
-    min-width: 412px;
-    width: 100%;
-    margin-left: 0px;
-    margin-bottom: 20%;
     background: linear-gradient(135deg, #6a11cb, #2575fc);
+    position: fixed;
+    top: 723px;
+    left: 0px;
+    width: 100%;
+}
+
+
+#tabBar{
+  display: flex;
+  justify-content: space-around;  /* distribuisce gli item */
+  align-items: center;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 70px;
+  background: #fff;
+  z-index: 1;
+}
+
+.bar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 13px;
+  color: #000;
+  cursor: pointer;
+}
+
+.bar-item img {
+  width: 28px;
+  height: 28px;
+  margin-bottom: 4px;
 }

@@ -1,3 +1,38 @@
+function goTo(){
+    const home = document.getElementById("home");
+    const wallet = document.getElementById("wallet-icon");
+    const goal = document.getElementById("goal-icon");
+    const insights = document.getElementById("insights-icon");
+
+    if(home){
+      home.addEventListener('click', () => {
+          window.location.href = "../homepage.php";
+      });
+    }
+
+    if(wallet){
+      wallet.addEventListener('click', () => {
+          window.location.href = "../wallet_page.php";
+      });
+    }
+
+    if(goal){
+      goal.addEventListener('click', () => {
+          window.location.href = "../goals.php";
+      });
+    }
+
+    if(insights){
+      insights.addEventListener('click', () => {
+          window.location.href = "../insights.php";
+      });
+    }
+}
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    goTo();
 async function fetchImage(userid) {
     try {
         const res = await fetch(`http://${API_HOST}:8000/api.php?path=image&user_id=${encodeURIComponent(userid)}`, {
@@ -1134,3 +1169,4 @@ function closeMenu() {
   document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
 
 }
+});
