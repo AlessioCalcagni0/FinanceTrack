@@ -6,9 +6,10 @@
 
 html,
 body {
-    height: 800px;
+    height: 851px;
     overflow: hidden;
     margin: 0 auto;
+    
 }
 
 body {
@@ -75,12 +76,6 @@ body {
     margin-left: 160px;
 }
 
-
-#tabBar{
-    left: 0%;
-    position:absolute;
-    bottom: -45%;
-}
 
 
 .dropdown {
@@ -299,7 +294,38 @@ body {
 
 }
 
-#bottombar{
+#bottombar {
     height: 3px;
     background: linear-gradient(135deg, #6a11cb, #2575fc);
+    position: fixed;
+    top: 842px;
+    left: 0px;
+    width: 100%;
+}
+
+
+#tabBar{
+  display: flex;
+  justify-content: space-around;  /* distribuisce gli item */
+  align-items: center;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 70px;
+  background: #fff;
+  z-index: 1;
+}
+
+.bar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 13px;
+  color: #000;
+  cursor: pointer;
+}
+
+.bar-item img {
+  width: 28px;
+  height: 28px;
+  margin-bottom: 4px;
 }

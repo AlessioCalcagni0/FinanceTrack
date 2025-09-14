@@ -301,7 +301,7 @@ async function loadLastWeekTransactions() {
 }
 function loadName() {
     const qs = new URLSearchParams(window.location.search);
-    const name = qs.get("name") || "Account";
+    const name = qs.get("name") || "Account Name";
 
     const nameDiv = document.getElementById("account-name");
     if (nameDiv) {

@@ -17,12 +17,67 @@ function openTransaction() {
   window.location.href = "/add_transaction.php";
 }
 
+function goTo(){
+    const home = document.getElementById("home");
+    const wallet = document.getElementById("wallet-icon");
+    const goal = document.getElementById("goal-icon");
+    const insights = document.getElementById("insights-icon");
 
-document.addEventListener('DOMContentLoaded', function () {
-  const profileBtn = document.getElementById("profile");
-  profileBtn.addEventListener("click", () => {
-    redirect("../account.php");
-  });
+    if(home){
+      home.addEventListener('click', () => {
+          window.location.href = "../homepage.php";
+      });
+    }
+
+    if(wallet){
+      wallet.addEventListener('click', () => {
+          window.location.href = "../wallet_page.php";
+      });
+    }
+
+    if(goal){
+      goal.addEventListener('click', () => {
+          window.location.href = "../goals.php";
+      });
+    }
+
+    if(insights){
+      insights.addEventListener('click', () => {
+          window.location.href = "../insights.php";
+      });
+    }
+}
+
+async function fetchImage(userid) {
+    try {
+        const res = await fetch(`http://${API_HOST}:8000/api.php?path=image&user_id=${encodeURIComponent(userid)}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        const out = await res.json().catch(() => ({}));
+        if (!res.ok || out.error) throw new Error(out.error || `HTTP ${res.status}`);
+
+        return out.url; // return only the image URL
+    } catch (e) {
+        console.error(e);
+        if (typeof showPopup === 'function') showPopup('Errore caricamento immagine: ' + e.message, 'error');
+        return null;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async function () {
+  goTo();
+ const profileBtn = document.getElementById("profile");
+
+    const imageUrl = await fetchImage(1);
+    if (imageUrl) {
+        profileBtn.src = imageUrl;  // <-- set src, no background needed
+    }
+
+    profileBtn.addEventListener("click", () => {
+        redirect("../account.php");
+    });
 
   var element = document.createElement("div");
   element.id = "overview";
@@ -160,49 +215,21 @@ function showOverview(hide) {
 
 
 function openMenu() {
-  document.getElementById("image1_303_309").classList.add("hide-menu");
-  document.getElementById("hh").classList.add("hide-menu");
-  document.getElementById("hhs").classList.add("hide-menu");
-  document.getElementById("ww").classList.add("hide-menu");
-  document.getElementsByClassName("back-arrow")[0].classList.add("show-menu");
-
-  document.getElementById("menu-content").classList.toggle("show-menu");
-
-
+  document.getElementById("menu-content").classList.add("show-menu");
+  document.getElementById("overlay").classList.add("show");
+  document.body.classList.add("menu-open");   // <- per zittire tabbar sotto
 }
 
-window.onclick = function (event) {
-  if (!event.target.matches('#menu') && !event.target.matches("menu-content")) {
-    document.getElementById("image1_303_309").classList.remove("hide-menu");
-    document.getElementById("hh").classList.remove("hide-menu");
-    document.getElementById("hhs").classList.remove("hide-menu");
-    document.getElementById("ww").classList.remove("hide-menu");
-
-    document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
-
-    var dropdowns = document.getElementsByClassName("dropdown-content");
-    var i;
-    for (i = 0; i < dropdowns.length; i++) {
-      var openDropdown = dropdowns[i];
-      if (openDropdown.classList.contains('show-menu')) {
-        openDropdown.classList.remove('show-menu');
-      }
-    }
-  }
-}
 
 function closeMenu() {
-  document.getElementById("image1_303_309").classList.remove("hide-menu");
-  document.getElementById("hh").classList.remove("hide-menu");
-  document.getElementById("hhs").classList.remove("hide-menu");
-  document.getElementById("ww").classList.remove("hide-menu");
   document.getElementById("menu-content").classList.remove("show-menu");
-  document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
-
+  document.getElementById("overlay").classList.remove("show");
+  document.body.classList.remove("menu-open");
 }
 
-
 document.addEventListener('DOMContentLoaded', function () {
+  document.getElementById("overlay").addEventListener("click", closeMenu);
+
   var swiper = new Swiper(".mySwiper", {
     slidesPerView: 1,
     spaceBetween: 10,
@@ -256,7 +283,7 @@ function renderGoals(goals) {
 
   if (!Array.isArray(goals) || goals.length === 0) {
     root.innerHTML = `
-      <p style="margin-left:8%">You don't have any goal at the moment</p>
+      <p style="margin-left:11%">You don't have any goal at the moment</p>
       <button class="create_wallet" onclick="goToCreateGoal()"  >Create a new Goal!</button>
     `;
     return;
@@ -508,3 +535,220 @@ async function loadWallets(userId=1){
 
 
 
+
+
+function buildSharedPageUrl({ name, participants, role, balance }) {
+    const normBalance = Number.isFinite(Number(balance))
+        ? Number(balance).toFixed(2)   // "1234.50"
+        : '';                           // fallback vuoto
+
+    const params = new URLSearchParams({
+        name: name ?? '',
+        participants: String(participants ?? ''),
+        role: role ?? '',
+        balance: normBalance
+    });
+    return `/shared_page.php?${params.toString()}`;
+}
+
+
+function openModifyWalletPopup(w) {
+    const overlay = document.getElementById('swOverlay');
+    const modal = document.getElementById('swEditPopup');
+
+    const myName = ((window.CURRENT_USER_FULLNAME || '').trim()) || 'Mario Rossi';
+    const norm = (s) => (s ?? '').toString().toLowerCase().trim();
+    const VALID = ['editor', 'admin', 'viewer'];
+    const roleNow = (r) => VALID.includes(norm(r)) ? (norm(r)[0].toUpperCase() + norm(r).slice(1)) : 'Viewer';
+
+    const people = [
+        { idx: 1, name: w.partecipant_name_surname1, role: w.participant_role1 },
+        { idx: 2, name: w.partecipant_name_surname2, role: w.participant_role2 },
+        { idx: 3, name: w.partecipant_name_surname3, role: w.participant_role3 },
+    ].filter(p => (p.name ?? '').trim().length);
+
+    modal.innerHTML = `
+    <div class="sw-header">
+      <div>
+        <div class="sw-title">Manage participants</div>
+        <div class="sw-sub">${w.name}</div>
+      </div>
+      <button class="sw-cancel" id="swCloseBtn">Close</button>
+    </div>
+
+    <div class="sw-list" id="swList"></div>
+
+    <div class="sw-footer">
+      <div class="sw-footer-left"></div>
+      <div class="sw-footer-right">
+        <button type="button" class="sw-quit" id="swQuitBtn" style="display:none">Delete</button>
+        <button class="sw-save" id="swSaveBtn">Save changes</button>
+      </div>
+    </div>
+  `;
+
+    const list = modal.querySelector('#swList');
+    const footerLeft = modal.querySelector('.sw-footer-left');
+    const quitBtn = modal.querySelector('#swQuitBtn');
+
+    function updateInviteVisibility() {
+        const count = list.querySelectorAll('.sw-person').length;
+        let btn = modal.querySelector('#swInviteBtn');
+        if (count < 3) {
+            if (!btn) {
+                btn = document.createElement('button');
+                btn.className = 'sw-invite';
+                btn.id = 'swInviteBtn';
+                btn.textContent = 'Invite friends';
+                btn.addEventListener('click', openInvitePopup);
+                footerLeft.appendChild(btn);
+            }
+        } else if (btn) {
+            btn.remove();
+        }
+    }
+
+    function refreshQuitButton() {
+        const rows = Array.from(list.querySelectorAll('.sw-person'));
+
+        if (rows.length === 0) {
+            // sposto quitBtn dentro la lista
+            if (!list.contains(quitBtn)) {
+                quitBtn.textContent = 'Delete account';  // cambio label
+                quitBtn.className = 'sw-quit';
+                quitBtn.style.display="block"     // cambio stile se vuoi
+                list.appendChild(quitBtn);              // lo sposto dentro la lista
+            }
+        } else {
+            // ci sono persone → tolgo il bottone dalla lista e lo nascondo
+            if (list.contains(quitBtn)) {
+                quitBtn.remove();
+            }
+        }
+    }
+
+
+    function renderPerson(p) {
+        const row = document.createElement('div');
+        row.className = 'sw-person';
+        row.dataset.idx = String(p.idx);
+
+        const rNow = roleNow(p.role);
+        row.innerHTML = `
+      <div class="sw-person-row">
+        <div class="sw-person-name">${p.name}</div>
+        <button class="sw-remove" title="Remove">Remove</button>
+      </div>
+      <div class="sw-roles" role="radiogroup" aria-label="Role">
+        ${['Editor', 'Admin', 'Viewer'].map(opt => `
+          <label class="sw-role">
+            <input type="radio" name="role-${p.idx}" value="${opt}" ${norm(rNow) === norm(opt) ? 'checked' : ''}>
+            ${opt}
+          </label>`).join('')}
+      </div>
+    `;
+
+        // Rimozione con fallback se non esiste animazione CSS
+        row.querySelector('.sw-remove').addEventListener('click', () => {
+            row.classList.add('removing');
+            let removed = false;
+            const kill = () => {
+                if (removed) return;
+                removed = true;
+                row.remove();
+                updateInviteVisibility();
+                refreshQuitButton();
+            };
+            row.addEventListener('animationend', kill, { once: true });
+            setTimeout(kill, 300); // fallback se non c’è animazione
+        });
+
+        list.appendChild(row);
+    }
+
+    people.forEach(renderPerson);
+    updateInviteVisibility();
+    refreshQuitButton();
+
+    // Azione QUIT (TODO: implementa la tua API/azione reale)
+    quitBtn.addEventListener('click', async () => {
+        try {
+            // esempio: mostra solo un popup ora
+            if (typeof showPopup === 'function') showPopup('Quit eseguito (TODO API)', 'success');
+            // qui potresti chiamare una API es: /api.php?path=wallet_quit
+            // e chiudere il modal / rimuovere la card dal DOM principale
+        } catch (e) {
+            console.error(e);
+            if (typeof showPopup === 'function') showPopup('Errore Quit: ' + e.message, 'error');
+        }
+    });
+
+    function closeModal() {
+        overlay.classList.remove('active');
+        modal.classList.remove('active');
+        document.getElementById('swInvitePopup')?.classList.remove('active');
+    }
+    overlay.onclick = closeModal;
+    modal.querySelector('#swCloseBtn').onclick = closeModal;
+
+    // ----- Invite popup mock -----
+    function ensureInviteModal() {
+        let inv = document.getElementById('swInvitePopup');
+        if (!inv) { inv = document.createElement('div'); inv.id = 'swInvitePopup'; document.body.appendChild(inv); }
+        inv.innerHTML = `
+      <div class="inv-header">
+        <div class="inv-title">Invite friends to "${w.name}"</div>
+        <button class="inv-close" id="invCloseBtn">Close</button>
+      </div>
+      <div class="inv-list">
+        <div class="inv-item"><div class="inv-name">Mario Rossi</div><button class="inv-btn is-already" data-state="already">Already invited</button></div>
+        <div class="inv-item"><div class="inv-name">Giulia Bianchi</div><button class="inv-btn" data-state="idle">Invite</button></div>
+        <div class="inv-item"><div class="inv-name">Luca Verdi</div><button class="inv-btn" data-state="idle">Invite</button></div>
+        <div class="inv-item"><div class="inv-name">Anna Neri</div><button class="inv-btn" data-state="idle">Invite</button></div>
+      </div>
+    `;
+        inv.querySelector('#invCloseBtn').addEventListener('click', () => inv.classList.remove('active'));
+        inv.querySelectorAll('.inv-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const state = btn.dataset.state;
+                if (state === 'already' || state === 'invited') return;
+                btn.dataset.state = 'invited';
+                btn.textContent = 'Invited';
+                btn.classList.add('is-invited');
+                // dopo un “Invite” ci sono >1 partecipanti → nascondi Quit
+                quitBtn.style.display = 'none';
+            });
+        });
+        return inv;
+    }
+    function openInvitePopup() { ensureInviteModal().classList.add('active'); }
+
+    // ----- SAVE -----
+    modal.querySelector('#swSaveBtn').addEventListener('click', async () => {
+        const survivors = Array.from(list.querySelectorAll('.sw-person')).map(row => {
+            const i = Number(row.dataset.idx);
+            const sel = row.querySelector(`input[name="role-${i}"]:checked`);
+            return { name: row.querySelector('.sw-person-name').textContent, role: sel ? sel.value : 'Viewer' };
+        }).slice(0, 3);
+
+        try {
+            const res = await fetch(`http://${API_HOST}:8000/api.php?path=save_sw_changes`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ wallet_id: w.id, participants: survivors })
+            });
+            const out = await res.json().catch(() => ({}));
+            if (!res.ok || out.error) throw new Error(out.error || `HTTP ${res.status}`);
+            if (typeof showPopup === 'function') showPopup('Participants updated', 'success');
+            closeModal();
+            loadWallets(1);
+        } catch (e) {
+            console.error(e);
+            if (typeof showPopup === 'function') showPopup('Errore salvataggio: ' + e.message, 'error');
+        }
+    });
+
+    overlay.classList.add('active');
+    modal.classList.add('active');
+    
+}

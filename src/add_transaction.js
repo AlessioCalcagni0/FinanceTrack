@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // -----------------------------
   // ELEMENTI UI – TUTORIAL
   // -----------------------------
-
+  
   const tutorialBtn = document.getElementById("tutorialBtn");
   const overlayTutorial = document.getElementById("overlay-tutorial");
   const popupTutorial = document.getElementById("popup-tutorial");
@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const backBtn = document.getElementById("backBtn");
   const nextBtn = document.getElementById("nextBtn");
   const skipBtn = document.getElementById("skipButton");
+  const backarrow = document.getElementById("back-arrow"); 
 
 
   // -----------------------------
@@ -662,37 +663,15 @@ document.addEventListener("DOMContentLoaded", () => {
   confirmBtn?.addEventListener("click", confirmAction);
   cancelBtn?.addEventListener("click", showCancelPopup);
 
+  backarrow.addEventListener("click", () => { window.history.back();})
+
   // -----------------------------
   // BOOT
   // -----------------------------
+
   loadCategories();
   attachInputListeners();
 });
 
-function goTo() {
 
-  const home = document.getElementById("home");
-  const wallet = document.getElementById("wallet-icon");
-  const goal = document.getElementById("goal-icon");
-  const insights = document.getElementById("insights-icon");
-  const backarrow = document.getElementById("back-arrow"); 
-
-  home.addEventListener('click', () => {
-    window.location.href = "../homepage.php"
-  }
-  );
-  wallet.addEventListener('click', () => {
-    window.location.href = "../wallet_page.php"
-  }
-  );
-  goal.addEventListener('click', () => {
-    window.location.href = "../goals.php"
-  }
-  );
-  insights.addEventListener('click', () => {
-    window.location.href = "../insights.php"
-  });
-  backarrow.addEventListener('click', () => {
-    window.location.href = "../cash_page.php"
-  });
-}
+  
