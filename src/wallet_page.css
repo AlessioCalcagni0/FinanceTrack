@@ -9,9 +9,7 @@
 body {
   top: 0%;
   min-height: 915px;
-  max-height: 915px;
-  min-width: 412px;
-  position: relative;
+ 
   display: flex;
   flex-direction: column;
   overflow-x: hidden;

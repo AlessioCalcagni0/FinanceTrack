@@ -181,7 +181,6 @@ function showOverview(hide) {
   }
 }
 
-
 function openMenu() {
   document.getElementById("image1_303_309").classList.add("hide-menu");
   document.getElementById("hh").classList.add("hide-menu");
@@ -190,7 +189,8 @@ function openMenu() {
   document.getElementsByClassName("back-arrow")[0].classList.add("show-menu");
 
   document.getElementById("menu-content").classList.toggle("show-menu");
-
+  const overlay = document.getElementById("overlay");
+  overlay.classList.add("overlayactive");
 
 }
 
@@ -202,7 +202,8 @@ window.onclick = function (event) {
     document.getElementById("ww").classList.remove("hide-menu");
 
     document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
-
+    const overlay = document.getElementById("overlay");
+    overlay.classList.remove("overlayactive");
     var dropdowns = document.getElementsByClassName("dropdown-content");
     var i;
     for (i = 0; i < dropdowns.length; i++) {
@@ -221,7 +222,8 @@ function closeMenu() {
   document.getElementById("ww").classList.remove("hide-menu");
   document.getElementById("menu-content").classList.remove("show-menu");
   document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
-
+const overlay = document.getElementById("overlay");
+overlay.classList.remove("overlayactive");
 }
 
 
