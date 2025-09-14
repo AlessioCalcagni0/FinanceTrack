@@ -19,14 +19,11 @@ $goalId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 <body>
 
   <header class="topbar">
+    <button class="back" aria-label="Back" onclick="goBack()">←</button>
     <h1 style="color:#0B4E92;">Edit Goal</h1>
-    <button class="close" aria-label="Close" onclick="goBack()">✕</button>
   </header>
 
   <main class="container">
-    <button class="add-funds" type="button" onclick="handleAddFunds()">Add Funds</button>
-    <button class="danger" type="button" onclick="handleDeleteGoal()">Delete Goal</button>
-
     <form id="goalForm" onsubmit="return handleSubmit(event)">
       <label class="field">
         <span class="label">Goal Name<span class="req">*</span></span>
@@ -50,8 +47,10 @@ $goalId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
       <label class="field">
         <span class="label">Target Savings Amount</span>
-        <input type="number" id="targetAmount" name="targetAmount" inputmode="decimal" step="0.01" placeholder="Current Target" />
-        <span class="suffix">€</span>
+        <div class="input-affix">
+          <input type="number" id="targetAmount" name="targetAmount" inputmode="decimal" step="0.01" placeholder="Current Target" />
+          <span class="suffix">€</span>
+        </div>
       </label>
 
       <label class="field">
@@ -75,11 +74,14 @@ $goalId = isset($_GET['id']) ? intval($_GET['id']) : 0;
         </div>
       </label>
 
-      <button class="primary" type="submit">Save Goal</button>
+      <div class="form-actions">
+        <button class="danger" type="button" onclick="handleDeleteGoal()">Delete Goal</button>
+        <button class="primary" type="submit">Save Goal</button>
+      </div>
     </form>
   </main>
 
-  <!-- Goal Completed Overlay (unchanged) -->
+  <!-- Overlay “goal completed” (facoltativo) -->
   <div id="goal-complete-overlay" class="gc-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="gc-title">
     <div class="gc-card">
       <div class="gc-illus">

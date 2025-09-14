@@ -8,36 +8,35 @@
 html, body{ height:100%; }
 body{ margin:0; background: var(--bg); color: var(--text); display:flex; flex-direction:column; }
 
-.topbar{ display:flex; align-items:center; justify-content:center; padding: 24px 16px 8px; position: relative; }
+.topbar{
+  position: relative;
+  display:flex; align-items:center; justify-content:center;
+  padding: 24px 16px 8px;
+}
 .topbar h1{ font-size: 26px; margin:0; font-weight: 800; letter-spacing: .2px; }
-.topbar .close{ position:absolute; right: 18px; top: 18px; background: transparent; border: none; font-size: 22px; cursor: pointer; }
 
-.container{ padding: 8px 16px 28px; max-width: 440px; width: 100%; margin: 0 auto; }
-
-.add-funds{
-  width:100%;
-  background: var(--green);
-  color:#fff;
-  border:none;
-  padding:14px 16px;
-  border-radius:12px;
-  font-weight:700;
-  margin: 12px 0 8px;
-  cursor:pointer;
+/* freccia back in alto a sinistra */
+.topbar .back{
+  position:absolute; left: 12px; top: 14px;
+  background: #fff; border: 1px solid var(--border);
+  width: 36px; height: 36px; border-radius: 10px;
+  font-size: 20px; line-height: 1;
+  display:flex; align-items:center; justify-content:center;
+  cursor: pointer; color: #111;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
 }
 
-.label{ display:block; font-weight:700; margin: 18px 0 8px; }
+.container{ padding: 8px 16px 28px; max-width: 480px; width: 100%; margin: 0 auto; }
+
+/* form fields */
+.field{ display:block; margin: 12px 0; position:relative; }
+.label{ display:block; font-weight:700; margin-bottom: 6px; color:#0B4E92; }
 .req{ color:#ef4444; margin-left:4px; }
-
-.field{ position:relative; display:block; }
 .field input, .field select{
-  width:100%; border:1px solid var(--border); border-radius: var(--radius);
-  padding: 14px 14px; outline:none; font-size:16px; color:var(--text);
-  background:#fff;
+  width:100%; padding: 12px 14px; border:1px solid var(--border); border-radius: 12px;
+  font-size: 14px; color: var(--text); background: #fff; outline: none;
 }
-.field input::placeholder{ color:#9ca3af; }
-
-.suffix{ position:absolute; right: 16px; top: 58px; color:#9ca3af; pointer-events:none; }
+.field input:focus, .field select:focus{ border-color:#0B4E92; box-shadow: 0 0 0 3px rgba(11,78,146,.1); }
 
 .select{ position:relative; }
 .select select{ appearance:none; background:#fff; }
@@ -47,6 +46,15 @@ body{ margin:0; background: var(--bg); color: var(--text); display:flex; flex-di
 .cal-ico{ position:absolute; left: 12px; top: 50%; transform: translateY(-50%); }
 .date-wrap input{ padding-left: 40px; }
 
+/* importo con suffisso euro centrato verticalmente */
+.input-affix{ position: relative; }
+.input-affix input{ padding-right: 36px; }
+.input-affix .suffix{
+  position:absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  color:#6b7280; pointer-events:none;
+}
+
+/* primary button (default full width quando è da solo) */
 .primary{
   margin-top: 24px;
   width:100%;
@@ -60,42 +68,7 @@ body{ margin:0; background: var(--bg); color: var(--text); display:flex; flex-di
 }
 .primary:active{ transform: translateY(1px); }
 
-/* ===== Goal Completed Overlay ===== */
-.hidden{ display:none !important; }
-body.modal-open{ overflow:hidden; }
-
-.gc-overlay{
-  position:fixed; inset:0; background:rgba(0,0,0,.45);
-  display:flex; align-items:center; justify-content:center; z-index:9999;
-}
-.gc-card{
-  width:min(92vw, 380px);
-  background:#fff; border-radius:18px; padding:18px 16px 20px;
-  box-shadow:0 10px 30px rgba(0,0,0,.2);
-  text-align:center;
-}
-.gc-illus{
-  width:220px; height:220px; margin:0 auto 10px;
-  border-radius:50%; background:#f7e9d0; border:2px solid #00000020;
-  display:flex; align-items:center; justify-content:center; position:relative;
-}
-.gc-emoji{ font-size:120px; line-height:1; }
-.gc-check{
-  position:absolute; right:16px; bottom:-6px;
-  width:84px; height:84px; border-radius:50%;
-  background:#22c55e; color:#fff; font-weight:900; font-size:46px;
-  display:flex; align-items:center; justify-content:center;
-  box-shadow:0 8px 20px rgba(34,197,94,.4);
-}
-.gc-title{ font-size:22px; font-weight:900; margin:10px 0 4px; color:#000; }
-.gc-sub{ color:#111; margin:0 0 14px; font-size:16px; }
-.gc-ok{
-  width:100%; background:#22c55e; color:#fff; border:none;
-  padding:12px 14px; border-radius:12px; font-weight:800; cursor:pointer;
-}
-.gc-ok:active{ transform: translateY(1px); }
-
-/* danger button for delete */
+/* danger button per delete (default full width) */
 .danger{
   width:100%;
   background:#ef4444;
@@ -108,3 +81,48 @@ body.modal-open{ overflow:hidden; }
   cursor:pointer;
 }
 .danger:active{ transform: translateY(1px); }
+
+/* --- azioni in basso, affiancate 50/50 --- */
+.form-actions{
+  display:flex;
+  gap: 10px;
+  justify-content: flex-start;
+  align-items: stretch;
+  margin-top: 18px;
+  width: 100%;
+}
+.form-actions .primary,
+.form-actions .danger{
+  flex: 1 1 0;
+  width: auto;
+  margin: 0;
+}
+
+/* ===== Overlay goal completed ===== */
+.hidden{ display:none !important; }
+body.modal-open{ overflow:hidden; }
+
+.gc-overlay{
+  position:fixed; inset:0; background:rgba(0,0,0,.45);
+  display:flex; align-items:center; justify-content:center; z-index:9999;
+}
+.gc-card{
+  width:min(92vw, 380px);
+  background:#fff; border-radius:18px; padding:18px 16px 20px;
+  box-shadow: 0 12px 28px rgba(0,0,0,.18);
+  text-align:center;
+}
+.gc-illus{ position:relative; width:110px; height:110px; margin: 6px auto 8px; }
+.gc-emoji{ font-size:76px; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+.gc-check{
+  position:absolute; right:-6px; bottom:-6px;
+  width:42px; height:42px; border-radius:50%; background:#22c55e; color:#fff;
+  display:flex; align-items:center; justify-content:center; font-weight:800; font-size:20px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.25);
+}
+.gc-title{ margin: 8px 0 2px; font-size:22px; font-weight:800; color:#0B4E92; }
+.gc-sub{ margin: 0 0 12px; color:#374151; }
+.gc-ok{
+  border:none; background:#0B4E92; color:#fff; font-weight:800;
+  padding: 10px 14px; border-radius:12px; cursor:pointer;
+}

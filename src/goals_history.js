@@ -30,6 +30,30 @@ function isMissed(g){
   return !!deadline && deadline < todayStr && saved < target;
 }
 
+/* --- SVG icons (stroke, inherit color) --- */
+const ICON_CHECK = `
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <circle cx="12" cy="12" r="10"></circle>
+  <path d="M8 12l2.5 2.5L16 9"></path>
+</svg>`;
+
+const ICON_X = `
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <circle cx="12" cy="12" r="10"></circle>
+  <path d="M15 9l-6 6M9 9l6 6"></path>
+</svg>`;
+
+const ICON_TRASH = `
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <polyline points="3 6 5 6 21 6"></polyline>
+  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+  <path d="M10 11v6M14 11v6"></path>
+  <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
+</svg>`;
+
 async function loadHistory(){
   const uid = (window.USER_ID && String(window.USER_ID).trim()) ? '&user_id=' + encodeURIComponent(window.USER_ID) : '';
   const res = await fetch('/api.php?path=goals' + uid);
@@ -38,11 +62,11 @@ async function loadHistory(){
   const completed = Array.isArray(goals) ? goals.filter(isCompleted) : [];
   const missed    = Array.isArray(goals) ? goals.filter(isMissed)    : [];
 
-  renderList(document.getElementById('completed'), completed, '✅');
-  renderList(document.getElementById('missed'), missed, '❌');
+  renderList(document.getElementById('completed'), completed, 'completed');
+  renderList(document.getElementById('missed'), missed, 'missed');
 }
 
-function renderList(container, items, glyph){
+function renderList(container, items, kind){
   container.innerHTML = '';
   if(!items || !items.length){
     container.innerHTML = '<p style="color:#6b7280;">No items.</p>';
@@ -60,7 +84,10 @@ function renderList(container, items, glyph){
 
     const left = document.createElement('div');
     left.className = 'left';
-    left.innerHTML = '<div class="glyph">' + glyph + '</div>';
+    const glyph = document.createElement('div');
+    glyph.className = 'glyph ' + (kind === 'completed' ? 'completed' : 'missed');
+    glyph.innerHTML = (kind === 'completed') ? ICON_CHECK : ICON_X;
+    left.appendChild(glyph);
 
     const mid = document.createElement('div');
     mid.className = 'mid';
@@ -96,7 +123,7 @@ function renderList(container, items, glyph){
     const del = document.createElement('button');
     del.className = 'icon-btn danger';
     del.title = 'Delete';
-    del.textContent = '🗑';
+    del.innerHTML = ICON_TRASH;
     del.addEventListener('click', () => confirmDeleteGoal(g.id, name));
 
     mid.appendChild(nm);

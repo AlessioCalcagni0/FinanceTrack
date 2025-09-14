@@ -6,10 +6,21 @@
   <title>Privacy Policy – FinanceTrack</title>
   <link rel="stylesheet" href="terms.css" />
 </head>
+<script>
+  function goBack(){
+    if (document.referrer && history.length > 1) {
+      history.back();
+    } else {
+      // Fallback se non c'è una pagina precedente nella history
+      window.location.href = './homepage.php'; // cambia se preferisci un'altra pagina
+    }
+  }
+</script>
+
 <body>
   <div class="container">
     <footer>
-      <p><a href="signup.php">← Back to Sign Up</a></p>
+      <button class="back back-top" type="button" onclick="goBack()" aria-label="Back">←</button>
     </footer>
     <h1>Privacy Policy</h1>
     <p>Last updated: August 4, 2025</p>
@@ -64,7 +75,7 @@
     </section>
 
     <footer>
-      <p><a href="signup.php">← Back to Sign Up</a></p>
+      <button class="back back-top" type="button" onclick="goBack()" aria-label="Back">←</button>
     </footer>
   </div>
 </body>

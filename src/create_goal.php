@@ -19,21 +19,22 @@ $user_id = $_SESSION['user_id'] ?? "1";
 <body>
 
   <header class="topbar">
+    <button class="back" aria-label="Back" onclick="goBack()">←</button>
     <h1>Create New Goal</h1>
-    <button class="close" aria-label="Close" onclick="goBack()">✕</button>
   </header>
 
   <main class="container">
     <form id="goalForm" onsubmit="return handleSubmit(event)">
       <label class="field">
         <span class="label">Goal Name<span class="req">*</span></span>
-        <input type="text" id="goalName" name="goalName" placeholder="Motorbike" required />
+        <input type="text" id="goalName" name="goalName" placeholder="New Goal Name" required />
       </label>
 
       <label class="field">
         <span class="label">Goal Type</span>
         <div class="select">
           <select id="goalType" name="goalType">
+            <option value="" selected>Select a Type</option>
             <option value="purchase">Purchase</option>
             <option value="travel">Travel</option>
             <option value="education">Education</option>
@@ -46,8 +47,10 @@ $user_id = $_SESSION['user_id'] ?? "1";
 
       <label class="field">
         <span class="label">Target Savings Amount</span>
-        <input type="number" id="targetAmount" name="targetAmount" inputmode="decimal" step="0.01" placeholder="20000" />
-        <span class="suffix">€</span>
+        <div class="input-affix">
+          <input type="number" id="targetAmount" name="targetAmount" inputmode="decimal" step="0.01" placeholder="20000" />
+          <span class="suffix">€</span>
+        </div>
       </label>
 
       <label class="field">
@@ -62,6 +65,7 @@ $user_id = $_SESSION['user_id'] ?? "1";
         <span class="label">Saving Source</span>
         <div class="select">
           <select id="savingSource" name="savingSource">
+            <option value="" selected>Select a Source</option>
             <option>Main Wallet</option>
             <option>Credit Card</option>
             <option>Cash</option>

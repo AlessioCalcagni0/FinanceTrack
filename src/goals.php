@@ -34,19 +34,40 @@ $user_id = $_SESSION['user_id'] ?? "1";
 
   <main class="content">
     <!-- Score Cards -->
-    <section class="score">
-      <div class="card green">
-        <div class="icon">🎯</div>
-        <div class="title">Goals Reached</div>
-        <div class="num">0</div>
-      </div>
-      <div class="center-pill">Current<br/>Score</div>
-      <div class="card red">
-        <div class="icon">❌</div>
-        <div class="title">Goals Missed</div>
-        <div class="num">0</div>
-      </div>
-    </section>
+<!-- Score Cards (modern) -->
+<section class="score score--modern">
+  <article class="card kpi green">
+    <div class="kpi__icon" aria-hidden="true">
+      <!-- Target icon -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"></circle>
+        <circle cx="12" cy="12" r="5"></circle>
+        <path d="M16 8l5-5M17 3h4v4"></path>
+      </svg>
+    </div>
+    <div class="kpi__meta">
+      <div class="kpi__label">Goals Reached</div>
+      <div class="kpi__value num">0</div>
+    </div>
+  </article>
+
+  <article class="card kpi red">
+    <div class="kpi__icon" aria-hidden="true">
+      <!-- X in circle -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"></circle>
+        <path d="M15 9l-6 6M9 9l6 6"></path>
+      </svg>
+    </div>
+    <div class="kpi__meta">
+      <div class="kpi__label">Goals Missed</div>
+      <div class="kpi__value num">0</div>
+    </div>
+  </article>
+</section>
+
 
     <a class="history" href="./goals_history.php">View History</a>
 
@@ -66,5 +87,18 @@ $user_id = $_SESSION['user_id'] ?? "1";
     }
     ?>
   </div>
+  
+  <!-- Goal Completed Overlay -->
+<div id="goal-complete-overlay" class="gc-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="gc-title">
+  <div class="gc-card">
+    <div class="gc-illus">
+      <span class="gc-emoji" aria-hidden="true">🏆</span>
+      <div class="gc-check">✓</div>
+    </div>
+    <h2 id="gc-title" class="gc-title">Congratulations!</h2>
+    <p class="gc-sub">You have achieved your goal.</p>
+    <button id="gc-ok" class="gc-ok" type="button">OK</button>
+  </div>
+</div>
 </body>
 </html>
