@@ -3,8 +3,8 @@ function openMenu() {
     document.getElementsByClassName("back-arrow")[0].classList.add("show-menu");
 
     document.getElementById("menu-content").classList.toggle("show-menu");
-    const overlay = document.getElementById("overlay");
-    overlay.classList.add("overlayactive");
+    const overlay = document.getElementById("overlay-menu");
+    overlay.style.opacity="1";
 
 }
 
@@ -44,8 +44,8 @@ window.onclick = function (event) {
 
 
         document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
-        const overlay = document.getElementById("overlay");
-        overlay.classList.remove("overlayactive");
+        const overlay = document.getElementById("overlay-menu");
+        overlay.style.opacity="0";
         var dropdowns = document.getElementsByClassName("dropdown-content");
         var i;
         for (i = 0; i < dropdowns.length; i++) {
@@ -58,14 +58,11 @@ window.onclick = function (event) {
 }
 
 function closeMenu() {
-    document.getElementById("image1_303_309").classList.remove("hide-menu");
-    document.getElementById("hh").classList.remove("hide-menu");
-    document.getElementById("hhs").classList.remove("hide-menu");
-    document.getElementById("ww").classList.remove("hide-menu");
+   
     document.getElementById("menu-content").classList.remove("show-menu");
     document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
-    const overlay = document.getElementById("overlay");
-    overlay.classList.remove("overlayactive");
+    const overlay = document.getElementById("overlay-menu");
+    overlay.style.opacity="0";
 }
 
 
@@ -82,7 +79,7 @@ async function fetchImage(userid) {
         return out.url; // return only the image URL
     } catch (e) {
         console.error(e);
-        if (typeof showPopup === 'function') showPopup('Errore caricamento immagine: ' + e.message, 'error');
+        if (typeof showPopup === 'function') showPopup('Error during image load: ' + e.message, 'error');
         return null;
     }
 }
@@ -123,17 +120,18 @@ document.addEventListener('DOMContentLoaded', async function () {
     const cancelButton = document.getElementById("cancel_button");
     const confirmButton = document.getElementById("confirm_button");
     const icons = document.querySelectorAll(".choose-icon .icon");
+    const overlay= document.getElementById("overlay");
 
     // APRI POPUP
     openButton.addEventListener("click", () => {
         popup.classList.add("addaccount-popupactive");
-        overlay.classList.add("overlayactive");
+        overlay.style.opacity="1";
     });
 
     // CHIUDI POPUP con Cancel
     cancelButton.addEventListener("click", () => {
         popup.classList.remove("addaccount-popupactive");
-        overlay.classList.remove("overlayactive");
+        overlay.style.opacity="0";
         resetAddAccountForm();
     });
 
@@ -189,11 +187,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // validazioni base
         if (!selectedType) {
-            showPopup("Seleziona un tipo di account (Bank, Card o Cash)!", { type: "error", lockOverlay: true });
+            showPopup("Select a wallet type (Bank or Card)!", { type: "error", lockOverlay: true });
             return;
         }
         if (!name) {
-            showPopup("Inserisci un nome per l'account!", { type: "error", lockOverlay: true });
+            showPopup("Choose a name for the wallet!", { type: "error", lockOverlay: true });
             return;
         }
 
@@ -202,7 +200,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (selectedType === "Bank") {
             const iban = (document.getElementById("iban")?.value || "").trim();
             if (!iban) {
-                showPopup("Inserisci l'IBAN!", { type: "error", lockOverlay: true });
+                showPopup("Insert IBAN", { type: "error", lockOverlay: true });
                 return;
             }
             details.iban = iban;
@@ -214,22 +212,22 @@ document.addEventListener('DOMContentLoaded', async function () {
             const cvv = (document.getElementById("cardCvv")?.value || "").trim();
 
             if (!holder || !number || !expiry || !cvv) {
-                showPopup("Compila tutti i campi della carta!", { type: "error", lockOverlay: true });
+                showPopup("Fill out all the field!", { type: "error", lockOverlay: true });
                 return;
             }
 
             // limiti e formati minimi
             // se vuoi solo Visa/Mastercard, imposta max 16 anziché 19
             if (!/^\d{12,19}$/.test(number)) {
-                showPopup("Numero carta non valido (12–19 cifre).", { type: "error", lockOverlay: true });
+                showPopup("Card number invalid (12–19 cifre).", { type: "error", lockOverlay: true });
                 return;
             }
             if (!/^\d{2}\/\d{2}$/.test(expiry)) {
-                showPopup("Scadenza non valida. Usa formato MM/YY.", { type: "error", lockOverlay: true });
+                showPopup("Deadline invalid. Use format: MM/YY.", { type: "error", lockOverlay: true });
                 return;
             }
             if (!/^\d{3,4}$/.test(cvv)) {
-                showPopup("CVV non valido (3 o 4 cifre).", { type: "error", lockOverlay: true });
+                showPopup("CVV invalid (3 or 4 digits).", { type: "error", lockOverlay: true });
                 return;
             }
 
@@ -259,16 +257,16 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             if (res.ok && result.success) {
                 popup.classList.remove("addaccount-popupactive");
-                overlay.classList.remove("overlayactive");
+                overlay.style.opacity="0";
                 resetAddAccountForm();
                 if (typeof loadAccounts === "function") loadAccounts();
-                showPopup("Account creato con successo!", { type: "success", autocloseMs: 1500 });
+                showPopup("Wallet created successfully!", { type: "success", autocloseMs: 1500 });
             } else {
-                showPopup("Errore salvataggio account: " + (result.error || res.status), { type: "error", lockOverlay: true });
+                showPopup("Error during wallet creation: " + (result.error || res.status), { type: "error", lockOverlay: true });
             }
         } catch (err) {
             console.error("Errore fetch add_account:", err);
-            showPopup("Errore di connessione con il server!", { type: "error", lockOverlay: true });
+            showPopup("Error in server connection!", { type: "error", lockOverlay: true });
         }
     });
 
@@ -357,7 +355,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         })
             .then(res => res.json())
             .then(result => {
-                if (!result.success) throw new Error(result.error || "Errore eliminazione");
+                if (!result.success) throw new Error(result.error || "Error elimination");
 
                 // Aggiorna contenuto popup con OK
                 deletePopupTitle.textContent = `Account "${selectedAccountName}" deleted successfully.`;
@@ -379,7 +377,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             })
             .catch(err => {
                 console.error(err);
-                deletePopupTitle.textContent = "Errore durante l'eliminazione dell'account.";
+                deletePopupTitle.textContent = "Error when deleting the wallet.";
             });
     }
 
@@ -412,7 +410,7 @@ async function loadIncome() {
         const sumData = await resSum.json();
         document.getElementById("income-sum").textContent = (sumData.totale ?? 0) + "€";
     } catch (err) {
-        document.getElementById("income-sum").textContent = "Errore caricamento entrate!";
+        document.getElementById("income-sum").textContent = "Error in income loading!";
         console.error(err);
     }
 }
@@ -423,7 +421,7 @@ async function loadSpent() {
         const sumData = await resSum.json();
         document.getElementById("spent-sum").textContent = (sumData.totale ?? 0) + "€";
     } catch (err) {
-        document.getElementById("spent-sum").textContent = "Errore caricamento entrate!";
+        document.getElementById("spent-sum").textContent = "Error in income loading!";
         console.error(err);
     }
 }
@@ -528,7 +526,7 @@ async function loadAccounts() {
             frame.appendChild(box);
         });
     } catch (err) {
-        console.error("Errore durante il caricamento accounts:", err);
+        console.error("Error account:", err);
     }
 }
 
@@ -561,7 +559,7 @@ function openModifyPopup(account) {
     document.getElementById("modifyConfirmBtn").onclick = async () => {
         const selectedIcon = document.querySelector("#modifyAccountPopup .icon.icon-selected");
         if (!selectedIcon) {
-            showPopup("Seleziona un'icona!", "error");
+            showPopup("Select an icon!", "error");
             return;
         }
 
@@ -573,7 +571,7 @@ function openModifyPopup(account) {
         };
 
         if (!newData.name || !newData.type) {
-            showPopup("Nome e tipo non possono essere vuoti!", "error");
+            showPopup("Name and type can't be empty!", "error");
             return;
         }
 
@@ -594,14 +592,14 @@ function openModifyPopup(account) {
                 typeInput.value = "";
                 icons.forEach(i => i.classList.remove("icon-selected"));
 
-                showPopup("Account modificato con successo!", "success");
+                showPopup("Wallet successfully updated!", "success");
                 loadAccounts();
             } else {
-                showPopup("Errore aggiornamento: " + (result.error || res.status), "error");
+                showPopup("Error in the update: " + (result.error || res.status), "error");
             }
         } catch (err) {
             console.error("Errore fetch update_account:", err);
-            showPopup("Errore di connessione con il server!", "error");
+            showPopup("Error during server connection!", "error");
         }
     };
 }

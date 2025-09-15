@@ -3,13 +3,13 @@
     font-family: 'Inter', sans-serif;
 }
 
-html,
-body {
+html {
     height: 800px;
     overflow: hidden;
 }
 
 body {
+    height: 842px;
     display: flex;
     flex-direction: column;
     margin: 0 auto;
@@ -40,47 +40,62 @@ body {
     flex: 1;
     height: 600px;
     overflow-y: scroll;
-    margin-left: 48px;
+    margin-left: 46px;
     margin-top: 10px;
 }
 
-.navbar{
-    display:flex ;
-    height: 60px;
-    align-items: center;
-    justify-content: space-between;
-    background-color: rgb(255, 255, 255);
+
+.navbar {
+  margin-left: 2%;
+  padding-top: 2%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-#menu,
-#bell{
+#menu {
+  width: 30px;
+  height: 30px;
+}
 
-    width: 30px;
-    height: 30px;
+#profile {
+  width: 33px;
+  height: 33px;
+  
+  border-radius: 50%;  /* makes it circular */
+  object-fit: cover;  
+}
+
+#bell {
+  margin-right: 5%;
+  width: 30px;
+  height: 30px;
+}
+
+#title {
+  padding-left: 10%;
+  font-size: 7dvw;
+  font-weight: bold;
+  color: #2A60BA;
 }
 
 
 .dropdown {
   position: relative;
   display: inline-block;
-  margin-left: 60px;
-  margin-top: -60px;
 }
 
 .dropdown-content {
-   display: block;
+  z-index: 999;
+  display: none;
   position: absolute;
+  margin-top: -223%;
+  padding-top: 0%;
+  margin-left: -57%;
   background-color: #0B4E92;
   width: 200px;
   height: 970px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  transform: translateX(-250%);   /* nascosto fuori schermo */
-  transition: transform 0.3s ease;
-  z-index: 10;
-}
-
-.dropdown-content.open {
-  transform: translateX(-148%);
+  
 }
 
 .dropdown-content a {
@@ -97,25 +112,26 @@ body {
   display: block;
 }
 
+
 .back-arrow {
-  display: block;
-  margin-top: 0px;
+  display: none;
+  position: absolute;
+  margin-top: -20px;
   margin-left: 120px;
-  margin-bottom: -30px;
-  margin-top: 30px;
+}
+
+
+.show-menu {
+  display: block;
+}
+
+.hide-menu {
+  display: none;
 }
 
 
 
 
-
-.title{
-    width: 30px;
-    font-size: 20px;
-    font-weight: bold;
-    color: #152C5C;
-    margin-left: -350px;
-}
 
 
 input{
@@ -151,21 +167,20 @@ input{
     border-radius: 20px;
     padding: 5px;
     width: 290px;
-    margin-left: 10px;
+margin-left: 12.75px;
 }
 
 .frame-category {
-    display: flex;
+        display: flex;
     align-items: center;
     margin: 0 auto;
     flex-direction: column;
-    width: 300px;
+    width: 320px;
     height: 270px;
     margin-top: 10px;
-    border: #152C5C solid 2px ;
-    border-radius: 20px;   
-    margin-left: 10px;
-
+    border: #152C5C solid 2px;
+    border-radius: 20px;
+    margin-left: 2px;
 }
 
 
@@ -178,7 +193,7 @@ input{
     background-color: #152C5C;
     margin: 0 auto;
     margin-top: 15px;
-    width: 270px;
+    width: 280px;
     height:50px;
     display: flex;
     flex-direction: row;
@@ -196,13 +211,6 @@ input{
     overflow-y: scroll;
 }
 
-.category-name{
-    
-}
-
-.category-limit{
-    
-}
 
 
 .icon{
@@ -331,7 +339,7 @@ input{
     top: 10%;
     left: 19%;
     z-index: 10;
-    margin-left: -15px;
+        margin-left: -21px;
     transform: scale(1);
 }
 
@@ -410,7 +418,7 @@ input{
     left: 0;
     background-color: rgba(0, 0, 0, .5);
     transition: 200ms ease-in-out;
-    z-index: 1;
+    z-index: 3;
     pointer-events: none;
 }
 
@@ -425,6 +433,7 @@ input{
     text-align: center;
     height: 24px;
     border-radius:5px;
+    margin-top: 4px;
 }
 
 .warning-category-popup{
@@ -470,7 +479,7 @@ input{
     padding: 5px 5px 5px 5px;
     border-radius: 20px;
     width: 310px;
-    height: 322px;
+    height: 291px;
     margin-left: 0px;
 }
 
@@ -495,6 +504,11 @@ input{
   color: white;
   font-weight: bold;
 }
+.category-limit{
+    margin-right: -8px;
+    margin-left: 4px;
+    text-align: center;
+}
 
 .chart-container {
   display: flex;
@@ -502,6 +516,10 @@ input{
   align-items: center;
   min-height: 300px;
   margin-bottom: 10px;
+
+  position: relative;
+  width: 100%;
+
 }
 
 .box-chart {
@@ -566,7 +584,7 @@ input{
 }
 
 #topbar {
-    
+    margin-top: 8px;
     height: 3px;
     background: linear-gradient(135deg, #2575fc, #6a11cb);
 
@@ -577,7 +595,7 @@ input{
     height: 3px;
     background: linear-gradient(135deg, #6a11cb, #2575fc);
     position: fixed;
-    top: 707px;
+        top: 843px;
     left: 0px;
     width: 100%;
 }

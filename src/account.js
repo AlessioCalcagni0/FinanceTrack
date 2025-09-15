@@ -81,8 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadMe(){
   try{
     const res = await fetch('/api.php?path=me');
-    if(res.status === 401){ location.href = './login.php'; return; }
     const data = await res.json();
+    console.log("data:d",data);
     const u = data && data.user ? data.user : null;
     if(!u) return;
 

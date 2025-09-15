@@ -17,6 +17,8 @@ function openTransaction() {
   window.location.href = "/add_transaction.php";
 }
 
+
+
 function goTo(){
     const home = document.getElementById("home");
     const wallet = document.getElementById("wallet-icon");
@@ -61,7 +63,7 @@ async function fetchImage(userid) {
         return out.url; // return only the image URL
     } catch (e) {
         console.error(e);
-        if (typeof showPopup === 'function') showPopup('Errore caricamento immagine: ' + e.message, 'error');
+        if (typeof showPopup === 'function') showPopup('Error during image loading: ' + e.message, 'error');
         return null;
     }
 }
@@ -282,7 +284,7 @@ function renderGoals(goals) {
 
   if (!Array.isArray(goals) || goals.length === 0) {
     root.innerHTML = `
-      <p style="margin-left:11%">You don't have any goal at the moment</p>
+      <p style="margin-left:7%">You don't have any goal at the moment</p>
       <button class="create_wallet" onclick="goToCreateGoal()"  >Create a new Goal!</button>
     `;
     return;

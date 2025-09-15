@@ -14,10 +14,10 @@ $apiHost = $_ENV['DB_HOST'] ;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Transaction</title>
-    <link rel="stylesheet" href="add_transaction.css">
+    <link rel="stylesheet" href="add_sw_trans.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script> const API_HOST = "<?php echo $apiHost; ?>";</script>
-    <script src="add_transaction.js"></script>
+    <script src="add_sw_trans.js"></script>
 </head>
 <body>
   
@@ -29,7 +29,7 @@ $apiHost = $_ENV['DB_HOST'] ;
     
     <div class="main">
         <div class="title">
-            <h1 class="title">Add cash transaction</h1>
+            <h1 class="title">Add shared transaction</h1>
         </div>
         <label class="label">Enter the name of the transaction</label>
         <input class="name_input" placeholder="Type the name here" maxlength="12" >
@@ -37,35 +37,27 @@ $apiHost = $_ENV['DB_HOST'] ;
         <div class="input-wrapper">
             <input class="number_input" type="number" min="0" max="9999" placeholder="Enter the amount spent                                                                     €" required>
         </div>
-        <div class="button-container">
-        <h1 id="choose">Choose an option</h1>
-        <button type="button" class="Uncat_button" id="Uncat_button">Uncategorized transaction</button>
-            <span id="or-separator" class="or-separator">or</span>
-            <button type="button" id="toggleSectionsBtn" class="toggle-sections-btn">Select categories</button>
+
+        <!-- Chi fa la transazione -->
+        <label class="label">Who made the transaction?</label>
+        <div id="payerSection" class="participants-list">
+           
+
         </div>
 
-        <div class="div-label">
-            <h1 id="select-label">Select categories</h1>
-            <button id="tutorialBtn" class="help-btn">?</button>
-        </div>
-        <div class="categories" id="categories">
-            <div id="labels-container">
-                <div id="name-label">Category name</div>
-                <div id="percentage-label">Amount</div>
-                <div id="amount-label">Percentage</div>
-                <button id="toggleCategoriesBtn" ><i class="fa-solid fa-arrows-up-down"></i> </button>
-            </div>
-            <div id="category-container">
 
+
+        <!-- Bottone per attivare la divisione personalizzata -->
+         <label class="label">Divided by</label>
+
+        <!-- Sezione nascosta di default -->
+        <div id="customSplitSection" class="custom-split">
+            <div id="splitSection" class="participants-list">
+                   
             </div>
         </div>
-        <div class="percentage-bar-container" id="percentage-bar-container">
-            <label>Percentage sum: <span id="percentage-sum">0</span></label>
-            <div class="percentage-bar">
-                <div id="percentage-fill"></div>
-            </div>
-        </div>
-            
+
+        
         
         <div class="end_operation">
             <button class="cancel_button" id="cancel_button">Cancel</button>

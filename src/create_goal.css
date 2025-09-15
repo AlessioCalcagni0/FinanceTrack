@@ -25,18 +25,29 @@ body{
   font-size: 26px; margin:0; font-weight: 800;
   letter-spacing: .2px;
 }
+
+/* back arrow button */
+.topbar .back{
+  position:absolute; left: 12px; top: 14px;
+  background: #fff; border: 1px solid var(--border);
+  width: 36px; height: 36px; border-radius: 10px;
+  font-size: 20px; line-height: 1;
+  display:flex; align-items:center; justify-content:center;
+  cursor: pointer; color: #111;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+
+/* (vecchia .close resta inutilizzata se presente in HTML legacy) */
 .topbar .close{
   position:absolute; right: 18px; top: 18px;
   background: transparent; border: none; font-size: 22px; cursor: pointer;
 }
 
-/* Form container */
 .container{
-  padding: 8px 16px 28px;
-  max-width: 440px; width: 100%;
-  margin: 0 auto;
+  padding: 8px 16px 28px; max-width: 480px; width: 100%; margin: 0 auto;
 }
 
+/* fields */
 .label{ display:block; font-weight:700; margin: 18px 0 8px; }
 .req{ color:#ef4444; margin-left:4px; }
 
@@ -48,9 +59,17 @@ body{
 }
 .field input::placeholder{ color:#9ca3af; }
 
-/* currency suffix */
+/* currency suffix (legacy) */
 .suffix{
   position:absolute; right: 16px; top: 58px; color:#9ca3af; pointer-events:none;
+}
+
+/* vertically centered currency suffix for target amount */
+.input-affix{ position: relative; }
+.input-affix input{ padding-right: 36px; }
+.input-affix .suffix{
+  position:absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  color:#6b7280; pointer-events:none;
 }
 
 /* custom select */
@@ -65,10 +84,10 @@ body{
 }
 
 /* date field */
-.date-wrap{
-  position:relative;
+.date-wrap{ position:relative; }
+.cal-ico{
+  position:absolute; left: 12px; top: 50%; transform: translateY(-50%);
 }
-.cal-ico{ position:absolute; left: 12px; top: 50%; transform: translateY(-50%); }
 .date-wrap input{ padding-left: 40px; }
 
 /* button */

@@ -15,6 +15,8 @@ $apiHost = $_ENV['DB_HOST'] ;
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Create Shared Wallet</title>
+    <script> const API_HOST = "<?php echo $apiHost; ?>";</script>
+
 <link rel="stylesheet" href="create_sw.css">
 <script src="create_sw.js"></script>
 

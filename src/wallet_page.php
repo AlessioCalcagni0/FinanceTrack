@@ -34,18 +34,18 @@ $apiHost = $_ENV['DB_HOST'] ;
             <img onclick="closeMenu()" class="back-arrow" src="/images/icons8-back-arrow-50.png" >
 
             <div id="menu-content" class="dropdown-content">
-                <h2 style="margin-top: 50%;">Home</h2>
+                <h2 style="margin-top: 50%;" onclick="redirect('/homepage.php')">Home</h2>
                 <h2>Wallets</h2>
-                <a onclick="closeMenu()">All Accounts</a>
-                <a href="./sharedWallet.php">Shared Wallets</a>
-                <a href="/cash_page.php">Cash Account</a>
+                <a onclick="closeMenu()">All Wallets</a>
+                <a href="/sharedWallet.php">Shared Wallets</a>
+                <a href="/cash_page.php">Cash Wallet</a>
                 <!-- la sezione "Add Transaction" è stata temporaneamente sostituita con un riferimento agli account di tipo "cash". -->
                 <h2>Insights</h2>
-                <a href="./insights.php">Dashboard</a>
-                <a href="./categories.php">Spending by Category</a>
+                <a href="/insights.php">Dashboard</a>
+                <a href="/categories.php">Spending by Category</a>
                 <h2>Goals</h2>
-                <a href="#">Overview</a>
-                <a href="#">New Goal</a>
+                <a href="/goals.php">Overview</a>
+                <a href="/create_goal.php">New Goal</a>
                 <h2>Settings</h2>
             </div>
         </div>
@@ -55,7 +55,7 @@ $apiHost = $_ENV['DB_HOST'] ;
         
         <div style="display:flex; width:20%; justify-content:space-evenly">
             <!--NOTIFY BELL-->
-            <svg id="bell" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <svg id="bell" onclick="redirect('notification.html')" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <rect width="20" height="20" fill="url(#pattern0_30_198)"/>
                 <defs>
                 <pattern id="pattern0_30_198" patternContentUnits="objectBoundingBox" width="1" height="1">
@@ -108,6 +108,7 @@ $apiHost = $_ENV['DB_HOST'] ;
         <button id="openAddAccount" class="add-account-btn">+ Add Account</button>
 
         <div id="overlay" class="overlay"></div>
+        <div id="overlay-menu" class="overlay"></div>
 
          <div id="addAccountPopup" class="add-account-popup">
             <div class="account-popup">
@@ -121,11 +122,7 @@ $apiHost = $_ENV['DB_HOST'] ;
                     style="background-image:url('images/MoneyHouse.png')"></div>
                 <div class="type-caption">Bank</div>
                 </div>
-                <div class="type-option" data-type="Cash">
-                <div class="icon" id="cash" data-img="images/Cash.png"
-                    style="background-image:url('images/Cash.png')"></div>
-                <div class="type-caption">Cash</div>
-                </div>
+            
                 <div class="type-option" data-type="Card">
                 <div class="icon" id="card" data-img="images/CreditCard.png"
                     style="background-image:url('images/CreditCard.png')"></div>

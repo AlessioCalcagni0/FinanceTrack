@@ -1,27 +1,103 @@
 
 
+function goTo(){
 
-document.addEventListener('DOMContentLoaded', () => {
+    const home = document.getElementById("home");
+    const wallet = document.getElementById("wallet-icon");
+    const goal = document.getElementById("goal-icon");
+    const insights = document.getElementById("insights-icon");
 
-    const burger = document.getElementById("burger");
-    const menu = document.getElementById("menu-content");
+    home.addEventListener('click', () => {
+        window.location.href = "../homepage.php"
+        }
+    );
+    wallet.addEventListener('click', () => {
+        window.location.href = "../wallet_page.php"
+        }
+    );
+    goal.addEventListener('click', () => {
+        window.location.href = "../goals.php"
+        }
+    );
+    insights.addEventListener('click', () => {
+        window.location.href = "../insights.php"
+        }
+    );
+}
+function redirect(location) {
+  window.location.href = location;
+}
+
+function openMenu() {
+    document.getElementsByClassName("back-arrow")[0].classList.add("show-menu");
+
+    document.getElementById("menu-content").classList.toggle("show-menu");
     const overlay = document.getElementById("overlay");
-    const backArrow = document.getElementById("back-arrow");
+    overlay.classList.add("overlayactive");
 
-    function openMenu() {
-        menu.classList.add("open");
-        overlay.style.display = "block";
+}
+function closeMenu() {
+
+    document.getElementById("menu-content").classList.remove("show-menu");
+    document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
+    const overlay = document.getElementById("overlay");
+    overlay.classList.remove("overlayactive");
+}
+
+window.onclick = function (event) {
+    if (!event.target.matches('#menu') && !event.target.matches("menu-content")) {
+
+
+        document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
+        const overlay = document.getElementById("overlay");
+        overlay.classList.remove("overlayactive");
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show-menu')) {
+                openDropdown.classList.remove('show-menu');
+            }
+        }
+    }
+}
+
+
+async function fetchImage(userid) {
+    try {
+        const res = await fetch(`http://${API_HOST}:8000/api.php?path=image&user_id=${encodeURIComponent(userid)}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        const out = await res.json().catch(() => ({}));
+        if (!res.ok || out.error) throw new Error(out.error || `HTTP ${res.status}`);
+
+        return out.url; // return only the image URL
+    } catch (e) {
+        console.error(e);
+        if (typeof showPopup === 'function') showPopup('Errore caricamento immagine: ' + e.message, 'error');
+        return null;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async function () {
+      goTo();
+      
+ const profileBtn = document.getElementById("profile");
+
+    const imageUrl = await fetchImage(1);
+    if (imageUrl) {
+        profileBtn.src = imageUrl;  // <-- set src, no background needed
     }
 
-    function closeMenu() {
-        menu.classList.remove("open");
-        overlay.style.display = "none";
-    }
+    profileBtn.addEventListener("click", () => {
+        redirect("../account.php");
+    });
 
-    burger.addEventListener("click", openMenu);
-    backArrow.addEventListener("click", closeMenu);
-    overlay.addEventListener("click", closeMenu);
 
+
+   
     
     window.currentAccountId = getAccountIdFromURL();
     console.log(window.currentAccountId);
@@ -33,25 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const month = String(oggi.getMonth() + 1).padStart(2, "0");
         const year = oggi.getFullYear();
         const fullDate = `${weekday} ${day}/${month}/${year}`;
-        document.getElementById("today-date").textContent = fullDate;
     }
-    const btn = document.getElementById("addbtn");
-    if (!btn) return;
-
-    // click → vai alla pagina
-    btn.addEventListener("click", () => {
-        window.location.href = "/add_transaction.php";
-    });
-
-    // mostra/nascondi in base al ruolo dalla querystring
-    const qs = new URLSearchParams(window.location.search);
-    const role = (qs.get("role") || "").toLowerCase();
-
-    if (role === "admin" || role === "editor") {
-        btn.style.display = "block"; // visibile
-    } else {
-        btn.style.display = "none";  // nascosto per Viewer o ruolo mancante
-    }
+    
 
     // ✅ invoca davvero la funzione
     UpdateDate();
@@ -223,10 +282,12 @@ async function loadTodayTransactions() {
             amountDiv.className = "amount";
             if (t.tipo === "income") {
                 amountDiv.textContent = "+" + t.importo + " €";
-                amountDiv.style.color = "#08fc00";
+                amountDiv.style.color = "white";
+                amountDiv.style.backgroundColor= "green";
             } else {
                 amountDiv.textContent = "-" + t.importo + " €";
-                amountDiv.style.color = "#ff0000ff";
+                amountDiv.style.color = "white";
+                amountDiv.style.backgroundColor= "#ff0000ff";
             }
 
             box.appendChild(iconDiv);
@@ -298,10 +359,12 @@ async function loadLastWeekTransactions() {
             amountDiv.className = "amount";
             if (t.tipo === "income") {
                 amountDiv.textContent = "+" + t.importo + " €";
-                amountDiv.style.color = "green";
+                amountDiv.style.color = "white";
+                amountDiv.style.backgroundColor= "green";
             } else {
                 amountDiv.textContent = "-" + t.importo + " €";
-                amountDiv.style.color = "red";
+                amountDiv.style.color = "white";
+                amountDiv.style.backgroundColor= "#ff0000ff";
             }
 
             box.appendChild(iconDiv);

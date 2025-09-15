@@ -361,49 +361,81 @@ document.addEventListener("DOMContentLoaded", () => {
   
 
   // --- Validation on submit ---
-  form.addEventListener("submit", (e) => {
-    const errors = [];
+  form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    // Participants check
-    // Participants check
-    const participantInputs = form.querySelectorAll("input[name='participants[]']");
+  const errors = [];
 
-    if (participantInputs.length === 0) {
-      errors.push("Please add at least one participant email.");
+  // --- Participants check ---
+  const participantInputs = form.querySelectorAll("input[name='participants[]']");
+  participantInputs.forEach((input, idx) => {
+  const value = input.value.trim();
+  if (value === "") {
+    errors.push(`Participant ${idx+1} is empty.`);
+  } else if (!validateEmail(value)) {
+    errors.push(`Invalid email format: ${value}`);
+  }
+ 
+});
+
+
+  // --- Role check ---
+  // --- Role check ---
+const roleSelects = form.querySelectorAll("select.role");
+if (roleSelects.length !== participantInputs.length) {
+  errors.push("Each participant must have a role.");
+}
+
+
+  // --- Icon check (optional) ---
+  const selectedIcon = document.querySelector("input[name='icon']:checked");
+  const iconValue = selectedIcon ? selectedIcon.value : null;
+  const roles = [...roleSelects].map(s => s.value);
+
+  if (errors.length > 0) {
+    showPopup(errors.join("\n"));
+    return;
+  }
+
+  // --- Prepara dati ---
+  const walletName = document.getElementById("walletName").value.trim();
+  const participants = [...participantInputs].map(i => i.value.trim());
+
+  const accountData = {
+    user_id: 1,
+    name: walletName,
+    p_name1: participants[0] || "",
+    p_role1: roles[0] || "",
+    p_name2: participants[1] || "null",
+    p_role2: roles[1] || "null",
+    p_name3: participants[2] || "null",
+    p_role3: roles[2] || "null",
+    number: participants.length+1,
+    icon: "/images/" +iconValue // 👈 qui l’icona scelta
+  };
+
+  // --- Invio ---
+  try {
+    const res = await fetch(`http://${API_HOST}:8000/api.php?path=create_sw`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(accountData)
+    });
+    const result = await res.json();
+
+
+    if (res.ok) {
+      showPopup("Wallet created successfully!");
+      form.reset();
+      window.location.href="/sharedWallet.php";
     } else {
-      participantInputs.forEach((input) => {
-        const value = input.value.trim();
-
-        if (value === "") {
-          errors.push("All participant fields must be filled.");
-        } else if (!validateEmail(value)) {
-          errors.push(`Invalid email format: ${value}`);
-        }
-      });
+      showPopup("Error during wallet creation: " + (result.error || res.status));
     }
-
-
-    // Role check
-    const role = form.querySelector("select[name='role']");
-    if (!role.value) {
-      errors.push("Please select a role.");
-    }
-
-    // Permissions check
-    const permissions = form.querySelectorAll("input[name='permissions[]']:checked");
-    if (permissions.length === 0) {
-      errors.push("Please select at least one permission.");
-    }
-
-    if (errors.length > 0) {
-      e.preventDefault();
-      showPopup(errors);
-    }
-    else {
-      hidePopup();
-
-    }
-  });
+  } catch (err) {
+    console.error("Errore fetch create_sw:", err);
+    showPopup("Error in server connection!");
+  }
+});
 
 
 });

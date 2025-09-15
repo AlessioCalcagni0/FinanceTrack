@@ -4,99 +4,98 @@
     font-family: 'Inter', sans-serif;
 }
 
-.footer {
-    z-index: 1;
-    background-color: white;
-}
+body {
+  top: 0%;
+  min-width: 412px;
+  max-height: 844px;
 
-.footer-nav {
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    color: white;
-    text-align: center;
-    padding: 1rem;
-    background-color: white;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+ overflow-y: hidden;
+  margin-right: 0%;
 }
-
 
 .main {
-    flex: 1;      
-    margin-top: 60px;
-    margin-left: 25px;
-    overflow-y: auto;   
-    padding: 20px; 
-    height: 850px;        
+    flex: 1;
+    padding-bottom: 80px;
+    height: 800px;
+    overflow-y: scroll;
+    margin-left: 50px;
+    margin-top: 36px;
+}
+
+.main::-webkit-scrollbar {
+    width: 6px;
+}
+
+.main::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
 }
 
 .navbar {
-    display: flex;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 50px;
-    align-items: center;
-    justify-content: space-between;
-    background-color: rgb(255, 255, 255);
-    z-index: 1;
+  margin-left: 2%;
+  padding-top: 2%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-
 #menu {
+  width: 30px;
+  height: 30px;
+}
 
-    width: 30px;
-    height: 30px;
+#profile {
+  width: 33px;
+  height: 33px;
+  
+  border-radius: 50%;  /* makes it circular */
+  object-fit: cover;  
 }
 
 #bell {
-
-    width: 30px;
-    height: 30px;
+  margin-right: 5%;
+  width: 30px;
+  height: 30px;
 }
 
-.title {
-    width: 200px;
-    font-size: 20px;
+#title {
+  padding-left: 12%;
+    font-size: 6dvw;
     font-weight: bold;
-    color: #152C5C;
-    margin: 0 auto;
+    color: #2A60BA;
 }
 
 
 .dropdown {
   position: relative;
   display: inline-block;
-  margin-left: -26px;
-  margin-top: -60px;
 }
 
 .dropdown-content {
-  display: block;
+  z-index: 999;
+  display: none;
   position: absolute;
+  margin-top: -223%;
+  padding-top: 0%;
+  margin-left: -57%;
   background-color: #0B4E92;
   width: 200px;
   height: 970px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  transform: translateX(-100%);   /* nascosto fuori schermo */
-  transition: transform 0.3s ease;
-  z-index: 2;
+  
 }
 
-.dropdown-content.open {
-  transform: translateX(0);
-}
+
 
 .dropdown-content a {
   color: white;
   padding: 15px 40px;
   text-decoration: none;
   display: block;
+  margin-left: 10px;
 }
 
 .dropdown-content h2 {
@@ -104,29 +103,50 @@
   padding-left: 15px;
   padding-top: 10px;
   display: block;
+  margin-left: 10px;
 }
+
+
+.dropdown-content.show-menu{
+  transform: translateX(0);
+}
+
+
+.show-menu {
+  display: block;
+}
+
 
 .back-arrow {
-  display: block;
-  margin-top: 0px;
+  display: none;
+  position: absolute;
+  margin-top: -20px;
   margin-left: 120px;
-  margin-bottom: -30px;
-  margin-top: 30px;
 }
-
-
 
 .overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.5);
-  display: none;     /* nascosto di default */
-  z-index: 1;      /* sotto al menu */
+    position: fixed;
+    opacity: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, .5);
+    transition: 200ms ease-in-out;
+    pointer-events: none;
+    z-index: 2;
 }
-
+.overlayactive {
+    opacity: 1;
+    pointer-events: all;
+}
+.amount{
+    padding: 5px;
+    padding-bottom: 5px;
+    border-radius: 8px;
+    width: max-content;
+    height: 20px;
+}
 
 .account-summary {
     width: 308px;
@@ -235,8 +255,8 @@
 
 #tot-balance {
     position: absolute;
-    left: 60%;
-    top: 15%;
+    left: 64%;
+    top: 18%;
 }
 
 .recent-transaction-label {
@@ -392,3 +412,48 @@
     color: rgb(106, 106, 106);
 }
 
+
+
+
+#topbar {
+  margin-top: 3%;
+    height: 3px;
+    background: linear-gradient(135deg, #2575fc, #6a11cb);
+
+}
+
+
+#bottombar{
+    height: 3px;
+    min-width: 412px;
+    width: 100%;
+    margin-left: 0px;
+        margin-top: 125%;
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+}
+
+#tabBar{
+  display: flex;
+  justify-content: space-around;  /* distribuisce gli item */
+  align-items: center;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 70px;
+  background: #fff;
+  z-index: 1;
+}
+
+.bar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 13px;
+  color: #000;
+  cursor: pointer;
+}
+
+.bar-item img {
+  width: 28px;
+  height: 28px;
+  margin-bottom: 4px;
+}

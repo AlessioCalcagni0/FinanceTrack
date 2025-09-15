@@ -86,6 +86,9 @@ main::-webkit-scrollbar-thumb {
   margin-bottom: 4px;
 }
 
+#insights-icon{
+  margin-left: 0px;
+}
 #menu {
   width: 30px;
   height: 30px;
@@ -137,29 +140,27 @@ main::-webkit-scrollbar-thumb {
   margin-top: 15%;
   margin-bottom: 20%;
   margin-right: auto;
-  margin-left: 6%;
+ margin-left: 2%;
 }
 
 
 
-.dropdown { position: relative; } /* ok tenerla così */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
 .dropdown-content {
-  position: fixed;
-  top: 0;             /* parte dall’alto */
-  bottom: 0;          /* copre fino al fondo */
-  left: 0;
-  width: 260px;
-  background: #0B4E92;
-  overflow-y: auto;
-  /* stato nascosto */
-  transform: translateX(-100%);
-  transition: transform .25s ease;
-  display: block;
-  z-index: 5;     
-}
-
-.dropdown-content.show-menu{
-  transform: translateX(0);
+  z-index: 999;
+  display: none;
+  position: absolute;
+  margin-top: -223%;
+  padding-top: 0%;
+  margin-left: -57%;
+  background-color: #0B4E92;
+  width: 200px;
+  height: 970px;
+  
 }
 
 .dropdown-content a {
@@ -167,8 +168,6 @@ main::-webkit-scrollbar-thumb {
   padding: 15px 40px;
   text-decoration: none;
   display: block;
-  font-size: 18px;
-    margin-left: 15px;
 }
 
 .dropdown-content h2 {
@@ -176,8 +175,8 @@ main::-webkit-scrollbar-thumb {
   padding-left: 15px;
   padding-top: 10px;
   display: block;
-    margin-left: 10px;
 }
+
 
 .back-arrow {
   display: none;
@@ -300,8 +299,8 @@ main::-webkit-scrollbar-thumb {
   border-radius: 8px;
   width: 200px;
   margin: 0 auto;
-  margin-left: 85px;
-  margin-top: 152px;
+      margin-left: 110px;
+    margin-top: 600px;
 }
 
 .btn-trans:hover {
@@ -309,7 +308,7 @@ main::-webkit-scrollbar-thumb {
 }
 
 .create_wallet{
-   margin-left: 25%;
+   margin-left: 22%;
    margin-right: auto;
   margin-top: 4%;
   margin-bottom: 40%;
@@ -657,7 +656,7 @@ section .card .image img {
   height: 3px;
   background: linear-gradient(135deg, #6a11cb, #2575fc);      /* niente margin-bottom */
   width: 100%;
-  margin-top: 625px;
+      margin-top: 130px;
 }
 
 #overlay {
@@ -669,7 +668,7 @@ section .card .image img {
   margin: 0 auto;
   background: rgba(0,0,0,0.5); /* sfondo nero trasparente */
   display: none; /* nascosto di default */
-  z-index: 1;   /* deve stare sopra al contenuto, ma sotto al menu */
+  z-index: 2;   /* deve stare sopra al contenuto, ma sotto al menu */
 }
 #overlay.show {
   display: block;

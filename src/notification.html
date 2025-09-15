@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <title>Notifications</title>
+  <style>
+    :root{
+      --blue:linear-gradient(135deg, #6a11cb, #2575fc);
+      --red:#e53935;
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --text:#0b1020;
+      --muted:#6b7280;
+      --radius:14px;
+      --shadow:0 6px 20px rgba(0,0,0,.06);
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+      color:var(--text);
+      background:var(--bg);
+    }
+
+    /* Fixed top bar */
+    .topbar{
+      position:fixed;
+      inset:0 0 auto 0;
+      height:56px;
+      background:var(--blue);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:0 16px;
+      z-index:10;
+      box-shadow:0 2px 10px rgba(0,0,0,.12);
+    }
+    .topbar__title{
+      font-size: 25px;
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+    .topbar__close{
+      position:absolute;
+      right:12px;
+      top:50%;
+      transform:translateY(-50%);
+      width:36px;
+      height:36px;
+      border-radius:10px;
+      display:grid;
+      place-items:center;
+      color:#fff;
+      text-decoration:none;
+      font-size:1.25rem;
+      line-height:1;
+      cursor:pointer;
+      border:0;
+      background:transparent;
+    }
+
+    /* Scrollable list area */
+    .wrap{
+      max-width:720px;
+      margin:0 auto;
+      padding:76px 16px 24px;
+      height:100%;
+    }
+    .list{
+      height:calc(100vh - 92px);
+      overflow:auto;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      padding-right:4px;
+    }
+
+    /* Notification cards */
+    .item{
+      display:grid;
+      grid-template-columns:auto 1fr;
+      gap:12px;
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:12px 14px;
+      width:100%;
+      align-items:flex-start;
+    }
+    .item__icon{
+      font-size:1.6rem;
+      line-height:1;
+      margin-top:4px;
+    }
+    .item__body{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      width:100%;
+    }
+    .item__title{
+      font-weight:700;
+      margin:0 0 2px 0;
+      font-size:.98rem;
+    }
+    .item__text{
+      margin:0;
+      color:var(--muted);
+      font-size:.9rem;
+      line-height:1.35;
+    }
+    .item__actions{
+      display:flex;
+      gap:8px;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      height:36px;
+      padding:0 14px;
+      border-radius:10px;
+      border:0;
+      cursor:pointer;
+      font-weight:700;
+      text-decoration:none;
+      white-space:nowrap;
+    }
+    .btn--view{
+      background:var(--blue);
+      color:#fff;
+    }
+    .btn--cancel{
+      background:#ff0000c8;
+      color:#fff;
+          font-size: 15.5px;
+
+    }
+    .btn:hover{ filter:brightness(.96) }
+
+    /* Empty state */
+    .empty{
+      text-align:center;
+      font-size:1.4rem;
+      font-weight:600;
+      color:#b0b0b0;
+      padding:40px 0;
+    }
+
+    img{
+      width: 35px;
+      height: 35px;
+    }
+
+    /* Scrollbar */
+    .list{
+      scrollbar-width:thin;
+      scrollbar-color:#cfd6e6 transparent;
+    }
+    .list::-webkit-scrollbar{ height:8px; width:8px }
+    .list::-webkit-scrollbar-thumb{ background:#cfd6e6; border-radius:20px }
+    .list::-webkit-scrollbar-track{ background:transparent }
+  </style>
+</head>
+<body>
+
+  <!-- Fixed blue header -->
+  <header class="topbar">
+    <div class="topbar__title">Notifications</div>
+    <button class="topbar__close" aria-label="Go back" title="Go back" onclick="goBack()">
+      <i class="fa-solid fa-xmark" ></i>
+    </button>
+  </header>
+
+  <!-- Content -->
+  <main class="wrap">
+    <div class="list" id="notifications">
+
+      <!-- Notification 1: shared wallet invite -->
+      <article class="item">
+        <div class="item__icon"><img src="images/icons8-letter-96.png"></div>
+        <div class="item__body">
+          <div>
+            <h3 class="item__title">You’ve been invited to a shared wallet</h3>
+            <p class="item__text">
+              Sara Fabrizi  invited  you to a shared wallet. You can view and manage it in
+              the “Shared wallets” section.
+            </p>
+          </div>
+          <div class="item__actions">
+            <a class="btn btn--view" href="/sharedWallet.php">View</a>
+            <a class="btn btn--cancel" onclick="removeNotification(this)">Cancel</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Notification 2: goal deadline missed -->
+      <article class="item">
+        <div class="item__icon"><img src="images/icons8-goal-96.png"></div>
+        <div class="item__body">
+          <div>
+            <h3 class="item__title">Goal not reached — deadline passed</h3>
+            <p class="item__text">
+              Your savings goal “Summer Trip” wasn’t reached before the deadline. Review the goal to adjust the target or extend the date.
+            </p>
+          </div>
+          <div class="item__actions">
+            <a class="btn btn--view" href="/goals.php">View</a>
+            <a class="btn btn--cancel" onclick="removeNotification(this)">Cancel</a>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </main>
+
+  <script>
+    function goBack(){
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = "/";
+      }
+    }
+
+    function removeNotification(button){
+      const item = button.closest('.item');
+      item.remove();
+      const list = document.getElementById('notifications');
+      if(list.children.length === 0){
+        const emptyMsg = document.createElement('div');
+        emptyMsg.className = 'empty';
+        emptyMsg.textContent = 'No notifications left';
+        list.appendChild(emptyMsg);
+      }
+    }
+  </script>
+</body>
+</html>

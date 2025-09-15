@@ -1,3 +1,43 @@
+
+function redirect(location) {
+  window.location.href = location;
+}
+
+function openMenu() {
+    document.getElementsByClassName("back-arrow")[0].classList.add("show-menu");
+
+    document.getElementById("menu-content").classList.toggle("show-menu");
+    const overlay = document.getElementById("overlay");
+    overlay.classList.add("overlayactive");
+
+}
+function closeMenu() {
+
+    document.getElementById("menu-content").classList.remove("show-menu");
+    document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
+    const overlay = document.getElementById("overlay");
+    overlay.classList.remove("overlayactive");
+}
+
+window.onclick = function (event) {
+    if (!event.target.matches('#menu') && !event.target.matches("menu-content")) {
+
+
+        document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
+        const overlay = document.getElementById("overlay");
+        overlay.classList.remove("overlayactive");
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show-menu')) {
+                openDropdown.classList.remove('show-menu');
+            }
+        }
+    }
+}
+
+
 function goTo(){
     const home = document.getElementById("home");
     const wallet = document.getElementById("wallet-icon");
@@ -30,9 +70,6 @@ function goTo(){
 }
 
 
-
-document.addEventListener('DOMContentLoaded', () => {
-    goTo();
 async function fetchImage(userid) {
     try {
         const res = await fetch(`http://${API_HOST}:8000/api.php?path=image&user_id=${encodeURIComponent(userid)}`, {
@@ -52,6 +89,8 @@ async function fetchImage(userid) {
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
+      goTo();
+      
  const profileBtn = document.getElementById("profile");
 
     const imageUrl = await fetchImage(1);
@@ -1122,51 +1161,6 @@ function buildSharedPageUrl({ name, participants, role, balance }) {
 }
 
 
-function redirect(location) {
-  window.location.href = location;
-}
 
 
 
-function openMenu() {
-  document.getElementById("image1_303_309").classList.add("hide-menu");
-  document.getElementById("hh").classList.add("hide-menu");
-  document.getElementById("hhs").classList.add("hide-menu");
-  document.getElementById("ww").classList.add("hide-menu");
-  document.getElementsByClassName("back-arrow")[0].classList.add("show-menu");
-
-  document.getElementById("menu-content").classList.toggle("show-menu");
-
-
-}
-
-window.onclick = function (event) {
-  if (!event.target.matches('#menu') && !event.target.matches("menu-content")) {
-    document.getElementById("image1_303_309").classList.remove("hide-menu");
-    document.getElementById("hh").classList.remove("hide-menu");
-    document.getElementById("hhs").classList.remove("hide-menu");
-    document.getElementById("ww").classList.remove("hide-menu");
-
-    document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
-
-    var dropdowns = document.getElementsByClassName("dropdown-content");
-    var i;
-    for (i = 0; i < dropdowns.length; i++) {
-      var openDropdown = dropdowns[i];
-      if (openDropdown.classList.contains('show-menu')) {
-        openDropdown.classList.remove('show-menu');
-      }
-    }
-  }
-}
-
-function closeMenu() {
-  document.getElementById("image1_303_309").classList.remove("hide-menu");
-  document.getElementById("hh").classList.remove("hide-menu");
-  document.getElementById("hhs").classList.remove("hide-menu");
-  document.getElementById("ww").classList.remove("hide-menu");
-  document.getElementById("menu-content").classList.remove("show-menu");
-  document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
-
-}
-});

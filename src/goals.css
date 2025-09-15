@@ -5,12 +5,12 @@
 
 /* Score */
 .score{
-  margin: 10px auto 16px;
-  max-width: 520px;
+  margin: 10px 50px;
+  max-width: 700px;
   display:grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr 1fr;
   align-items:center;
-  gap: 12px;
+  gap: 0px;
 }
 .score .card{
   border-radius: 20px;
@@ -22,29 +22,33 @@
   justify-content:center;
   min-height: 120px;
 }
-.score .card.green{ background:#16a34a; }
-.score .card.red{ background:#ef4444; }
+.score .card.green{ background:rgb(70, 213, 70);}
+.score .card.red{ background:#e64949; }
 .score .icon{ font-size:36px; line-height:1; }
 .score .title{ font-size:14px; margin-top:6px; }
 .score .num{ font-size:22px; font-weight:800; margin-top:6px; }
-.center-pill{
-  background:#fff; border-radius:14px; padding:10px 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,.08);
-  text-align:center; font-weight:800; font-size:14px;
-}
 
 /* Section title & link */
 .history{ display:block; text-align:center; font-weight:700; margin: 6px 0 12px; text-decoration:none; color:#0B4E92; }
 .section-title{ color:#0B4E92; margin: 8px 0; font-size:20px; }
 
 /* List */
-.list{ display:grid; gap: 14px; }
+
 .goal{
   display:grid; grid-template-columns: 48px 1fr auto; gap: 12px;
   background:#fff; border:1px solid #e5e7eb; border-radius:18px; padding: 12px;
   box-shadow: 0 2px 6px rgba(0,0,0,.05);
+  height: 115px;
 }
-.left .glyph{ width:40px; height:40px; border-radius:10px; background:#ececec; display:flex; align-items:center; justify-content:center; }
+.left .glyph{ width:40px; height:40px; border-radius:10px; background:#ececec; display:flex; align-items:center; justify-content:center; overflow: hidden; }
+.left .glyph .trophy-img{
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;        /* evita trascinamenti involontari */
+}
+
 .mid .name{ font-weight:800; }
 .mid .deadline{ color:#6b7280; font-size:12px; margin-top:2px; }
 .bar{ height:12px; background:#e5e7eb; border-radius:999px; overflow:hidden; margin: 8px 0 6px; }
@@ -56,11 +60,341 @@
 /* Floating Action Button */
 .fab{
   position: fixed;
-  right: 16px; bottom: 88px;
+  right: 23px;
+  bottom: 112px;
   background:#1f4ccf; color:#fff; text-decoration:none;
   padding: 12px 18px; border-radius: 999px; font-weight:800;
   box-shadow: 0 6px 18px rgba(31, 76, 207, .4);
 }
 
-#tabBar{ left:0%; position:absolute; bottom:-45%; }
+#tabBar{ 
+      left: 0%;
+    position: absolute;
+    bottom: -11%;
+ }
 .tabbar-wrap{ position:relative; height: 120px; }
+
+/* === Icon style override (flat, come History) === */
+
+/* togli lo sfondo grigio dietro alle icone a sinistra */
+.goal .left .glyph{
+  width:40px; height:40px;
+  display:flex; align-items:center; justify-content:center;
+  background: none !important; border: none !important; padding:0;
+}
+.goal .left .glyph svg{ width:24px; height:24px; }
+/* trophy dorato */
+.goal .left .glyph.trophy{ color:#f59e0b; }
+
+/* bottoni icona a destra */
+.icon-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:38px; height:38px;
+  background:#fff; border:1px solid #fff; border-radius:10px;
+  padding:0; cursor:pointer; text-decoration:none; color:#111;
+}
+.icon-btn + .icon-btn{ margin-left:6px; }
+.icon-btn svg{ width:20px; height:20px; }
+.icon-btn.danger{ border-color:#fff; }
+
+.icon-btnn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:38px; height:38px;
+  background:#fff; border:1px solid #fff; border-radius:10px;
+  padding:0; cursor:pointer; text-decoration:none; color:#2ecc71;
+}
+
+/* stato "attivo" per la campanella */
+.icon-btn[aria-pressed="true"]{
+  border-color:#fff; background:#fff; color:#000;
+}
+
+.icon-btn:active{ transform: translateY(1px); }
+
+
+/* Allunga la barra fino a destra sovrapponendo le icone */
+.goal{ position: relative; }                 /* abilita posizionamento assoluto */
+.mid{ grid-column: 2 / 4; }                  /* la colonna centrale occupa col 2 + 3 */
+.goal .right{
+  position: absolute;                        /* togli dal flusso la colonna icone */
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  gap: 6px;
+}
+.bar{ width: 100%; }                         /* la barra usa tutta la larghezza disponibile */
+
+
+/* icone SVG nei riquadri score */
+.score .icon{ line-height:0; display:flex; align-items:center; justify-content:center; }
+.score .icon svg{ width:36px; height:36px; stroke:currentColor; fill:none; }
+.score .card{ color:#fff; } /* garantisce icone bianche (currentColor) */
+
+/* Rimuovi il quadrato bianco dietro alle icone degli score */
+.score .card .icon{
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  width: auto; height: auto;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Dimensioni e stile dell'SVG (bianco su verde/rosso) */
+.score .card .icon svg{
+  width: 36px; height: 36px;
+  display: block;
+  stroke: currentColor;  /* usa il colore del testo della card (bianco) */
+  fill: none;
+}
+
+/* ===== Modern score KPIs ===== */
+/* container più stretto e centrato */
+.score.score--modern{
+  margin: 10px 110px;           /* centrato */
+  max-width: 300px;            /* <— più stretto (era 700) */
+  gap: 10px;
+}
+
+/* card un filo più compatta */
+.card.kpi{
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px 1fr; /* <— icona meno larga (era 56px) */
+  align-items: center;
+  gap: 10px;
+  min-height: 108px;           /* <— più bassa (era 120px) */
+  border: none;
+  box-shadow: 0 10px 24px rgba(0,0,0,.10);
+  border-radius: 20px;
+  padding: 14px;               /* <— leggermente meno (era 16px) */
+  color: #fff;
+}
+/* colori eleganti (leggero gradiente) */
+.card.kpi.green{
+  background: linear-gradient(135deg, #2ecc71 0%, #16a34a 100%);
+}
+.card.kpi.red{
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+/* icona: nessun quadratino, cerchietto soft translucido */
+.kpi__icon{
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  display:flex; align-items:center; justify-content:center;
+  background: rgba(255,255,255,.14);           /* alone traslucido */
+  border: 1px solid rgba(255,255,255,.22);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.1);
+}
+.kpi__icon svg{
+  width: 26px; height: 26px;
+  display:block;
+  stroke: currentColor; fill: none;
+}
+
+/* testi */
+.kpi__meta{ display:flex; flex-direction:column; gap:6px; }
+.kpi__label{
+  font-size: 13px; font-weight: 700; letter-spacing: .2px;
+  opacity: .95;
+}
+.kpi__value{
+  font-size: 28px; font-weight: 800; line-height: 1;
+}
+
+/* responsive: su schermi stretti impila */
+@media (max-width: 520px){
+  .score.score--modern{ grid-template-columns: 1fr; }
+}
+
+/* rimuovi eventuali stili ereditati che creavano quadrati bianchi */
+.score .card .icon,
+.score .card .kpi__icon{
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Force score cards side-by-side (no stacking) */
+.score,
+.score.score--modern{
+  flex-wrap: nowrap;
+  gap: 12px;
+  align-items: stretch;
+}
+
+/* make both cards take the same width */
+.score .card,
+.score.score--modern .card,
+.score.score--modern .card.kpi{
+  flex: 1 1 0;
+  min-width: 0; /* evita wrap su schermi stretti */
+}
+
+
+/* === FORCE score cards side-by-side, always === */
+.score,
+.score.score--modern{
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 12px;
+  align-items: stretch;
+}
+
+/* entrambe le card prendono metà spazio */
+.score .card,
+.score.score--modern .card,
+.score.score--modern .card.kpi{
+  flex: 1 1 0 !important;
+  min-width: 0;
+  width: auto !important;
+}
+
+/* se qualche media query le impilava, annullala */
+@media (max-width: 520px){
+  .score,
+  .score.score--modern{
+    display: flex !important;
+    flex-wrap: nowrap !important;
+  }
+}
+
+/* ——— Fix score layout: 2 colonne, nessun overflow ——— */
+.score{
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  margin: 10px 16px !important;     /* margini smartphone */
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+.score .card{
+  min-width: 0;                     /* consente di comprimersi senza sforare */
+}
+
+/* se c'è la variante modern, uniforma allo stesso comportamento */
+.score.score--modern{
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  margin: 10px 16px !important;
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+/* disattiva qualsiasi media query che le metteva in colonna singola */
+@media (max-width: 9999px){
+  .score.score--modern{ grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+
+/* === Slimmer score cards (adjustable) === */
+.score{
+  --card-width: 50%;            /* cambia qui: es. 90%, 88%, 85% ... */
+}
+
+.score .card,
+.score .card.kpi{
+  width: var(--card-width);
+  margin-left: auto;
+  margin-right: auto;           /* centra ogni card dentro la sua colonna */
+  min-width: 0;                 /* evita overflow */
+}
+
+/* (opzionale) un filo più spazio tra le due card */
+.score{ gap: 14px !important; }
+
+/* Stringi le due score card senza allargare lo schermo */
+.score,
+.score.score--modern{
+  justify-items: center !important; /* <— niente più stretch: centra gli item */
+}
+
+.score .card,
+.score.score--modern .card,
+.score .card.kpi,
+.score.score--modern .card.kpi{
+  width: 80% !important;            /* <— regola qui: 92%, 90%, 85%... */
+  max-width: 320px;                  /* opzionale: limite superiore */
+  justify-self: center !important;   /* sicurezza extra */
+}
+
+/* === FINAL: due card affiancate e centrate, niente overflow === */
+.score,
+.score.score--modern{
+  /* contenitore */
+  margin: 10px auto !important;
+  padding: 0 16px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+
+  /* griglia semplice: 2 colonne che si adattano alla card */
+  display: grid !important;
+  grid-template-columns: auto auto !important;
+  justify-content: center !important;   /* centra il GRUPPO delle 2 colonne */
+  justify-items: center !important;     /* centra ciascuna card nella propria colonna */
+  align-items: stretch !important;
+  gap: 20px !important;
+}
+
+/* le card non forzano larghezze strane */
+.score .card,
+.score .card.kpi,
+.score.score--modern .card,
+.score.score--modern .card.kpi{
+  width: auto !important;      /* annulla width:% precedenti */
+  max-width: 320px !important; /* opzionale: limite superiore per telefono */
+  min-width: 0 !important;
+}
+
+/* ===== Goal Completed Overlay ===== */
+.hidden{ display:none !important; }
+body.modal-open{ overflow:hidden; }
+
+.gc-overlay{
+  position:fixed; inset:0; background:rgba(0,0,0,.45);
+  display:flex; align-items:center; justify-content:center; z-index:9999;
+}
+.gc-card{
+  width:min(92vw, 380px);
+  background:#fff; border-radius:18px; padding:18px 16px 20px;
+  box-shadow: 0 12px 28px rgba(0,0,0,.18);
+  text-align:center;
+}
+.gc-illus{ position:relative; width:110px; height:110px; margin: 6px auto 8px; }
+.gc-emoji{ font-size:76px; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+.gc-check{
+  position:absolute; right:-6px; bottom:-6px;
+  width:42px; height:42px; border-radius:50%; background:#22c55e; color:#fff;
+  display:flex; align-items:center; justify-content:center; font-weight:800; font-size:20px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.25);
+}
+.gc-title{ margin: 8px 0 2px; font-size:22px; font-weight:800; color:#0B4E92; }
+.gc-sub{ margin: 0 0 12px; color:#374151; }
+.gc-ok{
+  border:none; background:#0B4E92; color:#fff; font-weight:800;
+  padding: 10px 14px; border-radius:12px; cursor:pointer;
+}
+
+#bottombar{
+      height: 3px;
+    position: absolute;
+    min-width: 412px;
+    width: 100%;
+    margin-left: 0px;
+    margin-top: 205%;
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+}
+
+
+
+#list{
+  height: 400px;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

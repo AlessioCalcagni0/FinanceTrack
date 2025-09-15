@@ -325,11 +325,11 @@ if ($path === "add_account") {
 
 if ($path === "update_account") {
     try {
-        $data = json_decode(file_get_contents("php://input"), true);
-        if (!$data || !isset($data["id"])) throw new Exception("ID mancante");
+        $data =1;
+        
 
         $fields = [];
-        $params = [":id"=>$data["id"]];
+        $params = [":id"=>$data];
         if (isset($data["name"])) { $fields[]="name=:name"; $params[":name"]=$data["name"]; }
         if (isset($data["type"])) { $fields[]="type=:type"; $params[":type"]=$data["type"]; }
         if (isset($data["path"])) { $fields[]="path=:path"; $params[":path"]=$data["path"]; }
@@ -452,7 +452,7 @@ if ($path === "api/goals") {
 
     $sql = "SELECT id, name, TO_CHAR(deadline, 'DD MM YYYY') as deadline, saved_amount , target_amount , created_at
             FROM goals
-            WHERE user_id = :user_id
+            WHERE user_id = :user_id and CURRENT_DATE > deadline
             ORDER BY created_at DESC";
 
     try {
@@ -619,6 +619,42 @@ if ($path === "sharedAccounts") {
     }
     exit;
 }
+
+
+if ($path === "fetchSW") {
+    $shared_wallet = $_GET["shared_wallet"] ?? "";
+    try {
+        $sql = "
+            SELECT 
+                id,
+                name,
+                balance,
+                path,
+                partecipant_num,
+                partecipant_name_surname1,
+                partecipant_name_surname2,
+                partecipant_name_surname3,
+                user_role,
+                participant_role1,
+                participant_role2,
+                participant_role3,
+                TO_CHAR(last_sync, 'YYYY-MM-DD') AS last_sync
+            FROM shared_wallets 
+            WHERE id = :shared_wallet
+            ORDER BY name ASC
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['shared_wallet' => (int)$shared_wallet]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($rows ?: []);
+    } catch(PDOException $e) {
+        http_response_code(500);
+        echo json_encode(["error"=>$e->getMessage()]);
+    }
+    exit;
+}
+
 
 
 if ($path === "save_sw_changes") {
@@ -858,7 +894,6 @@ if ($path === 'invitation_accept' && $_SERVER['REQUEST_METHOD'] === 'POST') {
                     partecipant_name_surname1, partecipant_name_surname2, partecipant_name_surname3,
                     user_role,
                     participant_role1, participant_role2, participant_role3,
-                    participant_permissions1, participant_permissions2, participant_permissions3,
                     last_sync, created_at
                 )
                 SELECT
@@ -867,7 +902,6 @@ if ($path === 'invitation_accept' && $_SERVER['REQUEST_METHOD'] === 'POST') {
                     partecipant_name_surname1, partecipant_name_surname2, partecipant_name_surname3,
                     'Viewer',
                     participant_role1, participant_role2, participant_role3,
-                    participant_permissions1, participant_permissions2, participant_permissions3,
                     NOW()::date, NOW()
                 FROM shared_wallets
                 WHERE id = :src
@@ -1234,6 +1268,7 @@ if ($path === "login" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
 // GET /api.php?path=logout
 if ($path === "logout") {
+     $pass  = $data["password"] ?? "";
     $_SESSION = [];
     if (ini_get("session.use_cookies")) {
         $params = session_get_cookie_params();
@@ -1248,14 +1283,10 @@ if ($path === "logout") {
 
 // GET /api.php?path=me
 if ($path === "me") {
-    if (!isset($_SESSION["user_id"])) {
-        http_response_code(401);
-        echo json_encode(["error"=>"Not authenticated"]);
-        exit;
-    }
+     $userId =1;
     try {
         $st = $pdo->prepare("SELECT id, name, surname, email, birth, tel, photo, created_at FROM users WHERE id = :id");
-        $st->execute([":id"=>$_SESSION["user_id"]]);
+        $st->execute([":id"=> $userId]);
         $user = $st->fetch(PDO::FETCH_ASSOC);
         echo json_encode(["user"=>$user]);
     } catch(PDOException $e) {
@@ -1365,12 +1396,8 @@ if ($path === "login" && $_SERVER["REQUEST_METHOD"] === "POST") {
 // POST /api.php?path=upload_photo  (multipart/form-data with "photo")
 if ($path === "upload_photo" && $_SERVER["REQUEST_METHOD"] === "POST") {
     header("Content-Type: application/json");
-    if (!isset($_SESSION["user_id"])) {
-        http_response_code(401);
-        echo json_encode(["error" => "Not authenticated"]);
-        exit;
-    }
-
+   
+    $id=1;
     if (!isset($_FILES["photo"])) {
         http_response_code(400);
         echo json_encode(["error" => "No file field 'photo'"]);
@@ -1433,7 +1460,7 @@ if ($path === "upload_photo" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Generate a safe unique name
     try { $rand = bin2hex(random_bytes(4)); } catch (Throwable $e) { $rand = substr(bin2hex(uniqid("", true)), 0, 8); }
-    $fname = "u" . $_SESSION["user_id"] . "_" . time() . "_" . $rand . "." . $ext;
+    $fname = "u" . $id . "_" . time() . "_" . $rand . "." . $ext;
     $dest  = $baseDir . "/" . $fname;
 
     if (!@move_uploaded_file($tmp, $dest)) {
@@ -1452,11 +1479,7 @@ if ($path === "upload_photo" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
 // POST /api.php?path=update_user  (JSON con name, surname, tel, birth, photo)
 if ($path === "update_user" && $_SERVER["REQUEST_METHOD"] === "POST") {
-    if (!isset($_SESSION["user_id"])) {
-        http_response_code(401);
-        echo json_encode(["error"=>"Not authenticated"]);
-        exit;
-    }
+    $id=1;
     $data = json_decode(file_get_contents("php://input"), true) ?? [];
 
     $name    = isset($data["name"])    ? trim($data["name"])    : null;
@@ -1466,7 +1489,7 @@ if ($path === "update_user" && $_SERVER["REQUEST_METHOD"] === "POST") {
     $photo   = isset($data["photo"])   ? trim($data["photo"])   : null; // es. uploads/avatars/xxx.jpg
 
     $fields = [];
-    $params = [":id"=>$_SESSION["user_id"]];
+    $params = [":id"=>$id];
 
     if ($name !== null && $name !== "")        { $fields[] = "name = :name";           $params[":name"]=$name; }
     if ($surname !== null && $surname !== "")  { $fields[] = "surname = :surname";     $params[":surname"]=$surname; }
@@ -1527,3 +1550,66 @@ if ($path === "image") {
 // Se non trova corrispondenza
 http_response_code(404);
 echo json_encode(["error" => "Endpoint non trovato"]);
+
+
+if ($path==="create_sw"){
+    header('Content-Type: application/json; charset=utf-8');
+    ob_clean(); // pulisci buffer output
+
+    $data = json_body();
+    $user_id = intval($data["user_id"] ?? 1);
+    $name = trim($data["name"] ?? "");
+    $partecipant_name_surname1=  trim($data["p_name1"] ?? "");
+    $participant_role1= trim($data["p_role1"] ?? "");
+    $partecipant_name_surname2= trim($data["p_name2"] ?? "");
+    $participant_role2=  trim($data["p_role2"] ?? "");
+    $partecipant_name_surname3= trim($data["p_name3"] ?? "");
+    $participant_role3=  trim($data["p_role3"] ?? "");
+    $participant_num = isset($data["number"]) ? intval($data["number"]) : null;
+    $icon = $data["icon"] ?? null;
+
+    if ($name === "") { http_response_code(400); echo json_encode(["error"=>"Missing name"]); exit; }
+    try {
+        $stmt = $pdo->prepare("INSERT INTO shared_wallets (user_id,
+                name,
+                income,
+                spent,
+                balance,
+                path,
+                partecipant_num,
+                partecipant_name_surname1,
+                partecipant_name_surname2,
+                partecipant_name_surname3,
+                user_role,
+                participant_role1,
+                participant_role2,
+                participant_role3)
+                               VALUES (:user_id, :name, 0,0,0, :icon, :participant_num, :partecipant_name_surname1, 
+                               :partecipant_name_surname2,
+                               :partecipant_name_surname3,
+                               'admin',
+                               :participant_role1,
+                               :participant_role2,
+                               :participant_role3)
+                               RETURNING id");
+        $stmt->execute([
+            ":user_id"=>$user_id, ":name"=>$name, ":icon"=>$icon,":participant_num"=>$participant_num,  
+             ":partecipant_name_surname1"=>$partecipant_name_surname1,
+            ":partecipant_name_surname2"=>$partecipant_name_surname2,
+             ":partecipant_name_surname3"=>$partecipant_name_surname3,
+              ":participant_role1"=>$participant_role1,
+              ":participant_role2"=>$participant_role2,
+              ":participant_role3"=>$participant_role3
+        ]);
+        http_response_code(200);
+        echo json_encode(["success"=>true]);
+        exit;
+    } catch(PDOException $e) {
+        http_response_code(500);
+        echo json_encode(["error"=>$e->getMessage()]);
+    }
+    exit;
+}
+
+file_put_contents('debug.log', print_r($_GET, true) . "\n", FILE_APPEND);
+file_put_contents('debug.log', print_r($_POST, true) . "\n", FILE_APPEND);

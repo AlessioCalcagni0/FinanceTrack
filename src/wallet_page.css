@@ -9,7 +9,8 @@
 body {
   top: 0%;
   min-width: 412px;
-  max-height: 775px;
+  max-height: 844px;
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -833,7 +834,7 @@ body {
     min-width: 412px;
     width: 100%;
     margin-left: 0px;
-    margin-bottom: 20%;
+    margin-top: 21%;
     background: linear-gradient(135deg, #6a11cb, #2575fc);
 }
 

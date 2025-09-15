@@ -94,7 +94,7 @@ function createBarChart(canvasId, data, label, period) {
       datasets: getDatasets(data, "bar")
     },
     options: {
-      responsive: true,
+      responsive: false,
       plugins: {
         title: {
           display: true,
@@ -135,7 +135,7 @@ function createLineChart(canvasId, data, label, period) {
       datasets: getDatasets(data, "line")
     },
     options: {
-      responsive: true,
+      responsive: false,
       plugins: {
         title: {
           display: true,
@@ -279,26 +279,109 @@ async function showChart(period) {
 // ================================
 // Boot
 // ================================
-document.addEventListener('DOMContentLoaded', async () => {
+function openMenu() {
+    document.getElementsByClassName("back-arrow")[0].classList.add("show-menu");
 
-  const burger = document.getElementById("burger");
-  const menu = document.getElementById("menu-content");
-  const overlay = document.getElementById("overlay");
-  const backArrow = document.getElementById("back-arrow");
+    document.getElementById("menu-content").classList.toggle("show-menu");
+    const overlay = document.getElementById("overlay-menu");
+    overlay.style.opacity="1";
 
-  function openMenu() {
-    menu.classList.add("open");
-    overlay.style.display = "block";
-  }
+}
 
-  function closeMenu() {
-    menu.classList.remove("open");
-    overlay.style.display = "none";
-  }
+function goTo() {
+    const home = document.getElementById("home");
+    const wallet = document.getElementById("wallet-icon");
+    const goal = document.getElementById("goal-icon");
+    const insights = document.getElementById("insights-icon");
 
-  burger.addEventListener("click", openMenu);
-  backArrow.addEventListener("click", closeMenu);
-  overlay.addEventListener("click", closeMenu); // c
+    if (home) {
+        home.addEventListener('click', () => {
+            window.location.href = "../homepage.php";
+        });
+    }
+
+    if (wallet) {
+        wallet.addEventListener('click', () => {
+            window.location.href = "../wallet_page.php";
+        });
+    }
+
+    if (goal) {
+        goal.addEventListener('click', () => {
+            window.location.href = "../goals.php";
+        });
+    }
+
+    if (insights) {
+        insights.addEventListener('click', () => {
+            window.location.href = "../insights.php";
+        });
+    }
+}
+
+window.onclick = function (event) {
+    if (!event.target.matches('#menu') && !event.target.matches("menu-content")) {
+
+
+        document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
+        const overlay = document.getElementById("overlay-menu");
+        overlay.style.opacity="0";
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show-menu')) {
+                openDropdown.classList.remove('show-menu');
+            }
+        }
+    }
+}
+
+function closeMenu() {
+   
+    document.getElementById("menu-content").classList.remove("show-menu");
+    document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
+    const overlay = document.getElementById("overlay-menu");
+    overlay.style.opacity="0";
+}
+
+
+async function fetchImage(userid) {
+    try {
+        const res = await fetch(`http://${API_HOST}:8000/api.php?path=image&user_id=${encodeURIComponent(userid)}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        const out = await res.json().catch(() => ({}));
+        if (!res.ok || out.error) throw new Error(out.error || `HTTP ${res.status}`);
+
+        return out.url; // return only the image URL
+    } catch (e) {
+        console.error(e);
+        if (typeof showPopup === 'function') showPopup('Error during image load: ' + e.message, 'error');
+        return null;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async function () {
+    const profileBtn = document.getElementById("profile");
+
+    const imageUrl = await fetchImage(1);
+    if (imageUrl) {
+        profileBtn.src = imageUrl;  // <-- set src, no background needed
+    }
+
+    profileBtn.addEventListener("click", () => {
+        redirect("../account.php");
+    });
+
+    goTo();
+
+  
+
+
+
   // Buttons periodo
   document.getElementById("btn-week").addEventListener("click", () => showChart("week"));
   document.getElementById("btn-month").addEventListener("click", () => showChart("month"));
@@ -350,28 +433,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ================================
 // Navigation helpers (unchanged)
 // ================================
-function goTo() {
 
-  const home = document.getElementById("home");
-  const wallet = document.getElementById("wallet-icon");
-  const goal = document.getElementById("goal-icon");
-  const insights = document.getElementById("insights-icon");
-
-  home.addEventListener('click', () => {
-    window.location.href = "../homepage.php"
-  }
-  );
-  wallet.addEventListener('click', () => {
-    window.location.href = "../wallet_page.php"
-  }
-  );
-  goal.addEventListener('click', () => {
-    window.location.href = "../goals.php"
-  }
-  );
-  insights.addEventListener('click', () => {
-    window.location.href = "../insights.php"
-  }
-  );
-};
 function redirect(location) { window.location.href = location; }

@@ -37,11 +37,11 @@ $apiHost = $_ENV['DB_HOST'] ;
             <img onclick="closeMenu()" class="back-arrow" src="/images/icons8-back-arrow-50.png" >
 
             <div id="menu-content" class="dropdown-content">
-                <h2 style="margin-top: 50%;">Home</h2>
+                <h2 style="margin-top: 20%;" onclick="redirect('/homepage.php')">Home</h2>
                 <h2>Wallets</h2>
-                <a href="../wallet_page.php">All Accounts</a>
+                <a href="../wallet_page.php">All Wallets</a>
                 <a href="./sharedWallet.php">Shared Wallets</a>
-                <a href="#">Cash Account</a>
+                <a href="./cash_page.php">Cash Wallet</a>
                 <!-- la sezione "Add Transaction" è stata temporaneamente sostituita con un riferimento agli account di tipo "cash". -->
                 <h2>Insights</h2>
                 <a href="./insights.php">Dashboard</a>
@@ -54,11 +54,11 @@ $apiHost = $_ENV['DB_HOST'] ;
         </div>
         
 
-        <div  id="title">Shared Wallets</div>
+        <div  id="title">FinanceTrack</div>
         
         <div style="display:flex; width:20%; justify-content:space-evenly">
             <!--NOTIFY BELL-->
-            <svg id="bell" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <svg id="bell"  onclick="redirect('notification.html')" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <rect width="20" height="20" fill="url(#pattern0_30_198)"/>
                 <defs>
                 <pattern id="pattern0_30_198" patternContentUnits="objectBoundingBox" width="1" height="1">
@@ -68,7 +68,7 @@ $apiHost = $_ENV['DB_HOST'] ;
                 </defs>
             </svg>    
              <!--PROFILE ICON-->
-            <img id="profile" src="" alt="profile missing">
+            <img id="profile"  alt="profile missing">
         </div>
 
     </div>
@@ -118,7 +118,8 @@ $apiHost = $_ENV['DB_HOST'] ;
             </div>
             </div>
 
-        <div id="overlay" class="overlay"></div>
+        <div id="overlay" class="overlay overlayactive"></div>
+        
 
         <!-- Pending Invitations -->
             <div id="invites" class="invites">
@@ -146,7 +147,6 @@ $apiHost = $_ENV['DB_HOST'] ;
     </div>
     <div id="bottombar"></div>
 
-    <div id="bottombar"></div>
 
     <div id="tabBar">
         

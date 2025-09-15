@@ -2,13 +2,77 @@ let categoryColors = {};
 let currentPeriod = "settimana";   // periodo selezionato (week di default)
 let categoriesCache = [];          // cache categorie (per i "limit")
 
+function redirect(location) {
+  window.location.href = location;
+}
+
+function openMenu() {
+
+    document.getElementById("menu-content").classList.toggle("show-menu");
+    const overlay = document.getElementById("overlay-menu");
+    overlay.style.opacity="1";
+
+}
+function closeMenu() {
+  
+    document.getElementById("menu-content").classList.remove("show-menu");
+    document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
+    const overlay = document.getElementById("overlay-menu");
+    overlay.style.opacity="0";
+}
+
+window.onclick = function (event) {
+    if (!event.target.matches('#menu') && !event.target.matches("menu-content")) {
+        document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
+        const overlay = document.getElementById("overlay-menu");
+        overlay.style.opacity="0";
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show-menu')) {
+                openDropdown.classList.remove('show-menu');
+            }
+        }
+    }
+}
+
+
+async function fetchImage(userid) {
+    try {
+        const res = await fetch(`http://${API_HOST}:8000/api.php?path=image&user_id=${encodeURIComponent(userid)}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        const out = await res.json().catch(() => ({}));
+        if (!res.ok || out.error) throw new Error(out.error || `HTTP ${res.status}`);
+
+        return out.url; // return only the image URL
+    } catch (e) {
+        console.error(e);
+        if (typeof showPopup === 'function') showPopup('Errore caricamento immagine: ' + e.message, 'error');
+        return null;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async function () {
+     goTo();
+    const profileBtn = document.getElementById("profile");
+
+    const imageUrl = await fetchImage(1);
+    if (imageUrl) {
+        profileBtn.src = imageUrl;  // <-- set src, no background needed
+    }
+
+    profileBtn.addEventListener("click", () => {
+        redirect("../account.php");
+    });
+
+});
+
 document.addEventListener('DOMContentLoaded', () => {
-
-
-
-
-
-
+   
     // --- GRAFICO PIE --- //
 
     const ctx = document.getElementById('myChart').getContext('2d');
@@ -185,29 +249,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CARICA CATEGORIE E DISEGNA GRAFICO BAR --- //
     loadCategories();
-    goTo(); // popola cards e cache + disegna bar chart sul periodo corrente
+    // popola cards e cache + disegna bar chart sul periodo corrente
 
-    const burger = document.getElementById("burger");
-    const menu = document.getElementById("menu-content");
-    const overlay = document.getElementById("overlay");
-    const backArrow = document.getElementById("back-arrow");
+   
 
 
-    function openMenu() {
-        menu.classList.add("open");
-        overlay.classList.add("overlayactive");
-    }
-
-    function closeMenu() {
-        menu.classList.remove("open");
-        overlay.classList.remove("overlayactive");
-        console.log("ADAD");
-    }
-
-    burger.addEventListener("click", openMenu);
-    backArrow.addEventListener("click", closeMenu);
-    overlay.addEventListener("click", closeMenu);
-
+    
 
 });
 
@@ -216,11 +263,11 @@ document.addEventListener('DOMContentLoaded', () => {
 // --------------------------
 function openPopup(popup, overlay) {
     document.getElementById(popup).classList.add("category-popupactive");
-    document.getElementById(overlay).classList.add("overlayactive");
+    document.getElementById(overlay).style.opacity="1";
 }
 function closePopup(popup, overlay) {
     document.getElementById(popup).classList.remove("category-popupactive");
-    document.getElementById(overlay).classList.remove("overlayactive");
+    document.getElementById(overlay).style.opacity="0";
 }
 
 // --------------------------

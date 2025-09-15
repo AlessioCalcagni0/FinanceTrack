@@ -22,29 +22,77 @@ function goTo(){
         }
     );
 }
+function redirect(location) {
+  window.location.href = location;
+}
 
+function openMenu() {
+    document.getElementsByClassName("back-arrow")[0].classList.add("show-menu");
 
-document.addEventListener('DOMContentLoaded', () => {
-
-
-    const burger = document.getElementById("burger");
-    const menu = document.getElementById("menu-content");
+    document.getElementById("menu-content").classList.toggle("show-menu");
     const overlay = document.getElementById("overlay");
-    const backArrow = document.getElementById("back-arrow");
+    overlay.classList.add("overlayactive");
 
-    function openMenu() {
-        menu.classList.add("open");
-        overlay.style.display = "block";
+}
+function closeMenu() {
+
+    document.getElementById("menu-content").classList.remove("show-menu");
+    document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
+    const overlay = document.getElementById("overlay");
+    overlay.classList.remove("overlayactive");
+}
+
+window.onclick = function (event) {
+    if (!event.target.matches('#menu') && !event.target.matches("menu-content")) {
+
+
+        document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
+        const overlay = document.getElementById("overlay");
+        overlay.classList.remove("overlayactive");
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show-menu')) {
+                openDropdown.classList.remove('show-menu');
+            }
+        }
+    }
+}
+
+
+async function fetchImage(userid) {
+    try {
+        const res = await fetch(`http://${API_HOST}:8000/api.php?path=image&user_id=${encodeURIComponent(userid)}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        const out = await res.json().catch(() => ({}));
+        if (!res.ok || out.error) throw new Error(out.error || `HTTP ${res.status}`);
+
+        return out.url; // return only the image URL
+    } catch (e) {
+        console.error(e);
+        if (typeof showPopup === 'function') showPopup('Errore caricamento immagine: ' + e.message, 'error');
+        return null;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async function () {
+      goTo();
+      
+ const profileBtn = document.getElementById("profile");
+
+    const imageUrl = await fetchImage(1);
+    if (imageUrl) {
+        profileBtn.src = imageUrl;  // <-- set src, no background needed
     }
 
-    function closeMenu() {
-        menu.classList.remove("open");
-        overlay.style.display = "none";
-    }
+    profileBtn.addEventListener("click", () => {
+        redirect("../account.php");
+    });
 
-    burger.addEventListener("click", openMenu);
-    backArrow.addEventListener("click", closeMenu);
-    overlay.addEventListener("click", closeMenu); 
 
     window.currentAccountId = getAccountIdFromURL();
     console.log(window.currentAccountId);
@@ -58,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const fullDate = `${weekday} ${day}/${month}/${year}`;
         document.getElementById("today-date").textContent = fullDate;
     }
-    goTo();
     // ✅ invoca davvero la funzione
     UpdateDate();
     // ✅ aggiorna ogni minuto (60000 ms)
@@ -217,10 +264,12 @@ async function loadTodayTransactions() {
             amountDiv.className = "amount";
             if (t.tipo === "income") {
                 amountDiv.textContent = "+" + t.importo + " €";
-                amountDiv.style.color = "#08fc00";
+                amountDiv.style.color = "white";
+                amountDiv.style.backgroundColor= "green";
             } else {
                 amountDiv.textContent = "-" + t.importo + " €";
-                amountDiv.style.color = "#ff0000ff";
+                amountDiv.style.color = "white";
+                amountDiv.style.backgroundColor= "#ff0000ff";
             }
 
             box.appendChild(iconDiv);
@@ -283,10 +332,12 @@ async function loadLastWeekTransactions() {
             amountDiv.className = "amount";
             if (t.tipo === "income") {
                 amountDiv.textContent = "+" + t.importo + " €";
-                amountDiv.style.color = "green";
+                amountDiv.style.color = "white";
+                amountDiv.style.backgroundColor= "green";
             } else {
                 amountDiv.textContent = "-" + t.importo + " €";
-                amountDiv.style.color = "red";
+                amountDiv.style.color = "white";
+                amountDiv.style.backgroundColor= "#ff0000ff";
             }
 
             box.appendChild(iconDiv);

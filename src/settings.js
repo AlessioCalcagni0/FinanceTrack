@@ -1,67 +1,93 @@
-// settings.js — minimal behavior copied from other pages
-function goHome(){
-  window.location.href = "./homepage.php";
+function goTo(){
+
+    const home = document.getElementById("home");
+    const wallet = document.getElementById("wallet-icon");
+    const goal = document.getElementById("goal-icon");
+    const insights = document.getElementById("insights-icon");
+
+    home.addEventListener('click', () => {
+        window.location.href = "../homepage.php"
+        }
+    );
+    wallet.addEventListener('click', () => {
+        window.location.href = "../wallet_page.php"
+        }
+    );
+    goal.addEventListener('click', () => {
+        window.location.href = "../goals.php"
+        }
+    );
+    insights.addEventListener('click', () => {
+        window.location.href = "../insights.php"
+        }
+    );
 }
 
-function redirect(url){ window.location.href = url; }
+function redirect(location) {
+  window.location.href = location;
+}
+
+function openMenu() {
+
+    document.getElementById("menu-content").classList.toggle("show-menu");
+    const overlay = document.getElementById("overlay-menu");
+    overlay.style.opacity="1";
+
+}
+function closeMenu() {
+  
+    document.getElementById("menu-content").classList.remove("show-menu");
+    document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
+    const overlay = document.getElementById("overlay-menu");
+    overlay.style.opacity="0";
+}
+
+window.onclick = function (event) {
+    if (!event.target.matches('#menu') && !event.target.matches("menu-content")) {
+        document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
+        const overlay = document.getElementById("overlay-menu");
+        overlay.style.opacity="0";
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show-menu')) {
+                openDropdown.classList.remove('show-menu');
+            }
+        }
+    }
+}
 
 
-// Robust overrides to ensure hamburger works even if some IDs are missing
-function openMenu(){
-  try {
-    var menuContent = document.getElementById("menu-content");
-    var backArrow = document.getElementsByClassName("back-arrow")[0];
-    var menuBtn = document.getElementById("menu");
+async function fetchImage(userid) {
+    try {
+        const res = await fetch(`http://${API_HOST}:8000/api.php?path=image&user_id=${encodeURIComponent(userid)}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        });
 
-    // Hide hero elements if present (wallet page IDs)
-    ["image1_303_309","hh","hhs","ww"].forEach(function(id){
-      var el = document.getElementById(id);
-      if (el) el.classList.add("hide-menu");
+        const out = await res.json().catch(() => ({}));
+        if (!res.ok || out.error) throw new Error(out.error || `HTTP ${res.status}`);
+
+        return out.url; // return only the image URL
+    } catch (e) {
+        console.error(e);
+        if (typeof showPopup === 'function') showPopup('Errore caricamento immagine: ' + e.message, 'error');
+        return null;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async function () {
+     goTo();
+    const profileBtn = document.getElementById("profile");
+
+    const imageUrl = await fetchImage(1);
+    if (imageUrl) {
+        profileBtn.src = imageUrl;  // <-- set src, no background needed
+    }
+
+    profileBtn.addEventListener("click", () => {
+        redirect("../account.php");
     });
 
-    if (menuContent){
-      menuContent.classList.add("show-menu");
-      menuContent.style.display = "block";
-    }
-    if (backArrow){
-      backArrow.classList.add("show-menu");
-      backArrow.style.display = "block";
-    }
-    if (menuBtn){
-      menuBtn.style.display = "none";
-    }
-  } catch(e){
-    console.error("openMenu error:", e);
-  }
-}
-
-function closeMenu(){
-  try {
-    var menuContent = document.getElementById("menu-content");
-    var backArrow = document.getElementsByClassName("back-arrow")[0];
-    var menuBtn = document.getElementById("menu");
-
-    ["image1_303_309","hh","hhs","ww"].forEach(function(id){
-      var el = document.getElementById(id);
-      if (el) el.classList.remove("hide-menu");
-    });
-
-    if (menuContent){
-      menuContent.classList.remove("show-menu");
-      menuContent.style.display = "none";
-    }
-    if (backArrow){
-      backArrow.classList.remove("show-menu");
-      backArrow.style.display = "none";
-    }
-    if (menuBtn){
-      menuBtn.style.display = "block";
-    }
-  } catch(e){
-    console.error("closeMenu error:", e);
-  }
-}
-
-// keep redirect helper for SVG tabbar
-function redirect(url){ window.location.href = url; }
-
+});

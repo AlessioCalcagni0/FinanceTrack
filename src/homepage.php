@@ -32,18 +32,18 @@ $apiHost = $_ENV['DB_HOST'] ;
             <img onclick="closeMenu()" class="back-arrow" src="/images/icons8-back-arrow-50.png" >
 
             <div id="menu-content" class="dropdown-content">
-                <h2 style="margin-top: 20%;">Home</h2>
+                <h2 style="margin-top: 20%;"  >Home</h2>
                 <h2>Wallets</h2>
-                <a href="../wallet_page.php">All Accounts</a>
+                <a href="./wallet_page.php">All Wallets</a>
                 <a href="./sharedWallet.php">Shared Wallets</a>
-                <a href="#">Cash Account</a>
+                <a href="/cash_page.php">Cash Wallet</a>
                 <!-- la sezione "Add Transaction" è stata temporaneamente sostituita con un riferimento agli account di tipo "cash". -->
                 <h2>Insights</h2>
                 <a href="./insights.php">Dashboard</a>
                 <a href="./categories.php">Spending by Category</a>
                 <h2>Goals</h2>
-                <a href="#">Overview</a>
-                <a href="#">New Goal</a>
+                <a href="/goals.php">Overview</a>
+                <a href="/create_goal.php">New Goal</a>
                 <h2>Settings</h2>
             </div>
         </div>
@@ -53,7 +53,7 @@ $apiHost = $_ENV['DB_HOST'] ;
         
         <div style="display:flex; width:20%; justify-content:space-evenly">
             <!--NOTIFY BELL-->
-            <svg id="bell" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <svg id="bell"  onclick="redirect('notification.html')" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <rect width="20" height="20" fill="url(#pattern0_30_198)"/>
                 <defs>
                 <pattern id="pattern0_30_198" patternContentUnits="objectBoundingBox" width="1" height="1">
@@ -94,12 +94,13 @@ $apiHost = $_ENV['DB_HOST'] ;
         <div id="swOverlay"></div>
         <div id="swEditPopup"></div>
         <div id="overlay" class="overlay overlayactive"></div>
+        
 
-    <button class="btn-trans" onclick="openTransaction()">Add Transaction</button>
 
     </main>
                           
-   
+       <button class="btn-trans" onclick="openTransaction()">Add Transaction</button>
+
   
     <div id="bottombar"></div>
     
