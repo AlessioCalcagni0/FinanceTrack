@@ -103,3 +103,245 @@ body{
   cursor:pointer;
 }
 .primary:active{ transform: translateY(1px); }
+
+.help-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    transition: background 0.2s;
+    margin-top: 2px;
+    margin-left: 10px;
+}
+
+.help-btn:hover {
+    background: #0056b3;
+}
+
+#overlay-tutorial {
+    z-index: 10;
+    pointer-events: none;
+}
+
+.popup-tutorial img {
+    width: auto;
+    height: auto;
+
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.popup-tutorial {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    height: 800px;
+    display: none;
+    /* inizialmente nascosto */
+    flex-direction: column;
+    justify-content: space-between;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+    transition: 200ms ease-in-out;
+}
+
+/* stato iniziale: nascosti */
+.overlay,
+.popup-tutorial { display: none; }
+
+/* quando aperti */
+.overlay.open { 
+  display: block;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 9998;
+}
+
+.popup-tutorial.open {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: fixed; inset: 0; 
+  margin: auto; width: min(92vw, 520px);
+  background: #fff; border-radius: 18px;
+  box-shadow: 0 12px 28px rgba(0,0,0,.18);
+  padding: 16px;
+  z-index: 9999;
+}
+
+.popup-tutorial img {
+  width: 100%; max-height: 60vh; object-fit: contain; border-radius: 12px; background: #f8fafc;
+}
+
+.popup-tutorial .buttons { display: flex; gap: 10px; }
+.popup-tutorial .buttons .back { 
+  flex: 1 1 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px 16px; font-weight: 700; 
+}
+.popup-tutorial .buttons .next { 
+  flex: 1 1 0; border: none; background:#1f4ccf; color:#fff; border-radius: 12px; padding: 12px 16px; font-weight: 800;
+}
+.skipButton{
+  align-self: flex-end; background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:8px 12px; cursor:pointer;
+}
+
+/* ===== FIX tutorial: centratura e interazioni ===== */
+
+/* 1) L'overlay deve essere cliccabile quando aperto */
+.overlay.open {
+  pointer-events: auto; /* override di #overlay-tutorial { pointer-events:none } */
+}
+
+/* 2) Annulla il vecchio centraggio e l'altezza fissa */
+.popup-tutorial {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* 3) Centra davvero la card quando "open" + limita l'altezza */
+.popup-tutorial.open {
+  position: fixed;
+  inset: 0;             /* top/right/bottom/left: 0 */
+  margin: auto;         /* centra orizzontale e verticale */
+  width: min(92vw, 520px);
+  max-height: 85vh;     /* niente 800px fissi */
+  overflow: auto;       /* scroll interno se serve */
+}
+
+/* 4) Bottoni in basso coerenti e responsivi */
+.popup-tutorial .buttons {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+.popup-tutorial .buttons .back {
+  flex: 1 1 0;
+  background: #fff;
+  color: #111;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: 700;
+}
+.popup-tutorial .buttons .next {
+  flex: 1 1 0;
+  border: none;
+  background: #1f4ccf;
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: 800;
+}
+/* opzionale: ultimo step “OK” in verde se in JS metti .next.ok */
+.popup-tutorial .buttons .next.ok { background: #22c55e; }
+
+/* === CENTER HARD FIX (popup al centro orizzontale+verticale) === */
+.popup-tutorial {
+  /* annulla i vecchi vincoli che la spingono in basso */
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+  height: auto !important;
+  width: auto !important;
+  justify-content: initial !important;
+}
+
+.popup-tutorial.open{
+  /* centratura assoluta, indipendente dall'overlay */
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+
+  /* dimensioni “belle” */
+  width: min(92vw, 800px) !important;
+  min-height: 80vh !important;
+  overflow: auto !important;
+
+  /* estetica coerente */
+  margin: 0 !important;              /* evita margin:auto che può sballare il vert */
+  background: #fff !important;
+  border-radius: 18px !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,.18) !important;
+  padding: 16px !important;
+  z-index: 9999 !important;
+}
+
+/* overlay sotto, cliccabile */
+.overlay.open{
+  display: block !important;
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0,0,0,.45) !important;
+  z-index: 9998 !important;
+  pointer-events: auto !important;
+}
+
+/* Bottoni tutorial: cursor manina */
+.popup-tutorial .buttons .back,
+.popup-tutorial .buttons .next,
+.popup-tutorial .buttons .ok,
+.skipButton {
+  cursor: pointer;
+}
+
+/* NEXT (blu) – stesso stile ma con hover/active carini */
+.popup-tutorial .buttons .next{
+  flex: 1 1 0;
+  border: none;
+  background:#1f4ccf;
+  color:#fff;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: 800;
+  box-shadow: 0 6px 18px rgba(31,76,207,.25);
+  transition: transform .05s ease, box-shadow .2s ease, filter .2s ease;
+}
+.popup-tutorial .buttons .next:hover{ filter: brightness(1.05); box-shadow: 0 8px 22px rgba(31,76,207,.35); }
+.popup-tutorial .buttons .next:active{ transform: translateY(1px); box-shadow: 0 4px 14px rgba(31,76,207,.25); }
+
+/* OK (verde) – quello che vuoi tu */
+.popup-tutorial .buttons .ok{
+  flex: 1 1 0;
+  border: none;
+  background:#22c55e;          /* verde carino */
+  color:#fff;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: 800;
+  box-shadow: 0 6px 18px rgba(34,197,94,.25);
+  transition: transform .05s ease, box-shadow .2s ease, filter .2s ease;
+}
+.popup-tutorial .buttons .ok:hover{ filter: brightness(1.05); box-shadow: 0 8px 22px rgba(34,197,94,.35); }
+.popup-tutorial .buttons .ok:active{ transform: translateY(1px); box-shadow: 0 4px 14px rgba(34,197,94,.25); }
+
+/* BACK (ghost) – aggiungo hover per feedback */
+.popup-tutorial .buttons .back{
+  flex: 1 1 0;
+  background:#fff;
+  color:#111;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:12px 16px;
+  font-weight:700;
+  transition: background .15s ease, transform .05s ease;
+}
+.popup-tutorial .buttons .back:hover{ background:#f8fafc; }
+.popup-tutorial .buttons .back:active{ transform: translateY(1px); }
