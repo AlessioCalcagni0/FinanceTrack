@@ -23,7 +23,7 @@ $apiHost = $_ENV['DB_HOST'] ;
   
     <div class="navbar">
         <!--THREE BARS MENU-->
-        <img src="images/BackArrow.png" id="back-arrow">
+        <img src="images/BackArrow.png" id="back-arrow" >
 
     </div>
     

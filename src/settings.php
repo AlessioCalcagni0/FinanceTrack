@@ -21,6 +21,7 @@ $apiHost = $_ENV['DB_HOST'] ;
   <title>Settings – FinanceTrack</title>
   <link rel="stylesheet" href="../wallet_page.css" />
   <link rel="stylesheet" href="settings.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <script> const API_HOST = "<?php echo $apiHost; ?>";</script>
   <script src="settings.js" defer></script>
 </head>
@@ -92,7 +93,52 @@ $apiHost = $_ENV['DB_HOST'] ;
       <p>Provide feedback on your experience. We use your input to improve functionality.</p>
     </section>
 
-    <div class="version">Version 1.0</div>
+    <section class="item">
+      <h3>Tutorial</h3>
+    </section>
+    <div class="tutorial-list" id="tutorialList">
+    <div class="tutorial-item">
+      <h2>Introduction</h2>
+      <button class="play-btn" data-tutorial="introduction" aria-label="Avvia Introduction">Play ▶</button>
+    </div>
+
+    <div class="tutorial-item">
+      <h2>Add shared transaction</h2>
+      <button class="play-btn" data-tutorial="add-shared-transaction" aria-label="Avvia Add shared transaction">Play ▶</button>
+    </div>
+
+    <div class="tutorial-item">
+      <h2>Create a shared wallet</h2>
+      <button class="play-btn" data-tutorial="create-shared-wallet" aria-label="Avvia Create a shared wallet">Play ▶</button>
+    </div>
+
+    <div class="tutorial-item">
+      <h2>Create a wallet</h2>
+      <button class="play-btn" data-tutorial="create-wallet" aria-label="Avvia Create a wallet">Play ▶</button>
+    </div>
+
+    <div class="tutorial-item">
+      <h2>Add transaction</h2>
+      <button class="play-btn" data-tutorial="add-transaction" aria-label="Avvia Add transaction"> Play ▶</button>
+    </div>
+  </div>
+
+  <!-- OVERLAY (se vuoi un’ombra dietro al popup; i click passano attraverso per via del CSS fornito) -->
+  <div id="overlay-tutorial" class="overlay"></div>
+
+  <!-- POPUP TUTORIAL -->
+ <div class="popup-tutorial" id="popup-tutorial">
+    <h1 class="title" id="popupTitle"> </h1>
+    <button id="skipButton" class="skipButton">
+      Skip <i class="fa-solid fa-forward"></i>
+    </button>
+    <img id="tutorial-image" alt="Step 1">
+    <div class="description" id="tutorial-description"></div>
+    <div class="buttons">
+      <button class="back" id="backBtn" disabled>Back</button>
+      <button class="next" id="nextBtn">Next</button>
+    </div>
+  </div>
   </main>
 
   <div id="bottombar"></div>
