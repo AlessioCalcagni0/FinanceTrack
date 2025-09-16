@@ -322,3 +322,134 @@ function showPopupAndBack(message, categories = []) {
     overlay.appendChild(popup);
     document.body.appendChild(overlay);
   }
+
+
+  document.addEventListener('DOMContentLoaded', () => {
+
+  const tutorialBtn = document.getElementById("tutorialBtn");
+  const overlayTutorial = document.getElementById("overlay-tutorial");
+  const popupTutorial = document.getElementById("popup-tutorial");
+  const tutorialImage = document.getElementById("tutorial-image");
+  const tutorialDescription = document.getElementById("tutorial-description");
+  const backBtn = document.getElementById("backBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const skipBtn = document.getElementById("skipButton");
+  const backarrow = document.getElementById("back-arrow"); 
+
+
+  // -----------------------------
+  // ELEMENTI UI – SEZIONI / CATEGORIE
+  // -----------------------------
+  const uncatBtn = document.getElementById("Uncat_button");
+  const orSeparator = document.getElementById("or-separator");
+  const toggleSectionsBtn = document.getElementById("toggleSectionsBtn");
+
+  const selectLabel = document.getElementById("select-label");
+  const categoriesSection = document.getElementById("categories");
+  const percentageBar = document.getElementById("percentage-bar-container");
+
+  const toggleCategoriesBtn = document.getElementById("toggleCategoriesBtn");
+  const categoryContainer = document.getElementById("category-container");
+
+  // -----------------------------
+  // ELEMENTI UI – CONFERMA / CANCEL
+  // -----------------------------
+  const confirmBtn = document.getElementById("confirm_button");
+  const cancelBtn = document.getElementById("cancel_button");
+
+  // -----------------------------
+  // STATI
+  // -----------------------------
+  let uncatActive = false;     // stato bottone "Uncategorized transaction"
+  let sectionsVisible = false;  // stato visibilità label/categorie/barra
+  let expanded = false;        // stato espansione contenitore categorie
+  let currentStep = 0;         // wizard tutorial
+
+  // -----------------------------
+  // DATI TUTORIAL
+  // -----------------------------
+  const images = [
+    "./tutorial/add_transaction/a.png",
+    "./tutorial/add_transaction/b.png",
+    "./tutorial/add_transaction/c.png",
+    "./tutorial/add_transaction/d.png"
+  ];
+  const descriptions = [
+    'Step 1: Enter the goal name and select a goal type',
+    "Step 2: Insert the target savings amount",
+    "Step 3: Choose a deadline",
+    'Step 4: Select a saving source from your wallets and press "Save Goal"'
+  ];
+
+  // -----------------------------
+  // FUNZIONI UTILI
+  // -----------------------------
+  const qs = (sel, root = document) => root.querySelector(sel);
+  const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  function updateTutorial() {
+    tutorialImage.src = images[currentStep];
+    tutorialDescription.textContent = descriptions[currentStep];
+    backBtn.disabled = currentStep === 0;
+
+    if (currentStep === images.length - 1) {
+      nextBtn.textContent = "OK";
+      nextBtn.classList.remove("next");
+      nextBtn.classList.add("ok");
+    } else {
+      nextBtn.textContent = "Next";
+      nextBtn.classList.remove("ok");
+      nextBtn.classList.add("next");
+    }
+  }
+
+  function resetTutorial() {
+    currentStep = 0;
+    backBtn.disabled = true;
+    nextBtn.textContent = "Next";
+    nextBtn.classList.remove("ok");
+    nextBtn.classList.add("next");
+    tutorialImage.src = images[0];
+    tutorialDescription.textContent = descriptions[0];
+  }
+
+  // --- apri/chiudi tutorial + listener ---
+  function openTutorial(){
+    if (!overlayTutorial || !popupTutorial) return;
+    overlayTutorial.classList.add('open');
+    popupTutorial.classList.add('open');
+    resetTutorial();
+    updateTutorial();
+  }
+  function closeTutorial(){
+    overlayTutorial?.classList.remove('open');
+    popupTutorial?.classList.remove('open');
+  }
+
+  if (tutorialBtn) tutorialBtn.addEventListener('click', openTutorial);
+  if (overlayTutorial) overlayTutorial.addEventListener('click', (e) => {
+    // chiudi clic fuori dal popup
+    if (!popupTutorial.contains(e.target)) closeTutorial();
+  });
+  if (skipBtn) skipBtn.addEventListener('click', closeTutorial);
+
+  if (backBtn) backBtn.addEventListener('click', () => {
+    if (currentStep > 0) { currentStep--; updateTutorial(); }
+  });
+  if (nextBtn) nextBtn.addEventListener('click', () => {
+    if (currentStep < images.length - 1) {
+      currentStep++; updateTutorial();
+    } else {
+      closeTutorial();
+    }
+  });
+
+  // ESC / frecce tastiera
+  document.addEventListener('keydown', (e) => {
+    const isOpen = popupTutorial?.classList.contains('open');
+    if (!isOpen) return;
+    if (e.key === 'Escape') closeTutorial();
+    if (e.key === 'ArrowRight') nextBtn?.click();
+    if (e.key === 'ArrowLeft') backBtn?.click();
+  });
+  });

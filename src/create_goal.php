@@ -14,12 +14,14 @@ $user_id = $_SESSION['user_id'] ?? "1";
     window.USER_ID = "<?php echo htmlspecialchars($user_id, ENT_QUOTES); ?>";
   </script>
   <script src="create_goal.js" defer></script>
+  
 </head>
 <body>
 
   <header class="topbar">
     <button class="back" aria-label="Back" onclick="goBack()">←</button>
     <h1>Create New Goal</h1>
+    <button id="tutorialBtn" class="help-btn">?</button>
   </header>
 
   <main class="container">
@@ -76,6 +78,20 @@ $user_id = $_SESSION['user_id'] ?? "1";
       <button class="primary" type="submit">Save Goal</button>
     </form>
   </main>
+
+  <!-- Tutorial -->
+<div class="popup-tutorial" id="popup-tutorial" role="dialog" aria-modal="true" aria-labelledby="tutorial-description">
+  <h1 class="title">How to add a cash transaction</h1>
+  <button id="skipButton" class="skipButton" type="button">Skip</button>
+  <img id="tutorial-image" alt="Step 1">
+  <div class="description" id="tutorial-description"></div>
+  <div class="buttons">
+    <button class="back" id="backBtn" type="button" disabled>Back</button>
+    <button class="next" id="nextBtn" type="button">Next</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-tutorial"></div>
 
 </body>
 </html>
