@@ -13,7 +13,7 @@ $apiHost = $_ENV['DB_HOST'] ;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Account</title>
+    <title>Wallet</title>
     <link rel="stylesheet" href="account_page.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="manifest" href="/manifest.json">
@@ -32,17 +32,17 @@ $apiHost = $_ENV['DB_HOST'] ;
             <div id="menu-content" class="dropdown-content">
                 <h2 style="margin-top: 20%;" onclick="redirect('/homepage.php')" >Home</h2>
                 <h2>Wallets</h2>
-                <a href="./wallet_page.php">All Wallets</a>
-                <a href="./sharedWallet.php">Shared Wallets</a>
-                <a href="./cash_page.php">Cash Wallet</a>
+                <a href="/wallet_page.php">All Wallets</a>
+                <a href="/sharedWallet.php">Shared Wallets</a>
+                <a href="/cash_page.php">Cash Wallet</a>
                 <!-- la sezione "Add Transaction" è stata temporaneamente sostituita con un riferimento agli account di tipo "cash". -->
                 <h2>Insights</h2>
-                <a href="./insights.php">Dashboard</a>
-                <a href="./categories.php">Spending by Category</a>
+                <a href="/insights.php">Dashboard</a>
+                <a href="/categories.php">Spending by Category</a>
                 <h2>Goals</h2>
-                <a href="./goals.php">Overview</a>
-                <a href="./create_goal.php">New Goal</a>
-                <h2>Settings</h2>
+                <a href="/goals.php">Overview</a>
+                <a href="/create_goal.php">New Goal</a>
+                <h2 onclick="redirect('/settings.php')">Settings</h2>
             </div>
         </div>
         
@@ -98,10 +98,10 @@ $apiHost = $_ENV['DB_HOST'] ;
         <div id="lastweek-container"></div>
         <button id="syncBtn">
             <div class="loader" id="loader"></div>
-            Synchronize account
+            Synchronize wallet
         </button>
 
-        <div id="notification">Account has been syncronized!✅</div>
+        <div id="notification">The Wallet has been syncronized!✅</div>
     </div>
 
     

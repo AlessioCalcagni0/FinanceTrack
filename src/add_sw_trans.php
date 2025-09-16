@@ -39,7 +39,7 @@ $apiHost = $_ENV['DB_HOST'] ;
         </div>
 
         <!-- Chi fa la transazione -->
-        <label class="label">Who made the transaction?</label>
+        <label class="label" style="margin-top: 19px;">Who made the transaction?</label>
         <div id="payerSection" class="participants-list">
            
 
@@ -48,7 +48,7 @@ $apiHost = $_ENV['DB_HOST'] ;
 
 
         <!-- Bottone per attivare la divisione personalizzata -->
-         <label class="label">Divided by</label>
+         <label class="label" style="margin-top: 19px;">Divided by  <button id="tutorialBtn" class="help-btn" style="display: block;">?</button></label>
 
         <!-- Sezione nascosta di default -->
         <div id="customSplitSection" class="custom-split">

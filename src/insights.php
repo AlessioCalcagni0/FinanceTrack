@@ -45,7 +45,7 @@ $apiHost = $_ENV['DB_HOST'] ;
                 <h2>Goals</h2>
                 <a href="/goals.php">Overview</a>
                 <a href="/create_goal.php">New Goal</a>
-                <h2>Settings</h2>
+                <h2 onclick="redirect('/settings.php')">Settings</h2>
             </div>
         </div>
         
@@ -76,7 +76,7 @@ $apiHost = $_ENV['DB_HOST'] ;
             <div class="chart-container">
                 <!-- Account Selector -->
                 <section class="account-picker">
-                    <h3 class="account-label">Select an account</h3>
+                    <h3 class="account-label">Select a wallet</h3>
                     <div id="account-list" class="account-list" role="listbox" aria-label="Account disponibili">
                         <!-- i blocchi account vengono inseriti via JS -->
                         <div class="account-skeleton"></div>

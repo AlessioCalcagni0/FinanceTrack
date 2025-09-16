@@ -34,8 +34,8 @@ $apiHost = $_ENV['DB_HOST'] ;
             <div id="menu-content" class="dropdown-content">
                 <h2 style="margin-top: 20%;"  >Home</h2>
                 <h2>Wallets</h2>
-                <a href="./wallet_page.php">All Wallets</a>
-                <a href="./sharedWallet.php">Shared Wallets</a>
+                <a href="/wallet_page.php">All Wallets</a>
+                <a href="/sharedWallet.php">Shared Wallets</a>
                 <a href="/cash_page.php">Cash Wallet</a>
                 <!-- la sezione "Add Transaction" è stata temporaneamente sostituita con un riferimento agli account di tipo "cash". -->
                 <h2>Insights</h2>
@@ -44,7 +44,7 @@ $apiHost = $_ENV['DB_HOST'] ;
                 <h2>Goals</h2>
                 <a href="/goals.php">Overview</a>
                 <a href="/create_goal.php">New Goal</a>
-                <h2>Settings</h2>
+                <h2 onclick="redirect('/settings.php')">Settings</h2>
             </div>
         </div>
         

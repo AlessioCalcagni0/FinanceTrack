@@ -46,7 +46,7 @@ $apiHost = $_ENV['DB_HOST'] ;
                 <h2>Goals</h2>
                 <a href="./goals.php">Overview</a>
                 <a href="./create_goal.php">New Goal</a>
-                <h2>Settings</h2>
+                <h2 onclick="clodeMenu()">Settings</h2>
             </div>
         </div>
         

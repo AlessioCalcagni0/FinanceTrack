@@ -46,7 +46,7 @@ $apiHost = $_ENV['DB_HOST'] ;
                 <h2>Goals</h2>
                 <a href="/goals.php">Overview</a>
                 <a href="/create_goal.php">New Goal</a>
-                <h2>Settings</h2>
+                <h2  onclick="redirect('/settings.php')">Settings</h2>
             </div>
         </div>
         
@@ -92,7 +92,7 @@ $apiHost = $_ENV['DB_HOST'] ;
             </div>
 
         </div>
-        <div class="account-list-label"> Account list</div>
+        <div class="account-list-label"> Wallets list</div>
 
         <div class="super-frame">
             <div class="frame-account" id="frame-account">
@@ -105,14 +105,14 @@ $apiHost = $_ENV['DB_HOST'] ;
         </div>
 
         <!-- Bottone centrale -->
-        <button id="openAddAccount" class="add-account-btn">+ Add Account</button>
+        <button id="openAddAccount" class="add-account-btn">+ Add Wallet</button>
 
         <div id="overlay" class="overlay"></div>
         <div id="overlay-menu" class="overlay"></div>
 
          <div id="addAccountPopup" class="add-account-popup">
             <div class="account-popup">
-            <h1>Add Account</h1>
+            <h1>Add Wallet</h1>
 
             <!-- Select Type -->
             <h2>Select Type</h2>
@@ -130,7 +130,7 @@ $apiHost = $_ENV['DB_HOST'] ;
                 </div>
             </div>
 
-            <h2>Account Name</h2>
+            <h2>Wallet Name</h2>
             <input type="text" id="accountName" class="number_input" placeholder="Enter account name"/>
 
             <!-- Campi dinamici -->
@@ -165,15 +165,15 @@ $apiHost = $_ENV['DB_HOST'] ;
 
         <div id="modifyAccountPopup" class="popup">
             <div class="super-title" > 
-                <h2 class="popup-title">Modify Account</h2>
-                <button class="delete-account-btn" id="delete-account-btn">Delete account </button>
+                <h2 class="popup-title">Modify Wallet</h2>
+                <button class="delete-account-btn" id="delete-account-btn">Delete wallet </button>
             </div>
             <!-- Account Name -->
-            <label for="modifyAccountName">Account Name</label>
+            <label for="modifyAccountName">Wallet Name</label>
             <input type="text" id="modifyAccountName" placeholder="Enter account name">
 
             <!-- Account Type -->
-            <label for="modifyAccountType">Account Type</label>
+            <label for="modifyAccountType">Wallet Type</label>
             <input type="text" id="modifyAccountType" placeholder="Enter account type">
 
             <!-- Hidden ID -->
@@ -189,7 +189,7 @@ $apiHost = $_ENV['DB_HOST'] ;
 
         <!-- Delete Confirm Popup -->
         <div id="deleteConfirmPopup" class="popup">
-        <h3 id="deletePopupTitle">Are you sure you want to delete this account?</h3>
+        <h3 id="deletePopupTitle">Are you sure you want to delete this wallet?</h3>
         <div id="deletePopupButtons" class="popup-buttons">
             <button id="deleteCancelBtn">Cancel</button>
             <button id="deleteConfirmBtn">Delete</button>
