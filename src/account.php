@@ -21,6 +21,7 @@ $user_id =  1 ;
 
   <!-- Header semplice senza burger -->
   <header class="topbar">
+    <button class="back" type="button" onclick="goBack()" aria-label="Back">←</button>
     <h1>Account</h1>
     <button id="btnLogout" class="logout">Log out</button>
   </header>

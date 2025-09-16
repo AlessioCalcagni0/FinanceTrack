@@ -6,10 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // logout
   document.getElementById('btnLogout')?.addEventListener('click', async () => {
     try{
-      await fetch('/api.php?path=logout');
+      await fetch(`http://${API_HOST}:8000/api.php?path=logout`);
     }catch(e){}
     location.href = './login.php';
   });
+  
 
   // change photo
   const btnPhoto = document.getElementById('btnChangePhoto');
@@ -27,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const fd = new FormData();
     fd.append('photo', file);
     try{
-      const res = await fetch('/api.php?path=upload_photo', { method:'POST', body: fd });
+      const res = await fetch(`http://${API_HOST}:8000/api.php?path=upload_photo`, { method:'POST', body: fd });
       const data = await res.json();
       if(res.ok && data.success){
         CURRENT_PHOTO = data.photo; // es. "uploads/avatars/xyz.jpg"
@@ -60,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try{
-      const res = await fetch('/api.php?path=update_user', {
+      const res = await fetch(`http://${API_HOST}:8000/api.php?path=update_user`, {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify(payload)
       });
@@ -80,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadMe(){
   try{
-    const res = await fetch('/api.php?path=me');
+    const res = await fetch(`http://${API_HOST}:8000/api.php?path=me`);
     const data = await res.json();
     console.log("data:d",data);
     const u = data && data.user ? data.user : null;
@@ -112,3 +113,15 @@ function defaultAvatarSVG(name, surname){
     <text x="50%" y="53%" text-anchor="middle" font-size="34" font-family="Inter, sans-serif" fill="#111" font-weight="800">${initials}</text>
   </svg>`;
 }
+
+
+  function goBack(){
+    if (document.referrer && history.length > 1) {
+      history.back();
+    } else {
+      window.location.href = './homepage.php'; // fallback: cambia se vuoi
+    }
+  }
+
+
+
