@@ -280,7 +280,7 @@ function renderBell(btn, on){
 async function loadScore(){
   try{
     const uid = (window.USER_ID && String(window.USER_ID).trim()) ? '&user_id=' + encodeURIComponent(window.USER_ID) : '';
-    const res = await fetch('/api.php?path=goals_score' + uid);
+    const res = await fetch('./api.php?path=goals_score' + uid);
     const data = await res.json();
     var green = document.querySelector('.score .card.green .num');
     var red   = document.querySelector('.score .card.red .num');
@@ -295,7 +295,7 @@ async function loadGoals(){
   listEl.innerHTML = '';
   try{
     const uid = (window.USER_ID && String(window.USER_ID).trim()) ? '&user_id=' + encodeURIComponent(window.USER_ID) : '';
-    const res = await fetch('/api.php?path=goals' + uid);
+    const res = await fetch('./api.php?path=goals' + uid);
     const goals = await res.json();
     if(!Array.isArray(goals) || goals.length===0){
       listEl.innerHTML = '<p style="color:#6b7280;">No goals yet. Create a new goal.</p>';
@@ -422,56 +422,78 @@ async function loadGoals(){
 }
 
 async function confirmDeleteGoal(id, name){
-  const ok = confirm(`Delete "${name}"?\nThis will remove the goal and its contributions.`);
-  if(!ok) return;
-  try{
-    const res = await fetch('/api.php?path=delete_goal', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({id})
-    });
-    const data = await res.json();
-    if(data && data.success){
-      loadGoals();
-    }else{
-      alert('Delete failed: ' + (data.error || 'not found'));
+  openConfirm({
+    title: `Delete "${name}"?`,
+    message: 'This will remove the goal and its contributions.',
+    confirmText: 'Delete',
+    cancelText: 'Cancel',
+    confirmColor: '#ef4444', // rosso "danger"
+    onConfirm: async () => {
+      try{
+        const res = await fetch('./api.php?path=delete_goal', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ id })
+        });
+        const data = await res.json();
+        if(data && data.success){
+          // opzionale: piccolo popup "Saved/Deleted"
+          showPopup('Goal deleted', () => {
+            loadGoals();
+            if (typeof loadScore === 'function') loadScore(); // se hai i KPI
+          });
+          // refresh immediato comunque
+          loadGoals();
+          if (typeof loadScore === 'function') loadScore();
+        }else{
+          showPopup('Delete failed: ' + (data?.error || 'not found'));
+        }
+      }catch(e){
+        console.error(e);
+        showPopup('Network error');
+      }
     }
-  }catch(e){
-    alert('Network error'); console.error(e);
-  }
+  });
 }
+
 
 async function addFundsToGoal(g){
   const name = (g && (g.name || g.goal_name || g.title)) || 'goal';
-  const val = prompt(`Add amount (€) to "${name}":`);
-  if(!val) return;
 
-  const amount = parseFloat(String(val).replace(',', '.')); // FIX 1: supporto virgola
-  if(!(amount > 0)){ alert('Invalid amount'); return; }
+  // chiedi l'importo con popup input
+  const amount = await openAmountPrompt({
+    title: 'Add funds',
+    message: `How much do you want to add to “${name}”?`,
+    placeholder: 'e.g. 100.00',
+    confirmText: 'Add funds',
+    cancelText: 'Cancel'
+  });
+  if (amount == null) return; // annullato
 
   // valori attuali dalla lista
   const saved0  = Number(pick(g, ['saved_amount','saved','current_saved','progress_saved','amount_saved']) ?? 0);
   const target0 = Number(pick(g, ['target_amount','target','goal_target','amount_target']) ?? 0);
 
-  // Controllo ottimistico: se già sappiamo che superiamo il target, prepariamoci a mostrare il popup
-  const willReach = target0 > 0 && (saved0 + amount) >= target0; // FIX 2: check ottimistico
+  // check ottimistico
+  const willReach = target0 > 0 && (saved0 + amount) >= target0;
 
   try{
     // 1) aggiungo i fondi
-    const res = await fetch('/api.php?path=add_goal_funds', {
+    const res = await fetch('./api.php?path=add_goal_funds', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ goal_id: g.id, amount, source: null })
     });
     const data = await res.json();
     if(!data || !data.success){
-      alert('Error: ' + (data && data.error ? data.error : 'unknown'));
+      showPopup('Error: ' + (data && data.error ? data.error : 'unknown'));
       return;
     }
 
     // 2) ricarico il goal aggiornato e verifico (no-cache!)
-    const fres = await fetch('/api.php?path=goal&id=' + encodeURIComponent(g.id), {
+    const fres = await fetch('./api.php?path=goal&id=' + encodeURIComponent(g.id), {
       cache: 'no-store',
-      headers: { 'Cache-Control': 'no-cache' } // FIX 3: niente cache
+      headers: { 'Cache-Control': 'no-cache' }
     });
     const fdata = await fres.json();
 
@@ -484,29 +506,278 @@ async function addFundsToGoal(g){
       finalTarget = Number(go.target_amount ?? go.target ?? go.goal_target ?? go.amount_target ?? finalTarget);
     }
 
-    // Mostra popup (una sola volta per goal)
-    if(finalTarget > 0 && finalSaved >= finalTarget){
-      const k = completedKey(g.id);
+    // Popup "goal completed" una sola volta
+    const k = completedKey(g.id);
+    if (finalTarget > 0 && finalSaved >= finalTarget){
       if(localStorage.getItem(k) !== '1'){
         localStorage.setItem(k, '1');
         showGoalCompletedModal();
       }
-    }else if(willReach){
-      // fallback: nel rarissimo caso in cui l'API non abbia ancora riflesso l'update
-      const k = completedKey(g.id);
+    }else if (willReach){
       if(localStorage.getItem(k) !== '1'){
         localStorage.setItem(k, '1');
         showGoalCompletedModal();
       }
     }
 
-    // 3) aggiorno la lista
+    // 3) feedback e refresh
+    showPopup('Funds added', () => {
+      loadGoals();
+      if (typeof loadScore === 'function') loadScore();
+    });
     loadGoals();
+    if (typeof loadScore === 'function') loadScore();
 
   }catch(e){
-    alert('Network error'); console.error(e);
+    console.error(e);
+    showPopup('Network error');
   }
 }
 
 
+
+/* ===== Popup "OK" stile add_transaction (1 bottone) ===== */
+function showPopup(message, onOk){
+  const ov = document.createElement('div');
+  ov.setAttribute('role', 'dialog');
+  ov.setAttribute('aria-modal', 'true');
+  Object.assign(ov.style, {
+    position:'fixed', inset:'0', background:'rgba(0,0,0,.45)',
+    display:'flex', alignItems:'center', justifyContent:'center',
+    zIndex:'9999', padding:'16px'
+  });
+
+  const card = document.createElement('div');
+  Object.assign(card.style, {
+    width:'min(92vw, 420px)', background:'#fff', borderRadius:'18px',
+    boxShadow:'0 12px 28px rgba(0,0,0,.18)', padding:'18px 16px', textAlign:'center'
+  });
+
+  const p = document.createElement('p');
+  p.textContent = String(message ?? '');
+  Object.assign(p.style, { margin:'0 0 14px', color:'#374151', fontSize:'14px' });
+
+  const ok = document.createElement('button');
+  ok.type = 'button';
+  ok.textContent = 'OK';
+  Object.assign(ok.style, {
+    border:'none', background:'#07e90e', color:'#fff', fontWeight:'800',
+    padding:'12px 16px', borderRadius:'12px', cursor:'pointer',
+    boxShadow:'0 6px 18px rgba(31,76,207,.25)'
+  });
+  ok.addEventListener('click', () => {
+    try { document.body.removeChild(ov); } catch(_) {}
+    document.body.style.overflow = '';
+    if (typeof onOk === 'function') onOk();
+  });
+
+  card.appendChild(p);
+  card.appendChild(ok);
+  ov.appendChild(card);
+  document.body.appendChild(ov);
+  document.body.style.overflow = 'hidden';
+
+  const onKey = (e) => {
+    if (e.key === 'Escape') {
+      try { document.body.removeChild(ov); } catch(_) {}
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', onKey);
+    }
+  };
+  document.addEventListener('keydown', onKey);
+}
+
+/* ===== Popup di conferma (2 bottoni) riutilizzabile ===== */
+function openConfirm(opts){
+  const o = Object.assign({
+    title: 'Are you sure?',
+    message: 'This action cannot be undone.',
+    confirmText: 'Confirm',
+    cancelText: 'Cancel',
+    confirmColor: '#1f4ccf', // blu default
+    onConfirm: null
+  }, opts||{});
+
+  const ov = document.createElement('div');
+  ov.setAttribute('role', 'dialog');
+  ov.setAttribute('aria-modal', 'true');
+  Object.assign(ov.style, {
+    position:'fixed', inset:'0', background:'rgba(0,0,0,.45)',
+    display:'flex', alignItems:'center', justifyContent:'center',
+    zIndex:'9999', padding:'16px'
+  });
+
+  const card = document.createElement('div');
+  Object.assign(card.style, {
+    width:'min(92vw, 420px)', background:'#fff', borderRadius:'18px',
+    boxShadow:'0 12px 28px rgba(0,0,0,.18)', padding:'18px 16px', textAlign:'center'
+  });
+
+  const h = document.createElement('h2');
+  h.textContent = o.title;
+  Object.assign(h.style, { margin:'0 0 6px', fontSize:'20px', fontWeight:'800', color:'#0B4E92' });
+
+  const p = document.createElement('p');
+  p.textContent = o.message;
+  Object.assign(p.style, { margin:'0 0 14px', color:'#374151', fontSize:'14px' });
+
+  const row = document.createElement('div');
+  Object.assign(row.style, { display:'flex', gap:'10px', justifyContent:'flex-end' });
+
+  const cancel = document.createElement('button');
+  cancel.type = 'button';
+  cancel.textContent = o.cancelText;
+  Object.assign(cancel.style, {
+    flex:'1 1 0', background:'#fff', color:'#111', border:'1px solid #e5e7eb',
+    padding:'12px 16px', borderRadius:'12px', fontWeight:'700', cursor:'pointer'
+  });
+  cancel.addEventListener('click', close);
+
+  const confirm = document.createElement('button');
+  confirm.type = 'button';
+  confirm.textContent = o.confirmText;
+  Object.assign(confirm.style, {
+    flex:'1 1 0', border:'none', background:o.confirmColor, color:'#fff',
+    padding:'12px 16px', borderRadius:'12px', fontWeight:'800', cursor:'pointer',
+    boxShadow:'0 6px 18px rgba(0,0,0,.15)'
+  });
+  confirm.addEventListener('click', () => {
+    close();
+    if (typeof o.onConfirm === 'function') o.onConfirm();
+  });
+
+  function close(){
+    try { document.body.removeChild(ov); } catch(_) {}
+    document.body.style.overflow = '';
+    document.removeEventListener('keydown', onKey);
+  }
+
+  ov.addEventListener('click', (e) => {
+    const clickInside = card.contains(e.target);
+    if (!clickInside) close();
+  });
+
+  const onKey = (e) => { if (e.key === 'Escape') close(); };
+
+  row.appendChild(cancel);
+  row.appendChild(confirm);
+  card.appendChild(h);
+  card.appendChild(p);
+  card.appendChild(row);
+  ov.appendChild(card);
+  document.body.appendChild(ov);
+  document.body.style.overflow = 'hidden';
+  document.addEventListener('keydown', onKey);
+}
+
+
+/* ===== Popup input (amount) – stile inline come gli altri ===== */
+function openAmountPrompt(opts){
+  const o = Object.assign({
+    title: 'Add funds',
+    message: '',
+    placeholder: 'Amount (€)',
+    confirmText: 'Add',
+    cancelText: 'Cancel',
+  }, opts||{});
+
+  return new Promise(resolve => {
+    const ov = document.createElement('div');
+    ov.setAttribute('role', 'dialog');
+    ov.setAttribute('aria-modal', 'true');
+    Object.assign(ov.style, {
+      position:'fixed', inset:'0', background:'rgba(0,0,0,.45)',
+      display:'flex', alignItems:'center', justifyContent:'center',
+      zIndex:'9999', padding:'16px'
+    });
+
+    const card = document.createElement('div');
+    Object.assign(card.style, {
+      width:'min(92vw, 420px)', background:'#fff', borderRadius:'18px',
+      boxShadow:'0 12px 28px rgba(0,0,0,.18)', padding:'18px 16px', textAlign:'center'
+    });
+
+    const h = document.createElement('h2');
+    h.textContent = o.title;
+    Object.assign(h.style, { margin:'0 0 6px', fontSize:'20px', fontWeight:'800', color:'#0B4E92' });
+
+    const p = document.createElement('p');
+    p.textContent = o.message;
+    Object.assign(p.style, { margin:'0 0 12px', color:'#374151', fontSize:'14px' });
+
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.inputMode = 'decimal';
+    input.step = '0.01';
+    input.placeholder = o.placeholder;
+    Object.assign(input.style, {
+      width:'100%', border:'1px solid #e5e7eb', borderRadius:'12px',
+      padding:'12px 14px', fontSize:'16px', margin:'0 0 10px'
+    });
+
+    const err = document.createElement('div');
+    err.textContent = '';
+    Object.assign(err.style, { color:'#ef4444', fontSize:'12px', minHeight:'16px', margin:'0 0 6px' });
+
+    const row = document.createElement('div');
+    Object.assign(row.style, { display:'flex', gap:'10px', justifyContent:'flex-end' });
+
+    const cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.textContent = o.cancelText;
+    Object.assign(cancel.style, {
+      flex:'1 1 0', background:'#fff', color:'#111', border:'1px solid #e5e7eb',
+      padding:'12px 16px', borderRadius:'12px', fontWeight:'700', cursor:'pointer'
+    });
+
+    const confirm = document.createElement('button');
+    confirm.type = 'button';
+    confirm.textContent = o.confirmText;
+    Object.assign(confirm.style, {
+      flex:'1 1 0', border:'none', background:'#22c55e', color:'#fff',
+      padding:'12px 16px', borderRadius:'12px', fontWeight:'800', cursor:'pointer',
+      boxShadow:'0 6px 18px rgba(0,0,0,.15)'
+    });
+
+    function close(v){
+      try { document.body.removeChild(ov); } catch(_) {}
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', onKey);
+      resolve(v);
+    }
+
+    cancel.addEventListener('click', () => close(null));
+    confirm.addEventListener('click', () => {
+      const raw = String(input.value || '').trim().replace(',', '.');
+      const n = parseFloat(raw);
+      if (!(n > 0)) {
+        err.textContent = 'Please enter a valid amount';
+        input.focus();
+        return;
+      }
+      close(n);
+    });
+
+    const onKey = (e) => {
+      if (e.key === 'Escape') close(null);
+      if (e.key === 'Enter') confirm.click();
+    };
+
+    ov.addEventListener('click', (e) => { if (!card.contains(e.target)) close(null); });
+
+    row.appendChild(cancel);
+    row.appendChild(confirm);
+    card.appendChild(h);
+    if (o.message) card.appendChild(p);
+    card.appendChild(input);
+    card.appendChild(err);
+    card.appendChild(row);
+    ov.appendChild(card);
+    document.body.appendChild(ov);
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', onKey);
+
+    setTimeout(() => input.focus(), 0);
+  });
+}
 
