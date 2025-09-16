@@ -85,11 +85,25 @@ const TUTORIALS = {
     title: "Introduction",
     images: [
       "../tutorial/introduction/1.png",
-      "../tutorial/introduction/2.png"
+      "../tutorial/introduction/2.png",
+      "../tutorial/introduction/3.png",
+      "../tutorial/introduction/4.png",
+      "../tutorial/introduction/5.png",
+      "../tutorial/introduction/6.png",
+      "../tutorial/introduction/7.png",
+      "../tutorial/introduction/8.png",
+      "../tutorial/introduction/9.png"
     ],
     descriptions: [
       "Step 1: Welcome to FinanceTrack , this is the homepage where you can access through main contents using the tab bar  ",
-      "Step 2: Then you can also find the side menu to navigate the app"
+      "Step 2: Then you can also find the side menu to navigate the app",
+      "Step 3: This is the wallet section where you can manage your wallets",
+      "Step 4: This is the shared wallet section where you can view your shared wallets, create new shared wallets and managing invitations",
+      "Step 5: This is the cash wallet section where you can track your cash transaction and adding a new one",
+      "Step 6: In insights page you can see graphs about your expenses and income based on the wallets",
+      "Step 7: Categories section allows you to check the limits spent in certain categories and you can also add a new one",
+      "Step 8: Goal page allows you to manage and create your goals",
+      "Step 9: This is an example of the form you will see in goal creation",
     ]
   },
   "add-shared-transaction": {

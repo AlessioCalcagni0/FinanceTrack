@@ -47,7 +47,7 @@ $apiHost = $_ENV['DB_HOST'] ;
         </div>
         
 
-        <div  id="title">Physical Currency</div>
+        <div  id="title">Finance Track</div>
         
         <div style="display:flex; width:20%; justify-content:space-evenly">
             <!--NOTIFY BELL-->
