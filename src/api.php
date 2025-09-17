@@ -325,22 +325,31 @@ if ($path === "add_account") {
 
 if ($path === "update_account") {
     try {
-         $data = getJsonInput();
-        $id= $data["id"];
-        $name    = $data["name"]   ?? 'Account';
-        $type   = $data["type"]  ?? 'bank';
-        
+        $data = getJsonInput();              // deve restituire array associativo
+        $id   = $data["id"]   ?? null;
+        $name = $data["name"] ?? 'Account';
 
-      
-     
-        $sql = "UPDATE account SET name=:name, type=:type, last_sync=NOW() WHERE id=:id";
+        if (!$id) {
+            http_response_code(400);
+            echo json_encode(["success" => false, "error" => "Missing required field: id"]);
+            exit;
+        }
+
+        $sql = "UPDATE account SET name = :name, last_sync = NOW() WHERE id = :id";
         $stmt = $pdo->prepare($sql);
+
+        // Costruisci i parametri che corrispondono ai placeholder
+        $params = [
+            ':name' => $name,
+            ':id'   => (int)$id,  // se id è intero
+        ];
+
         $stmt->execute($params);
 
-        echo json_encode(["success"=>true]);
-    } catch(Exception $e) {
-        http_response_code(400);
-        echo json_encode(["error"=>$e->getMessage()]);
+        echo json_encode(["success" => true]);
+    } catch (Throwable $e) {
+        http_response_code(500);
+        echo json_encode(["success" => false, "error" => $e->getMessage()]);
     }
     exit;
 }

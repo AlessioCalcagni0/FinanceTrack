@@ -12,6 +12,8 @@ $apiHost = $_ENV['DB_HOST'] ;
 
 <head>
     <meta charset="UTF-8">
+    <script src="/pwa.js"></script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png">
@@ -173,8 +175,7 @@ $apiHost = $_ENV['DB_HOST'] ;
             <input type="text" id="modifyAccountName" placeholder="Enter account name">
 
             <!-- Account Type -->
-            <label for="modifyAccountType">Wallet Type</label>
-            <input type="text" id="modifyAccountType" placeholder="Enter account type">
+        
 
             <!-- Hidden ID -->
             <input type="hidden" id="modifyAccountId">

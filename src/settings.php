@@ -17,6 +17,9 @@ $apiHost = $_ENV['DB_HOST'] ;
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <script src="/pwa.js"></script>
+
+  <link rel="manifest" href="/manifest.json">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Settings – FinanceTrack</title>
   <link rel="stylesheet" href="../wallet_page.css" />

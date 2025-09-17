@@ -1,3 +1,252 @@
+// Legge l’elenco di transazioni condivise salvate in sessionStorage
+function readSharedTransactionsFromSession() {
+    try {
+        const raw = sessionStorage.getItem('shared_transactions');
+        if (!raw) return [];
+        const arr = JSON.parse(raw);
+        return Array.isArray(arr) ? arr : [];
+    } catch {
+        return [];
+    }
+}
+
+function applySessionDeltaToBalances() {
+    const { totalDelta, myDelta } = computeSessionDeltasForToday();
+
+    // Total Balance
+    const totEl = document.getElementById("tot-balance");
+    if (totEl) {
+        const base = totEl.dataset.baseValue != null
+            ? parseFloat(totEl.dataset.baseValue)
+            : parseEuro(totEl.textContent);
+        totEl.dataset.baseValue = String(base);
+        totEl.textContent = formatEuro(base + totalDelta);
+    }
+
+    // Personal Balance (se presente)
+    const personalEl = document.getElementById("personal-balance") || document.getElementById("my-balance");
+    if (personalEl) {
+        const baseP = personalEl.dataset.baseValue != null
+            ? parseFloat(personalEl.dataset.baseValue)
+            : parseEuro(personalEl.textContent);
+        personalEl.dataset.baseValue = String(baseP);
+        personalEl.textContent = formatEuro(baseP + myDelta);
+    }
+}
+
+function applySessionDeltaToIncomeAndSpent() {
+    const { spentDelta, incomeDelta } = computeSessionDeltasForToday();
+
+    // Income
+    const incEl = document.getElementById("income-sum");
+    if (incEl) {
+        const base = incEl.dataset.baseValue != null
+            ? parseFloat(incEl.dataset.baseValue)
+            : parseEuro(incEl.textContent);
+        incEl.dataset.baseValue = String(base);
+        incEl.textContent = formatEuro(base + incomeDelta);
+    }
+
+    // Spent
+    const spEl = document.getElementById("spent-sum");
+    if (spEl) {
+        const base = spEl.dataset.baseValue != null
+            ? parseFloat(spEl.dataset.baseValue)
+            : parseEuro(spEl.textContent);
+        spEl.dataset.baseValue = String(base);
+        spEl.textContent = formatEuro(base + spentDelta);
+    }
+}
+
+/** comodo quando devi ricalcolare tutto dopo i fetch */
+function applyAllSessionDeltas() {
+    applySessionDeltaToBalances();
+    applySessionDeltaToIncomeAndSpent();
+}
+
+// Confronta se due date (ISO o Date) sono lo stesso giorno
+function isSameDay(a, b = new Date()) {
+    const da = new Date(a);
+    const db = new Date(b);
+    return (
+        da.getFullYear() === db.getFullYear() &&
+        da.getMonth() === db.getMonth() &&
+        da.getDate() === db.getDate()
+    );
+}
+
+// Crea e aggiunge una “card” transazione al container (stile Today)
+function appendTransactionBox(container, { name, who, amount, tipo = 'expense', path = null }) {
+    const box = document.createElement("div");
+    box.className = "box-category";
+
+    const iconDiv = document.createElement("div");
+    iconDiv.className = "icon";
+    if (path) {
+        iconDiv.style.backgroundImage = `url('${path}')`;
+        iconDiv.style.backgroundSize = "cover";
+        iconDiv.style.backgroundPosition = "center";
+    }
+
+    const nameDiv = document.createElement("div");
+    nameDiv.className = "transaction-name";
+    // Mostro nome transazione e chi ha pagato (by …)
+    nameDiv.textContent = `${name ?? "Senza nome"} • by ${who}`;
+
+    const amountDiv = document.createElement("div");
+    amountDiv.className = "amount";
+
+    const amountNum = Number(amount) || 0;
+    if (tipo === "income") {
+        amountDiv.textContent =
+            "+" + amountNum.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+        amountDiv.style.color = "white";
+        amountDiv.style.backgroundColor = "green";
+    } else {
+        amountDiv.textContent =
+            "-" + amountNum.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+        amountDiv.style.color = "white";
+        amountDiv.style.backgroundColor = "#ff0000ff";
+    }
+
+    box.appendChild(iconDiv);
+    box.appendChild(nameDiv);
+    box.appendChild(amountDiv);
+    container.appendChild(box);
+}
+function readSharedTransactionsFromSession() {
+    try {
+        const raw = sessionStorage.getItem('shared_transactions');
+        if (!raw) return [];
+        const arr = JSON.parse(raw);
+        return Array.isArray(arr) ? arr : [];
+    } catch {
+        return [];
+    }
+}
+
+function isSameDay(a, b = new Date()) {
+    const da = new Date(a);
+    const db = new Date(b);
+    return da.getFullYear() === db.getFullYear() &&
+        da.getMonth() === db.getMonth() &&
+        da.getDate() === db.getDate();
+}
+
+function formatEuro(val) {
+    return Number(val).toLocaleString('it-IT', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + "€";
+}
+
+function parseEuro(text) {
+    if (!text) return 0;
+    const normalized = text
+        .replace(/[^\d,.\-]/g, '')   // lascia cifre, virgola, punto e segno
+        .replace(/\./g, '')          // rimuovi separatore migliaia
+        .replace(',', '.');          // usa punto decimale
+    const n = parseFloat(normalized);
+    return Number.isFinite(n) ? n : 0;
+}
+
+// crea una card stile “today”
+function appendTransactionBox(container, { name, who, amount, tipo = 'expense', path = null }) {
+    const box = document.createElement("div");
+    box.className = "box-category";
+
+    const iconDiv = document.createElement("div");
+    iconDiv.className = "icon";
+    if (path) {
+        iconDiv.style.backgroundImage = `url('${path}')`;
+        iconDiv.style.backgroundSize = "cover";
+        iconDiv.style.backgroundPosition = "center";
+    }
+
+    const nameDiv = document.createElement("div");
+    nameDiv.className = "transaction-name";
+    // ⚠️ niente nome partecipante: solo nome transazione + payer
+    nameDiv.textContent = `${name ?? "Senza nome"} • by ${who}`;
+
+    const amountDiv = document.createElement("div");
+    amountDiv.className = "amount";
+
+    const amountNum = Number(amount) || 0;
+    if (tipo === "income") {
+        amountDiv.textContent = "+" + amountNum.toFixed(2) + " €";
+        amountDiv.style.color = "white";
+        amountDiv.style.backgroundColor = "green";
+    } else {
+        amountDiv.textContent = "-" + amountNum.toFixed(2) + " €";
+        amountDiv.style.color = "white";
+        amountDiv.style.backgroundColor = "#ff0000ff";
+    }
+
+    box.appendChild(iconDiv);
+    box.appendChild(nameDiv);
+    box.appendChild(amountDiv);
+    container.appendChild(box);
+}
+
+/** calcola i delta (oggi) da sessionStorage */
+/** calcola i delta (solo oggi) da sessionStorage */
+function computeSessionDeltasForToday() {
+  const sharedToday = readSharedTransactionsFromSession()
+    .filter(entry => !entry.createdAt || isSameDay(entry.createdAt));
+
+  // delta per i vari contatori
+  let totalDelta  = 0; // impatta il total balance (spese => negativo)
+  let myDelta     = 0; // impatta solo "Me" (spese => negativo)
+  let spentDelta  = 0; // aumenta lo "spent" mostrato
+  let incomeDelta = 0; // se in futuro gestisci entrate, aggiornalo qui
+
+  for (const entry of sharedToday) {
+    const tot = Number(entry.total) || 0;
+
+    // Le shared sono spese: impattano total e spent
+    totalDelta -= tot;
+    spentDelta += tot;
+
+    // --- Calcolo impatto personale ---
+    const payerIsMe = (entry.payer || '').trim().toLowerCase() === 'me';
+    const mePart = (entry.split || []).find(
+      p => (p.name || '').trim().toLowerCase() === 'me'
+    );
+
+    if (mePart) {
+      // Caso 1: "Me" è nello split -> impatto = quota personale
+      const myShare = Number(mePart.amount) || 0;
+      myDelta -= myShare;
+    } else if (payerIsMe) {
+      // Caso 2: "Me" NON nello split ma è il payer -> impatto = totale
+      myDelta -= tot;
+    }
+    // Caso 3: "Me" non è nello split e non è payer -> nessun impatto personale
+  }
+
+  return { totalDelta, myDelta, spentDelta, incomeDelta };
+}
+/** applica i delta ai saldi visualizzati */
+function applySessionDeltaToBalances() {
+    const { totalDelta, myDelta } = computeSessionDeltasForToday();
+
+    // Total Balance
+    const totEl = document.getElementById("tot-balance");
+    if (totEl) {
+        const base = totEl.dataset.baseValue != null
+            ? parseFloat(totEl.dataset.baseValue)
+            : parseEuro(totEl.textContent);
+        totEl.dataset.baseValue = String(base); // salva il “base” per evitare doppi conteggi
+        totEl.textContent = formatEuro(base + totalDelta);
+    }
+
+    // Personal Balance (se presente)
+    const personalEl = document.getElementById("personal-balance") || document.getElementById("my-balance");
+    if (personalEl) {
+        const baseP = personalEl.dataset.baseValue != null
+            ? parseFloat(personalEl.dataset.baseValue)
+            : parseEuro(personalEl.textContent);
+        personalEl.dataset.baseValue = String(baseP);
+        personalEl.textContent = formatEuro(baseP + myDelta);
+    }
+}
 
 function readSharedTransactionsFromSession() {
     try {
@@ -10,7 +259,7 @@ function readSharedTransactionsFromSession() {
     }
 }
 
-function goTo(){
+function goTo() {
 
     const home = document.getElementById("home");
     const wallet = document.getElementById("wallet-icon");
@@ -19,23 +268,23 @@ function goTo(){
 
     home.addEventListener('click', () => {
         window.location.href = "../homepage.php"
-        }
+    }
     );
     wallet.addEventListener('click', () => {
         window.location.href = "../wallet_page.php"
-        }
+    }
     );
     goal.addEventListener('click', () => {
         window.location.href = "../goals.php"
-        }
+    }
     );
     insights.addEventListener('click', () => {
         window.location.href = "../insights.php"
-        }
+    }
     );
 }
 function redirect(location) {
-  window.location.href = location;
+    window.location.href = location;
 }
 
 function openMenu() {
@@ -263,9 +512,9 @@ async function fetchImage(userid) {
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
-      goTo();
-      
- const profileBtn = document.getElementById("profile");
+    goTo();
+
+    const profileBtn = document.getElementById("profile");
 
     const imageUrl = await fetchImage(1);
     if (imageUrl) {
@@ -278,8 +527,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 
 
-   
-    
+
+
     window.currentAccountId = getAccountIdFromURL();
     console.log(window.currentAccountId);
     function UpdateDate() {
@@ -291,7 +540,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const year = oggi.getFullYear();
         const fullDate = `${weekday} ${day}/${month}/${year}`;
     }
-    
+
 
     // ✅ invoca davvero la funzione
     UpdateDate();
@@ -333,6 +582,7 @@ async function loadIncome() {
     }
 }
 
+
 async function loadSpent() {
     try {
         const accountId = getEffectiveAccountId();
@@ -358,6 +608,7 @@ async function loadSpent() {
         console.error(err);
     }
 }
+
 
 async function loadBalance() {
     try {
@@ -424,6 +675,7 @@ async function loadBalance() {
         console.error(err);
     }
 }
+
 
 
 
@@ -495,7 +747,6 @@ async function loadTodayTransactions() {
         console.error("Errore durante il caricamento transazioni:", err);
     }
 }
-
 
 
 function loadName() {

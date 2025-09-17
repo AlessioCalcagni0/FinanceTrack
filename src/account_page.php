@@ -12,11 +12,9 @@ $apiHost = $_ENV['DB_HOST'] ;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>Wallet</title>
     <link rel="stylesheet" href="account_page.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="manifest" href="/manifest.json">
     <script> const API_HOST = "<?php echo $apiHost; ?>";</script>
     <script src="account_page.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
