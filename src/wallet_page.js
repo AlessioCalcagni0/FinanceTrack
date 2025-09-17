@@ -4,7 +4,7 @@ function openMenu() {
 
     document.getElementById("menu-content").classList.toggle("show-menu");
     const overlay = document.getElementById("overlay-menu");
-    overlay.style.opacity="1";
+    overlay.style.opacity = "1";
 
 }
 
@@ -45,7 +45,7 @@ window.onclick = function (event) {
 
         document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
         const overlay = document.getElementById("overlay-menu");
-        overlay.style.opacity="0";
+        overlay.style.opacity = "0";
         var dropdowns = document.getElementsByClassName("dropdown-content");
         var i;
         for (i = 0; i < dropdowns.length; i++) {
@@ -58,11 +58,11 @@ window.onclick = function (event) {
 }
 
 function closeMenu() {
-   
+
     document.getElementById("menu-content").classList.remove("show-menu");
     document.getElementsByClassName("back-arrow")[0].classList.remove("show-menu");
     const overlay = document.getElementById("overlay-menu");
-    overlay.style.opacity="0";
+    overlay.style.opacity = "0";
 }
 
 
@@ -120,18 +120,18 @@ document.addEventListener('DOMContentLoaded', async function () {
     const cancelButton = document.getElementById("cancel_button");
     const confirmButton = document.getElementById("confirm_button");
     const icons = document.querySelectorAll(".choose-icon .icon");
-    const overlay= document.getElementById("overlay");
+    const overlay = document.getElementById("overlay");
 
     // APRI POPUP
     openButton.addEventListener("click", () => {
         popup.classList.add("addaccount-popupactive");
-        overlay.style.opacity="1";
+        overlay.style.opacity = "1";
     });
 
     // CHIUDI POPUP con Cancel
     cancelButton.addEventListener("click", () => {
         popup.classList.remove("addaccount-popupactive");
-        overlay.style.opacity="0";
+        overlay.style.opacity = "0";
         resetAddAccountForm();
     });
 
@@ -187,11 +187,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // validazioni base
         if (!selectedType) {
-            showPopup("Select a wallet type (Bank or Card)!", { type: "error", lockOverlay: true });
+            showPopup("Select a wallet type (Bank or Card)!", { type: "info", lockOverlay: true });
             return;
         }
         if (!name) {
-            showPopup("Choose a name for the wallet!", { type: "error", lockOverlay: true });
+            showPopup("Choose a name for the wallet!", { type: "info", lockOverlay: true });
             return;
         }
 
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             if (res.ok && result.success) {
                 popup.classList.remove("addaccount-popupactive");
-                overlay.style.opacity="0";
+                overlay.style.opacity = "0";
                 resetAddAccountForm();
                 if (typeof loadAccounts === "function") loadAccounts();
                 showPopup("Wallet created successfully!", { type: "success", autocloseMs: 1500 });
@@ -536,37 +536,34 @@ function openModifyPopup(account) {
     const overlay = document.getElementById("overlay");
 
     const nameInput = document.getElementById("modifyAccountName");
-    const typeInput = document.getElementById("modifyAccountType");
     const idInput = document.getElementById("modifyAccountId");
     const icons = document.querySelectorAll("#modifyAccountPopup .choose-icon .icon");
 
     // Popola i campi
     nameInput.value = account.name || "";
-    typeInput.value = account.type || "";
     idInput.value = account.id || "";
 
     // Mostra popup e overlay
     popup.classList.add("addaccount-popupactive");
-    overlay.classList.add("overlayactive");
+    overlay.style.opacity = "1";
 
     // CANCEL
     document.getElementById("modifyCancelBtn").onclick = () => {
         popup.classList.remove("addaccount-popupactive");
-        overlay.classList.remove("overlayactive");
+        overlay.style.opacity = "0";
     };
 
     // CONFIRM
     document.getElementById("modifyConfirmBtn").onclick = async () => {
-     
+
 
         const newData = {
             id: 1,
             name: nameInput.value.trim(),
-            type: typeInput.value.trim(),
         };
 
-        if (!newData.name || !newData.type) {
-            showPopup("Name and type can't be empty!", "error");
+        if (!newData.name) {
+            showPopup("Name can't be empty!", "error");
             return;
         }
 
@@ -577,18 +574,31 @@ function openModifyPopup(account) {
                 body: JSON.stringify(newData)
             });
 
-            const result = await res.json();
+            // Leggo come testo per debug
+            const rawText = await res.text();
+            console.log("🔍 Raw response text:", rawText);
+
+            let result;
+            try {
+                result = JSON.parse(rawText);
+                console.log("✅ Parsed JSON:", result);
+            } catch (parseErr) {
+                console.error("❌ JSON parse error:", parseErr);
+                throw new Error("Response was not valid JSON");
+            }
 
             if (res.ok && result.success) {
                 popup.classList.remove("addaccount-popupactive");
                 overlay.classList.remove("overlayactive");
 
                 nameInput.value = "";
-                typeInput.value = "";
 
                 showPopup("Wallet successfully updated!", "success");
+                
                 loadAccounts();
+                
             } else {
+                console.warn("⚠️ Server returned error:", result.error || res.status);
                 showPopup("Error in the update: " + (result.error || res.status), "error");
             }
         } catch (err) {
@@ -630,7 +640,8 @@ function resetAddAccountForm() {
 function showPopup(message, options = {}) {
     const {
         type = "info",        // "success" | "error" | "info"
-        closeOverlay = false  // true: al click su OK si chiude anche overlay
+        lockOverlay = false,  // <-- se true, NON rimuovo l'overlay su OK
+        autocloseMs = null
     } = options;
 
     const popup = document.getElementById("successPopup");
@@ -647,35 +658,53 @@ function showPopup(message, options = {}) {
     // testo
     popupText.textContent = message;
 
-    // classi di stato (per eventuali stili diversi)
+    // classi di stato
     popup.classList.remove("is-success", "is-error", "is-info");
     popup.classList.add(
         type === "success" ? "is-success" :
-            type === "error" ? "is-error" : "is-info"
+        type === "error"   ? "is-error"   : "is-info"
     );
 
     // mostra popup + overlay
     popup.style.display = "flex";
     overlay.classList.add("overlayactive");
+    overlay.style.opacity = "1";
 
     // rimuovi vecchi listener dall'OK
     const okBtnClone = okBtn.cloneNode(true);
     okBtn.parentNode.replaceChild(okBtnClone, okBtn);
     const newOkBtn = document.getElementById("successOkBtn");
 
-    // click OK → chiude il popup
+    // click OK
     newOkBtn.onclick = () => {
+        // chiudo solo il popup
         popup.style.display = "none";
-        if (closeOverlay) {
+        if (!lockOverlay) {
+            // nei casi normali, chiudo anche l'overlay
             overlay.classList.remove("overlayactive");
+            overlay.style.opacity = "0";
         }
+        // se lockOverlay === true, lascio overlay attivo
     };
 
-    // click overlay → non fa nulla (così l’utente deve premere OK)
+    // disabilito chiusura via overlay-click
     overlay.onclick = (e) => {
         if (e.target.id !== "overlay") return;
-        // lasciamo overlay attivo sempre, finché non chiudi da OK
+        // non faccio nulla: l'overlay resta
     };
+
+    // autoclose opzionale
+    if (autocloseMs && Number.isFinite(autocloseMs)) {
+        setTimeout(() => {
+            if (popup.style.display !== "none") {
+                popup.style.display = "none";
+                if (!lockOverlay) {
+                    overlay.classList.remove("overlayactive");
+                    overlay.style.opacity = "0";
+                }
+            }
+        }, autocloseMs);
+    }
 }
 
 

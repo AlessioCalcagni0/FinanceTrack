@@ -404,11 +404,13 @@ async function drawBudgetChart(periodo = "settimana") {
         if (!Array.isArray(categoriesCache) || categoriesCache.length === 0) {
             const resCats = await fetch(`http://${API_HOST}:8000/api.php?path=categories`);
             categoriesCache = await resCats.json();
+            console.log(categoriesCache);
         }
 
         // 2) spese aggregate per categoria nel periodo selezionato
         const res = await fetch(`http://${API_HOST}:8000/api.php?path=api/spese&periodo=${encodeURIComponent(periodo)}`);
         const datiRaw = await res.json();
+        console.log(datiRaw);
 
         if (!Array.isArray(datiRaw)) {
             console.error("api/spese non ha restituito un array");

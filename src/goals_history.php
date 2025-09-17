@@ -14,6 +14,9 @@ $user_id = $_SESSION['user_id'] ?? "1";
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link rel="manifest" href="/manifest.json">
+  <script src="/pwa.js"></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Goals History – FinanceTrack</title>
 <script> const API_HOST = "<?php echo $apiHost; ?>";</script>

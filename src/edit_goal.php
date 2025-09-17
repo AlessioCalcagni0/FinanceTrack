@@ -9,6 +9,9 @@ $goalId = isset($_GET['id']) ? intval($_GET['id']) : 0;
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Edit Goal – FinanceTrack</title>
+  <script src="/pwa.js"></script>
+
+  <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="edit_goal.css" />
   <script>
     window.USER_ID = "<?= htmlspecialchars($user_id, ENT_QUOTES) ?>";
