@@ -405,7 +405,7 @@ async function drawBudgetChart(periodo = "settimana") {
             const resCats = await fetch(`http://${API_HOST}:8000/api.php?path=categories`);
             categoriesCache = await resCats.json();
         }
-
+       
         // 2) spese aggregate per categoria nel periodo selezionato
         const res = await fetch(`http://${API_HOST}:8000/api.php?path=api/spese&periodo=${encodeURIComponent(periodo)}`);
         const datiRaw = await res.json();

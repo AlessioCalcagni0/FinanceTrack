@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     if (!out.wallet) throw new Error('API ok, ma manca "wallet" nella risposta');
 
                     // verifiche client-side richieste
-                    const myName = (window.CURRENT_USER_FULLNAME || 'Mario Rossi').trim();
+                    const myName = (window.CURRENT_USER_FULLNAME || 'Franco Bianchi').trim();
                     const slots = [
                         out.wallet.partecipant_name_surname1,
                         out.wallet.partecipant_name_surname2,
@@ -599,7 +599,7 @@ function openModifyWalletPopup(w) {
     const overlay = document.getElementById('swOverlay');
     const modal = document.getElementById('swEditPopup');
 
-    const myName = ((window.CURRENT_USER_FULLNAME || '').trim()) || 'Mario Rossi';
+    const myName = ((window.CURRENT_USER_FULLNAME || '').trim()) || 'Franco Rossi';
     const norm = (s) => (s ?? '').toString().toLowerCase().trim();
     const VALID = ['editor', 'admin', 'viewer'];
     const roleNow = (r) => VALID.includes(norm(r)) ? (norm(r)[0].toUpperCase() + norm(r).slice(1)) : 'Viewer';
@@ -744,10 +744,7 @@ function openModifyWalletPopup(w) {
         <button class="inv-close" id="invCloseBtn">Close</button>
       </div>
       <div class="inv-list">
-        <div class="inv-item"><div class="inv-name">Mario Rossi</div><button class="inv-btn is-already" data-state="already">Already invited</button></div>
-        <div class="inv-item"><div class="inv-name">Giulia Bianchi</div><button class="inv-btn" data-state="idle">Invite</button></div>
-        <div class="inv-item"><div class="inv-name">Luca Verdi</div><button class="inv-btn" data-state="idle">Invite</button></div>
-        <div class="inv-item"><div class="inv-name">Anna Neri</div><button class="inv-btn" data-state="idle">Invite</button></div>
+        <div class="inv-item"><div class="inv-name">Franco Bianchi</div><button class="inv-btn is-already" data-state="already">Already invited</button></div>
       </div>
     `;
         inv.querySelector('#invCloseBtn').addEventListener('click', () => inv.classList.remove('active'));

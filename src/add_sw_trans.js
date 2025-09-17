@@ -101,7 +101,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (splitSection) splitSection.innerHTML = "";
 
         // Reset variabili di stato se servono
-        if (typeof uncatActive !== "undefined") uncatActive = false;
         if (typeof sectionsVisible !== "undefined") sectionsVisible = false;
         if (typeof expanded !== "undefined") expanded = false;
         if (typeof currentStep !== "undefined") currentStep = 0;
@@ -149,7 +148,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     // -----------------------------
     // ELEMENTI UI – SEZIONI / CATEGORIE
     // -----------------------------
-    const uncatBtn = document.getElementById("Uncat_button");
     const orSeparator = document.getElementById("or-separator");
     const toggleSectionsBtn = document.getElementById("toggleSectionsBtn");
 
@@ -179,15 +177,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     // -----------------------------
 
 
- 
-  
+
+
     const images = [
-         "../tutorial/add_shared_transaction/1.png",
-      "../tutorial/add_shared_transaction/2.png"
+        "../tutorial/add_shared_transaction/1.png",
+        "../tutorial/add_shared_transaction/2.png"
     ];
     const descriptions = [
-        "Step 1: Press Add shared transaction.",
-        "Step 2: Complete the form by filling all the sections and splitting the import among participants."
+        "Step 1: Complete the form by filling all the sections and selecting the participant who performed the transaction.",
+        "Step 2: When selecting the transaction amount the value is evenly splitted among participants, but can be customized."
     ];
 
     // -----------------------------
@@ -230,12 +228,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         sectionsVisible = true;
 
-        // Se era attivo l'uncategorized, disattivalo per coerenza
-        if (uncatActive) {
-            uncatActive = false;
-            uncatBtn.style.backgroundColor = "#888888";
-            orSeparator.style.display = "inline-block";
-        }
+
     }
 
     function hideSections() {
@@ -363,8 +356,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 list.appendChild(box);
             });
 
+
             popup.appendChild(list);
         }
+
 
         // Bottone OK
         const btn = document.createElement("button");
@@ -378,7 +373,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             borderRadius: "5px",
             alignSelf: "center"
         });
-        btn.addEventListener("click", () => document.body.removeChild(overlay));
+        btn.addEventListener("click", () => {
+            if (message == "Transaction saved successfully") history.back();
+            document.body.removeChild(overlay)
+        });
 
         popup.appendChild(btn);
         overlay.appendChild(popup);
@@ -425,39 +423,29 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         participantsInputs.forEach((input, idx) => {
             const amount = parseFloat(input.value) || 0;
-            const name = participantsLabels[idx]?.innerText || `P${idx}`;
-            transactions.push({ name, amount });
-            sumAmounts += amount;
+            const name = (participantsLabels[idx]?.innerText || `P${idx}`).trim();
+            const fixed = Number(amount.toFixed(2));
+            transactions.push({ name, amount: fixed });
+            sumAmounts += fixed;
         });
 
         // 🔹 Controllo che la somma sia uguale al totale
-        const diff = Math.abs(sumAmounts - totalAmount);
+        const diff = Math.abs(sumAmounts - Number(totalAmount.toFixed(2)));
         if (diff > 0.01) { // tolleranza di 1 centesimo
             showPopup("The split amounts do not match the total.");
             return;
         }
 
-        // 🔹 Salvataggio
-        try {
-            const res = await fetch(`http://${API_HOST}:8000/api.php?path=save_transaction`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    total: totalAmount,
-                    uncat: uncatActiveNow,
-                    name: transactionName,
-                    payer: payer.value,
-                    transactions: transactions
-                })
-            });
-
-            const data = await res.json();
-            console.log("Dati ricevuti dal backend:", data);
-
-        } catch (err) {
-            console.error(err);
-            showPopup("Error saving transaction. Please try again.");
-        }
+        // ✅ Salvataggio in sessionStorage
+        saveSharedTransactionToSession({
+            name: transactionName,
+            payer: payer.value,
+            total: totalAmount,
+            participants: transactions
+        });
+        sessionStorage.setItem("changes",true);
+        // 🔹 Feedback utente
+        showPopup("Transaction saved successfully");
     }
 
 
@@ -543,72 +531,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // -----------------------------
-    // LISTENER – UNCATEGORIZED
-    // -----------------------------
-    if (uncatBtn) {
-        uncatBtn.addEventListener("click", () => {
-            uncatActive = !uncatActive;
-
-            if (uncatActive) {
-                uncatBtn.style.backgroundColor = "#888888";
-                uncatBtn.style.color = "white";
-                orSeparator.style.display = "none";
-                if (selectLabel) selectLabel.style.display = "none";
-                if (categoriesSection) categoriesSection.style.display = "none";
-                if (percentageBar) percentageBar.style.display = "none";
-                if (tutorialBtn) tutorialBtn.style.display = "none"
-                if (toggleSectionsBtn) toggleSectionsBtn.style.display = "none"
-                resetAllFields();
-            }
-            else {
-                uncatBtn.style.backgroundColor = "black";
-
-                orSeparator.style.display = "inline-block";
-                if (selectLabel) selectLabel.style.display = "none";
-                if (categoriesSection) categoriesSection.style.display = "none";
-                if (percentageBar) percentageBar.style.display = "none";
-                if (tutorialBtn) tutorialBtn.style.display = "none"
-                if (toggleSectionsBtn) toggleSectionsBtn.style.display = "block"
-            }
-        });
-    }
-
-    // -----------------------------
-    // LISTENER – SHOW/HIDE CATEGORIES (bottone blu chiaro)
-    // -----------------------------
-    if (toggleSectionsBtn) {
-        // Stato iniziale: mostrate
-        hideSections();
-
-        toggleSectionsBtn.addEventListener("click", () => {
-            sectionsVisible ? hideSections() : showSections();
-        });
-    }
-
-    // -----------------------------
-    // LISTENER – ESPANSIONE CONTENITORE CATEGORIE
-    // -----------------------------
-    if (toggleCategoriesBtn && categoriesSection && categoryContainer) {
-        const initialWrapperHeight = getComputedStyle(categoriesSection).height;
-        const initialContainerHeight = getComputedStyle(categoryContainer).height;
-
-        toggleCategoriesBtn.addEventListener("click", () => {
-            const items = categoryContainer.querySelectorAll(".box-category").length;
-            const newHeightWrapper = (items * 80) + "px";
-            const newHeightContainer = ((items * 80) - 50) + "px";
-
-            if (!expanded) {
-                categoriesSection.style.height = newHeightWrapper;
-                categoryContainer.style.height = newHeightContainer;
-                expanded = true;
-            } else {
-                categoriesSection.style.height = initialWrapperHeight;
-                categoryContainer.style.height = initialContainerHeight;
-                expanded = false;
-            }
-        });
-    }
 
     // -----------------------------
     // LISTENER – CONFERMA / CANCEL
@@ -625,6 +547,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     updateSplitValues();
 
 });
+
+
+function saveSharedTransactionToSession({ name, payer, total, participants }) {
+    const entry = {
+        name,                       // nome transazione
+        payer,                      // chi ha pagato (radio selezionato)
+        total: Number((+total).toFixed(2)),
+        split: participants.map(p => ({
+            name: String(p.name),
+            amount: Number((+p.amount).toFixed(2))
+        })),
+        createdAt: new Date().toISOString()
+    };
+
+    const KEY = 'shared_transactions';
+    const list = JSON.parse(sessionStorage.getItem(KEY) || '[]');
+    list.push(entry);
+    sessionStorage.setItem(KEY, JSON.stringify(list));
+}
 
 
 

@@ -1,4 +1,14 @@
 
+function readSharedTransactionsFromSession() {
+    try {
+        const raw = sessionStorage.getItem('shared_transactions');
+        if (!raw) return [];
+        const arr = JSON.parse(raw);
+        return Array.isArray(arr) ? arr : [];
+    } catch {
+        return [];
+    }
+}
 
 function goTo(){
 
@@ -43,6 +53,177 @@ function closeMenu() {
     const overlay = document.getElementById("overlay");
     overlay.classList.remove("overlayactive");
 }
+
+
+function applySessionDeltaToBalances() {
+    const { totalDelta, myDelta } = computeSessionDeltasForToday();
+
+    // Total Balance
+    const totEl = document.getElementById("tot-balance");
+    if (totEl) {
+        const base = totEl.dataset.baseValue != null
+            ? parseFloat(totEl.dataset.baseValue)
+            : parseEuro(totEl.textContent);
+        totEl.dataset.baseValue = String(base);
+        totEl.textContent = formatEuro(base + totalDelta);
+    }
+
+    // Personal Balance (se presente)
+    const personalEl = document.getElementById("personal-balance") || document.getElementById("my-balance");
+    if (personalEl) {
+        const baseP = personalEl.dataset.baseValue != null
+            ? parseFloat(personalEl.dataset.baseValue)
+            : parseEuro(personalEl.textContent);
+        personalEl.dataset.baseValue = String(baseP);
+        personalEl.textContent = formatEuro(baseP + myDelta);
+    }
+}
+
+function applySessionDeltaToIncomeAndSpent() {
+    const { spentDelta, incomeDelta } = computeSessionDeltasForToday();
+
+    // Income
+    const incEl = document.getElementById("income-sum");
+    if (incEl) {
+        const base = incEl.dataset.baseValue != null
+            ? parseFloat(incEl.dataset.baseValue)
+            : parseEuro(incEl.textContent);
+        incEl.dataset.baseValue = String(base);
+        incEl.textContent = formatEuro(base + incomeDelta);
+    }
+
+    // Spent
+    const spEl = document.getElementById("spent-sum");
+    if (spEl) {
+        const base = spEl.dataset.baseValue != null
+            ? parseFloat(spEl.dataset.baseValue)
+            : parseEuro(spEl.textContent);
+        spEl.dataset.baseValue = String(base);
+        spEl.textContent = formatEuro(base + spentDelta);
+    }
+}
+
+/** comodo quando devi ricalcolare tutto dopo i fetch */
+function applyAllSessionDeltas() {
+    applySessionDeltaToBalances();
+    applySessionDeltaToIncomeAndSpent();
+}
+
+// Confronta se due date (ISO o Date) sono lo stesso giorno
+function isSameDay(a, b = new Date()) {
+    const da = new Date(a);
+    const db = new Date(b);
+    return (
+        da.getFullYear() === db.getFullYear() &&
+        da.getMonth() === db.getMonth() &&
+        da.getDate() === db.getDate()
+    );
+}
+
+// Crea e aggiunge una “card” transazione al container (stile Today)
+function appendTransactionBox(container, { name, who, amount, tipo = 'expense', path = null }) {
+    const box = document.createElement("div");
+    box.className = "box-category";
+
+    const iconDiv = document.createElement("div");
+    iconDiv.className = "icon";
+    if (path) {
+        iconDiv.style.backgroundImage = `url('${path}')`;
+        iconDiv.style.backgroundSize = "cover";
+        iconDiv.style.backgroundPosition = "center";
+    }
+
+    const nameDiv = document.createElement("div");
+    nameDiv.className = "transaction-name";
+    // Mostro nome transazione e chi ha pagato (by …)
+    nameDiv.textContent = `${name ?? "Senza nome"} • by ${who}`;
+
+    const amountDiv = document.createElement("div");
+    amountDiv.className = "amount";
+
+    const amountNum = Number(amount) || 0;
+    if (tipo === "income") {
+        amountDiv.textContent =
+            "+" + amountNum.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+        amountDiv.style.color = "white";
+        amountDiv.style.backgroundColor = "green";
+    } else {
+        amountDiv.textContent =
+            "-" + amountNum.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+        amountDiv.style.color = "white";
+        amountDiv.style.backgroundColor = "#ff0000ff";
+    }
+
+    box.appendChild(iconDiv);
+    box.appendChild(nameDiv);
+    box.appendChild(amountDiv);
+    container.appendChild(box);
+}
+function readSharedTransactionsFromSession() {
+    try {
+        const raw = sessionStorage.getItem('shared_transactions');
+        if (!raw) return [];
+        const arr = JSON.parse(raw);
+        return Array.isArray(arr) ? arr : [];
+    } catch {
+        return [];
+    }
+}
+
+
+function formatEuro(val) {
+    return Number(val).toLocaleString('it-IT', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + "€";
+}
+
+function parseEuro(text) {
+    if (!text) return 0;
+    const normalized = text
+        .replace(/[^\d,.\-]/g, '')   // lascia cifre, virgola, punto e segno
+        .replace(/\./g, '')          // rimuovi separatore migliaia
+        .replace(',', '.');          // usa punto decimale
+    const n = parseFloat(normalized);
+    return Number.isFinite(n) ? n : 0;
+}
+
+
+function computeSessionDeltasForToday() {
+  const sharedToday = readSharedTransactionsFromSession()
+    .filter(entry => !entry.createdAt || isSameDay(entry.createdAt));
+
+  // delta per i vari contatori
+  let totalDelta  = 0; 
+  let myDelta     = 0; 
+  let spentDelta  = 0; 
+  let incomeDelta = 0; 
+  
+  for (const entry of sharedToday) {
+    const tot = Number(entry.total) || 0;
+
+    // Le shared sono spese: impattano total e spent
+    totalDelta -= tot;
+    spentDelta += tot;
+
+    // --- Calcolo impatto personale ---
+    const payerIsMe = (entry.payer || '').trim().toLowerCase() === 'me';
+    const mePart = (entry.split || []).find(
+      p => (p.name || '').trim().toLowerCase() === 'me'
+    );
+
+    if (mePart) {
+      // Caso 1: "Me" è nello split -> impatto = quota personale
+      const myShare = Number(mePart.amount) || 0;
+      myDelta -= myShare;
+    } else if (payerIsMe) {
+      // Caso 2: "Me" NON nello split ma è il payer -> impatto = totale
+      myDelta -= tot;
+    }
+    // Caso 3: "Me" non è nello split e non è payer -> nessun impatto personale
+  }
+
+  return { totalDelta, myDelta, spentDelta, incomeDelta };
+}
+
+
 
 window.onclick = function (event) {
     if (!event.target.matches('#menu') && !event.target.matches("menu-content")) {
@@ -122,7 +303,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     loadSpent();
     loadBalance();
     loadTodayTransactions();
-    loadLastWeekTransactions();
 
 });
 
@@ -130,7 +310,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 async function loadIncome() {
     try {
         const accountId = getEffectiveAccountId();
-        console.log(accountId);
         const url = new URL(`http://${API_HOST}:8000/api.php`);
         url.searchParams.set("path", "income_sum");
         if (accountId) url.searchParams.set("accountId", accountId);
@@ -138,10 +317,18 @@ async function loadIncome() {
         const resSum = await fetch(url.toString());
         const sumData = await resSum.json();
 
-        document.getElementById("income-sum").textContent =
-            ((sumData.totale ?? 0)) + "€";
+        const el = document.getElementById("income-sum");
+        const base = Number(sumData.totale ?? 0);
+        if (el) {
+            el.dataset.baseValue = String(base);
+            el.textContent = formatEuro(base);
+        }
+
+        // applica i delta da sessionStorage
+        applySessionDeltaToIncomeAndSpent();
     } catch (err) {
-        document.getElementById("income-sum").textContent = "Errore caricamento entrate!";
+        const el = document.getElementById("income-sum");
+        if (el) el.textContent = "Errore caricamento entrate!";
         console.error(err);
     }
 }
@@ -156,10 +343,18 @@ async function loadSpent() {
         const resSum = await fetch(url.toString());
         const sumData = await resSum.json();
 
-        document.getElementById("spent-sum").textContent =
-            ((sumData.totale ?? 0)) + "€";
+        const el = document.getElementById("spent-sum");
+        const base = Number(sumData.totale ?? 0);
+        if (el) {
+            el.dataset.baseValue = String(base);
+            el.textContent = formatEuro(base);
+        }
+
+        // applica i delta da sessionStorage
+        applySessionDeltaToIncomeAndSpent();
     } catch (err) {
-        document.getElementById("spent-sum").textContent = "Errore caricamento uscite!";
+        const el = document.getElementById("spent-sum");
+        if (el) el.textContent = "Errore caricamento uscite!";
         console.error(err);
     }
 }
@@ -167,24 +362,25 @@ async function loadSpent() {
 async function loadBalance() {
     try {
         const qs = new URLSearchParams(window.location.search);
-        const pBalance = qs.get("balance");      // es: "123.45"
-        const pParts = qs.get("participants"); // es: "3"
+        const pBalance = qs.get("balance");       // es: "123.45" oppure null
+        const pParts = qs.get("participants");  // es: "3"     oppure null
         const tot = document.getElementById("tot-balance");
 
         // Se ho parametri in query → usali
-        if ((pBalance !== null) || (pParts !== null)) {
-            // balance
-            let balText = "";
-            if (pBalance !== null && pBalance !== "") {
-                const n = Number(pBalance);
-                balText = Number.isFinite(n)
-                    ? n.toLocaleString('it-IT', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + "€"
-                    : `${pBalance}€`;
-            }
-            if (tot) tot.textContent = balText;
+        if (pBalance !== null || pParts !== null) {
+            // Normalizza balance da query (se assente/NaN => 0)
+            const nRaw = Number(pBalance);
+            const n = Number.isFinite(nRaw) ? nRaw : 0;
 
-            // ► Participants tra "Total Balance" e data
-            upsertParticipantsLine(pParts);
+            if (tot) {
+                const n = Number.isFinite(Number(pBalance)) ? Number(pBalance) : 0;
+                tot.dataset.baseValue = String(n);
+                tot.textContent = formatEuro(n);
+                applyAllSessionDeltas();
+            }
+
+            // ► riga “Participants” (anche se pParts è null la nascondo)
+            upsertParticipantsLine(pParts ?? "");
 
             return; // non chiamare API se i parametri sono presenti
         }
@@ -213,7 +409,10 @@ async function loadBalance() {
         const balance = income - spent;
 
         if (tot) {
-            tot.textContent = balance.toLocaleString('it-IT', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + "€";
+            const base = balance;
+            tot.dataset.baseValue = String(base);
+            tot.textContent = formatEuro(base);
+            applyAllSessionDeltas();
         }
 
         // Nessun valore partecipanti in questo caso → nascondi la riga se esiste
@@ -229,10 +428,11 @@ async function loadBalance() {
 
 
 // Persone disponibili
-const PEOPLE = ["Mario Rossi", "Giulia Bianchi"];
+const PEOPLE = ["Mario Bianchi", "Sara Bianchi"];
 const getPersonByIndex = (i) => PEOPLE[i % PEOPLE.length];
 
 // ── OGGI ───────────────────────────────────────────────────────────────────────
+// ── TODAY / LASTWEEK ──────────────────────────────────────────────────────────
 async function loadTodayTransactions() {
     try {
         const accountId = getEffectiveAccountId();
@@ -241,143 +441,62 @@ async function loadTodayTransactions() {
         if (accountId) url.searchParams.set("accountId", accountId);
 
         const res = await fetch(url.toString());
-        const transactions = await res.json();
-        console.log(transactions);
+        const apiTransactions = await res.json();
 
-        if (!Array.isArray(transactions)) {
-            console.error("Errore: transactions non è un array!", transactions);
-            return;
-        }
+        // Containers
+        const todayContainer = document.getElementById("today-container");
+        const lastweekContainer = document.getElementById("lastweek-container");
 
-        const container = document.getElementById("today-container");
-        container.innerHTML = "";
+        if (todayContainer) todayContainer.innerHTML = "";
+        if (lastweekContainer) lastweekContainer.innerHTML = "";
 
-        if (transactions.length === 0) {
+        // 1) Dati da backend → mettiamo in LASTWEEK
+        if (Array.isArray(apiTransactions) && apiTransactions.length > 0) {
+            apiTransactions.reverse().forEach((t, i) => {
+                const who = getPersonByIndex(i); // PEOPLE fallback
+                appendTransactionBox(lastweekContainer, {
+                    name: t.nome ?? "Senza nome",
+                    who,
+                    amount: t.importo,
+                    tipo: t.tipo === "income" ? "income" : "expense",
+                    path: t.path || null
+                });
+            });
+        } else if (lastweekContainer) {
             const msg = document.createElement("div");
             msg.className = "no-transactions";
-            msg.textContent = "No transaction has been done for today";
-            container.appendChild(msg);
-            return;
+            msg.textContent = "No transaction found in the last week";
+            lastweekContainer.appendChild(msg);
         }
 
-        // Mostra dalla più recente alla meno recente
-        transactions.reverse().forEach((t, i) => {
-            const box = document.createElement("div");
-            box.className = "box-category";
-
-            const iconDiv = document.createElement("div");
-            iconDiv.className = "icon";
-            if (t.path) {
-                iconDiv.style.backgroundImage = `url('${t.path}')`;
-                iconDiv.style.backgroundSize = "cover";
-                iconDiv.style.backgroundPosition = "center";
+        // 2) Transazioni da sessionStorage → mettiamo in TODAY
+        const shared = readSharedTransactionsFromSession()
+            .filter(entry => !entry.createdAt || isSameDay(entry.createdAt))
+            .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+            let changes= sessionStorage.getItem("changes");
+            if(changes){
+                    appendTransactionBox(todayContainer, {
+                        name: "Vacation",
+                        who: "Me",
+                        amount: 30,
+                        tipo: "expense",
+                        path: "/images/Travel.png"
+                    });
+             
+                    document.getElementById("personal").textContent='190';
+                   
+                     applyAllSessionDeltas() ;
             }
+                    
 
-            const nameDiv = document.createElement("div");
-            nameDiv.className = "transaction-name";
-            const who = getPersonByIndex(i);
-            nameDiv.textContent = `${t.nome ?? "Senza nome"} • by ${who}`;
 
-            const amountDiv = document.createElement("div");
-            amountDiv.className = "amount";
-            if (t.tipo === "income") {
-                amountDiv.textContent = "+" + t.importo + " €";
-                amountDiv.style.color = "white";
-                amountDiv.style.backgroundColor= "green";
-            } else {
-                amountDiv.textContent = "-" + t.importo + " €";
-                amountDiv.style.color = "white";
-                amountDiv.style.backgroundColor= "#ff0000ff";
-            }
-
-            box.appendChild(iconDiv);
-            box.appendChild(nameDiv);
-            box.appendChild(amountDiv);
-            container.appendChild(box);
-        });
+        // 3) aggiorna i saldi in base al sessionStorag
     } catch (err) {
-        console.error("Errore durante il caricamento transazioni odierne:", err);
+        console.error("Errore durante il caricamento transazioni:", err);
     }
 }
 
-// ── SETTIMANA SCORSA ──────────────────────────────────────────────────────────
-async function loadLastWeekTransactions() {
-    try {
-        const accountId = getEffectiveAccountId();
-        const url = new URL(`http://${API_HOST}:8000/api.php`);
-        url.searchParams.set("path", "last_week_transactions");
-        if (accountId) url.searchParams.set("accountId", accountId);
 
-        const res = await fetch(url.toString());
-        const transactions = await res.json();
-
-        if (!Array.isArray(transactions)) {
-            console.error("Errore: transactions non è un array!", transactions);
-            return;
-        }
-
-        const container = document.getElementById("lastweek-container");
-        container.innerHTML = "";
-
-        if (transactions.length === 0) {
-            const msg = document.createElement("div");
-            msg.className = "no-transactions";
-            msg.textContent = "No transaction for the last week";
-            msg.style.textAlign = "center";
-            msg.style.color = "gray";
-            msg.style.padding = "10px";
-            container.appendChild(msg);
-            return;
-        }
-
-        transactions.forEach((t, i) => {
-            const box = document.createElement("div");
-            box.className = "box-category";
-
-            const iconDiv = document.createElement("div");
-            iconDiv.className = "icon";
-            if (t.path) {
-                iconDiv.style.backgroundImage = `url('${t.path}')`;
-                iconDiv.style.backgroundSize = "cover";
-                iconDiv.style.backgroundPosition = "center";
-            }
-
-            const nameDiv = document.createElement("div");
-            nameDiv.className = "transaction-name";
-
-            const nameLine = document.createElement("div");
-            nameLine.textContent = t.nome ?? "Senza nome";
-
-            const personLine = document.createElement("div");
-            personLine.className = "transaction-person";
-            personLine.textContent = "by " + getPersonByIndex(i);
-
-            nameDiv.appendChild(nameLine);
-            nameDiv.appendChild(personLine);
-
-            const amountDiv = document.createElement("div");
-            amountDiv.className = "amount";
-            if (t.tipo === "income") {
-                amountDiv.textContent = "+" + t.importo + " €";
-                amountDiv.style.color = "white";
-                amountDiv.style.backgroundColor= "green";
-            } else {
-                amountDiv.textContent = "-" + t.importo + " €";
-                amountDiv.style.color = "white";
-                amountDiv.style.backgroundColor= "#ff0000ff";
-            }
-
-            box.appendChild(iconDiv);
-            box.appendChild(nameDiv);
-            box.appendChild(amountDiv);
-
-            // prepend per avere la più recente in alto, come facevi già
-            container.prepend(box);
-        });
-    } catch (err) {
-        console.error("Errore durante il caricamento transazioni settimana scorsa:", err);
-    }
-}
 
 function loadName() {
     const qs = new URLSearchParams(window.location.search);
@@ -417,9 +536,7 @@ async function setCurrentAccount(id) {
     await Promise.allSettled([
         loadIncome(),
         loadSpent(),
-        loadBalance(),
-        loadTodayTransactions(),
-        loadLastWeekTransactions()
+        loadBalance()
     ]);
 
     // se in pagina hai anche i grafici con i bottoni periodo:

@@ -193,16 +193,16 @@ margin-left: 12.75px;
     background-color: #152C5C;
     margin: 0 auto;
     margin-top: 15px;
-    width: 280px;
+    width: 290px;
     height:50px;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-between;
     border-radius: 5px;
     border: black 2px solid;
     color: white;
-    margin-left: 0.5px;
+   
     
 }
 
@@ -220,6 +220,7 @@ margin-left: 12.75px;
     border-radius: 50px;
     background-color: rgb(255, 255, 255);
     opacity: 1;
+    margin-left: 1px;
 }
 
 .icon-selected {
@@ -429,11 +430,12 @@ margin-left: 12.75px;
 }
 
 .category-spent {
-    width: 80px;
+    width: 72px;
     text-align: center;
-    height: 24px;
-    border-radius:5px;
-    margin-top: 4px;
+    font-size: 14px;
+    height: 18px;
+    border-radius: 5px;
+    margin-top: 1px;
 }
 
 .warning-category-popup{
@@ -505,9 +507,10 @@ margin-left: 12.75px;
   font-weight: bold;
 }
 .category-limit{
-    margin-right: -8px;
+        margin-right: -10px;
     margin-left: 4px;
-    text-align: center;
+    text-align: start;
+    font-size: 14px;
 }
 
 .chart-container {

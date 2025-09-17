@@ -489,6 +489,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
       } else {
         showPopup("Your cash transaction has been saved");
+        goBack();
       }
     } catch (err) {
       console.error(err);

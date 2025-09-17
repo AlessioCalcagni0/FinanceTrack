@@ -83,7 +83,7 @@ $apiHost = $_ENV['DB_HOST'] ;
                     <div id="participants-line" class="participants-line"></div>
                     
                 </div>
-                <div  class="personal"> 200€</div>
+                <div id="personal"  class="personal"> 200€</div>
                 <div id="tot-balance" class="balance-amount"></div>
             </div>
             <div class="spent-income">

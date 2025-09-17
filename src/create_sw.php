@@ -76,7 +76,6 @@ $apiHost = $_ENV['DB_HOST'] ;
 
                 <div class="hiddenName"  id="selectPartecipants" style=" flex-direction:row">
                     <h3 >Select participants</h3>
-                    <button id="tutorialBtn" class="help-btn" style="display: block;">?</button>                
                 </div>
                 
                 <!-- Participants (hiddenName) -->
