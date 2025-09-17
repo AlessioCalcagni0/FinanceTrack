@@ -177,17 +177,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     // -----------------------------
     // DATI TUTORIAL
     // -----------------------------
+
+
+ 
+  
     const images = [
-        "../tutorial/add_transaction/1.png",
-        "../tutorial/add_transaction/2.png",
-        "../tutorial/add_transaction/3.png",
-        "../tutorial/add_transaction/4.png"
+         "../tutorial/add_shared_transaction/1.png",
+      "../tutorial/add_shared_transaction/2.png"
     ];
     const descriptions = [
-        'Step 1: Enter the import in the input field "Enter the amount"',
-        "Step 2: Now you can choose categories or to leave it as uncategorized transaction",
-        "Step 3: Tap on categories and enter the amount spent in the corresponding fields",
-        "Step 4: Make sure that you enter all the amount by checking the progress and then press Confirm!"
+        "Step 1: Press Add shared transaction.",
+        "Step 2: Complete the form by filling all the sections and splitting the import among participants."
     ];
 
     // -----------------------------

@@ -13,6 +13,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const skipBtn = document.getElementById("skipButton");
   const backarrow = document.getElementById("back-arrow"); 
 
+  function goBack(){
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = "/";
+      }
+    }
 
   // -----------------------------
   // ELEMENTI UI – SEZIONI / CATEGORIE
@@ -539,7 +546,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       resetAllCategories();
       closeAll();
-      window.location.href = "../cash_page.php"
+      goBack();
     };
 
     if (keepBtn) keepBtn.addEventListener("click", closeAll, { once: true });

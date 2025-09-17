@@ -81,7 +81,7 @@ $user_id = $_SESSION['user_id'] ?? "1";
 
   <!-- Tutorial -->
 <div class="popup-tutorial" id="popup-tutorial" role="dialog" aria-modal="true" aria-labelledby="tutorial-description">
-  <h1 class="title">How to add a cash transaction</h1>
+  <h1 class="title">How to create a goal</h1>
   <button id="skipButton" class="skipButton" type="button">Skip</button>
   <img id="tutorial-image" alt="Step 1">
   <div class="description" id="tutorial-description"></div>

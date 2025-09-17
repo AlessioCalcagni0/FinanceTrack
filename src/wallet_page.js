@@ -557,17 +557,12 @@ function openModifyPopup(account) {
 
     // CONFIRM
     document.getElementById("modifyConfirmBtn").onclick = async () => {
-        const selectedIcon = document.querySelector("#modifyAccountPopup .icon.icon-selected");
-        if (!selectedIcon) {
-            showPopup("Select an icon!", "error");
-            return;
-        }
+     
 
         const newData = {
-            id: idInput.value,
+            id: 1,
             name: nameInput.value.trim(),
             type: typeInput.value.trim(),
-            path: selectedIcon.dataset.img
         };
 
         if (!newData.name || !newData.type) {
@@ -590,7 +585,6 @@ function openModifyPopup(account) {
 
                 nameInput.value = "";
                 typeInput.value = "";
-                icons.forEach(i => i.classList.remove("icon-selected"));
 
                 showPopup("Wallet successfully updated!", "success");
                 loadAccounts();

@@ -40,7 +40,7 @@ $apiHost = $_ENV['DB_HOST'] ;
                 <a href="/cash_page.php">Cash Wallet</a>
                 <!-- la sezione "Add Transaction" è stata temporaneamente sostituita con un riferimento agli account di tipo "cash". -->
                 <h2>Insights</h2>
-                <a href="closeMenu()">Dashboard</a>
+                <a onclick="closeMenu()">Dashboard</a>
                 <a href="/categories.php">Spending by Category</a>
                 <h2>Goals</h2>
                 <a href="/goals.php">Overview</a>

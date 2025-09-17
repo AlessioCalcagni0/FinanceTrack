@@ -1,5 +1,38 @@
 function goBack(){ window.location.href = "./goals.php"; }
 
+async function confirmDeleteGoal(id, name){
+  openConfirm({
+    title: `Delete "${name}"?`,
+    message: 'This will remove the goal and its contributions.',
+    confirmText: 'Delete',
+    cancelText: 'Cancel',
+    confirmColor: '#ef4444', // rosso "danger"
+    onConfirm: async () => {
+      try{
+        const res = await fetch('./api.php?path=delete_goal', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ id })
+        });
+        const data = await res.json();
+        if(data && data.success){
+          // opzionale: piccolo popup "Saved/Deleted"
+          showPopup('Goal deleted');
+          // refresh immediato comunque
+          if (typeof loadScore === 'function') loadScore();
+        }else{
+          showPopup('Delete failed: ' + (data?.error || 'not found'));
+        }
+      }catch(e){
+        console.error(e);
+        showPopup('Network error');
+      }
+    }
+
+  });
+}
+
+
 let CURRENT_GOAL = null;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -90,8 +123,9 @@ async function handleAddFunds(){
 
 async function handleDeleteGoal(){
   if(!window.GOAL_ID) return;
-  const ok = confirm('Delete this goal?\nThis will remove the goal and all its contributions.');
-  if(!ok) return;
+  
+  confirmDeleteGoal('Delete this goal?\nThis will remove the goal and all its contributions.');
+
   try{
     const res = await fetch('./api.php?path=delete_goal', {
       method:'POST', headers:{'Content-Type':'application/json'},

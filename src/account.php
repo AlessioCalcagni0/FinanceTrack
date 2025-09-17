@@ -2,6 +2,13 @@
 session_start();
 
 $user_id =  1 ;
+// carico dotenv (opzionale, se usi .env con phpdotenv)
+require __DIR__ . '/vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+// recupero la variabile (può venire da .env o fallback)
+$apiHost = $_ENV['DB_HOST'] ;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,6 +22,7 @@ $user_id =  1 ;
   <script>
     window.USER_ID = "<?= htmlspecialchars($user_id, ENT_QUOTES) ?>";
   </script>
+  <script> const API_HOST = "<?php echo $apiHost; ?>";</script>
   <script src="account.js" defer></script>
 </head>
 <body>

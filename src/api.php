@@ -325,18 +325,15 @@ if ($path === "add_account") {
 
 if ($path === "update_account") {
     try {
-        $data =1;
+         $data = getJsonInput();
+        $id= $data["id"];
+        $name    = $data["name"]   ?? 'Account';
+        $type   = $data["type"]  ?? 'bank';
         
 
-        $fields = [];
-        $params = [":id"=>$data];
-        if (isset($data["name"])) { $fields[]="name=:name"; $params[":name"]=$data["name"]; }
-        if (isset($data["type"])) { $fields[]="type=:type"; $params[":type"]=$data["type"]; }
-        if (isset($data["path"])) { $fields[]="path=:path"; $params[":path"]=$data["path"]; }
-
-        if(empty($fields)) throw new Exception("Nessun campo da aggiornare");
-
-        $sql = "UPDATE account SET ".implode(", ", $fields).", last_sync=NOW() WHERE id=:id";
+      
+     
+        $sql = "UPDATE account SET name=:name, type=:type, last_sync=NOW() WHERE id=:id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
 
@@ -1288,6 +1285,7 @@ if ($path === "me") {
         $st = $pdo->prepare("SELECT id, name, surname, email, birth, tel, photo, created_at FROM users WHERE id = :id");
         $st->execute([":id"=> $userId]);
         $user = $st->fetch(PDO::FETCH_ASSOC);
+        http_response_code(200);
         echo json_encode(["user"=>$user]);
     } catch(PDOException $e) {
         http_response_code(500);

@@ -305,7 +305,9 @@ body {
   justify-content: space-around;  /* distribuisce gli item */
   align-items: center;
   position: fixed;
-  bottom:01px; left: 0; right: 0;
+  bottom:0px; 
+  left: 0; 
+  right: 0;
   height: 70px;
   background: #fff;
   z-index: 1;

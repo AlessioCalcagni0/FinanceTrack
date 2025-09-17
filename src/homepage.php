@@ -32,7 +32,7 @@ $apiHost = $_ENV['DB_HOST'] ;
             <img onclick="closeMenu()" class="back-arrow" src="/images/icons8-back-arrow-50.png" >
 
             <div id="menu-content" class="dropdown-content">
-                <h2 style="margin-top: 20%;"  >Home</h2>
+                <h2 style="margin-top: 20%;" onclick="closeMenu()" >Home</h2>
                 <h2>Wallets</h2>
                 <a href="/wallet_page.php">All Wallets</a>
                 <a href="/sharedWallet.php">Shared Wallets</a>
@@ -74,7 +74,7 @@ $apiHost = $_ENV['DB_HOST'] ;
      
          <div class="home-container">
             <div class="home active" onclick="openTab('goals', this)" id="goal">Goals</div>
-            <div class="home" onclick="openTab('wallets', this)" id="wallet">Wallets</div>
+            <div class="home" onclick="openTab('wallets', this)" id="wallet">Shared Wallets</div>
         </div>
 
         <!-- Goals Content -->

@@ -68,14 +68,14 @@ $apiHost = $_ENV['DB_HOST'] ;
     
     <div class="popup" id="confirm-popup">
         <img src="images/Green_Tick.png">
-        <p>Your cash transaction has been saved.</p>
+        <p>Your shared transaction has been saved.</p>
         <button id="ok-button" onclick="closeConfirmPopup()">OK</button>
     </div>
     <div id="overlay" class="overlay"></div>
 
     <div class="popup" id="warning-popup">
         <img src="images/Warning.png">
-        <p>Your cash transaction has been saved but you have reached the budget limits for the following categories: </p>
+        <p>Your shared transaction has been saved but you have reached the budget limits for the following categories: </p>
         <button id="ok-button" onclick="closeWarningPopup()">OK</button>
     </div>
     <div id="overlay" class="overlay"></div>
@@ -83,7 +83,7 @@ $apiHost = $_ENV['DB_HOST'] ;
 
     
     <div class="popup-tutorial" id="popup-tutorial">
-            <h1 class="title">How to add a cash transaction</h1>
+            <h1 class="title">How to add a shared transaction</h1>
             <button id="skipButton" class="skipButton">
                 Skip <i class="fa-solid fa-forward"></i>
             </button>

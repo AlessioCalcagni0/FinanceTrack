@@ -80,8 +80,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function loadMe(){
+ 
   try{
     const res = await fetch(`http://${API_HOST}:8000/api.php?path=me`);
+     console.log("started");
     const data = await res.json();
     console.log("data:d",data);
     const u = data && data.user ? data.user : null;

@@ -378,7 +378,7 @@ function showPopupAndBack(message, categories = []) {
     'Step 1: Enter the goal name and select a goal type',
     "Step 2: Insert the target savings amount",
     "Step 3: Choose a deadline",
-    'Step 4: Select a saving source from your wallets and press "Save Goal"'
+    'Step 4: Select a saving source from your wallets and press "Save Goal". The saving sources displayed are the wallets you have created or imported.'
   ];
 
   // -----------------------------

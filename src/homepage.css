@@ -155,7 +155,7 @@ main::-webkit-scrollbar-thumb {
   display: none;
   position: absolute;
   margin-top: -223%;
-  padding-top: 0%;
+      padding-top: 218%;
   margin-left: -57%;
   background-color: #0B4E92;
   width: 200px;
@@ -508,7 +508,7 @@ section .card .image img {
     border-radius: 5px;
     border: #8451AC 2px solid;
     color: #000;
-    margin-left: 20px;
+    margin-left: 0px;
     font-size: 10px;
 }
 

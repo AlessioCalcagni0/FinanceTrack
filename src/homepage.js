@@ -56,7 +56,7 @@ async function fetchImage(userid) {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
         });
-
+        console.log(res);
         const out = await res.json().catch(() => ({}));
         if (!res.ok || out.error) throw new Error(out.error || `HTTP ${res.status}`);
 
