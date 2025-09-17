@@ -141,15 +141,15 @@ const TUTORIALS = {
       "../tutorial/create_wallet/4.png"
     ],
     descriptions: [
-      "Step 1: Tap on add account button.",
-      "Step 2: By tapping on Bank account , it will show you the form to fill with all information",
-      "Step 3: By tapping on Card account , you have to insert card information ",
+      "Step 1: Tap on add wallet button.",
+      "Step 2: By tapping on Bank wallet , it will show you the form to fill with all information",
+      "Step 3: By tapping on Card Wallet , you have to insert card information ",
       "Step 4: If you want to edit your wallet then click on modify button related to it .",
       "Step 5: Now you can choose to edit it or to delete it",
     ]
   },
   "add-transaction": {
-    title: "Add transaction",
+    title: "Add cash transaction",
     images: [
       "../tutorial/add_transaction/1.png",
       "../tutorial/add_transaction/2.png",
