@@ -8,3 +8,6 @@ function togglePassword() {
   icon.classList.toggle("fa-eye");
   icon.classList.toggle("fa-eye-slash");
 }
+
+
+sessionStorage.setItem("firstTime", 1);

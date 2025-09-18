@@ -123,6 +123,23 @@ $apiHost = $_ENV['DB_HOST'] ;
         </div>
         </div>
 
+
+        <div class="popup-tutorial" id="popup-tutorial">
+            <h1 class="title">Introduction </h1>
+            <button id="skipButton" class="skipButton">
+                Skip <i class="fa-solid fa-forward"></i>
+            </button>
+            <img id="tutorial-image"  alt="Step 1">
+            <div class="description" id="tutorial-description"></div>
+                <div class="buttons">
+                    <button class="back" id="backBtn" disabled>Back</button>
+                    <button class="next" id="nextBtn">Next</button>
+                </div>
+            </div>
+    </div>
+
+    <div class="overlay" id="overlay-tutorial"></div>
+
     
     <div id="overlay"></div>
 

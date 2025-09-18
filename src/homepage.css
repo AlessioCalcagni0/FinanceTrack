@@ -140,7 +140,7 @@ main::-webkit-scrollbar-thumb {
   margin-top: 15%;
   margin-bottom: 20%;
   margin-right: auto;
- margin-left: 2%;
+    margin-left: 2%;
 }
 
 
@@ -155,7 +155,7 @@ main::-webkit-scrollbar-thumb {
   display: none;
   position: absolute;
   margin-top: -223%;
-      padding-top: 218%;
+      padding-top: 204%;
   margin-left: -57%;
   background-color: #0B4E92;
   width: 200px;
@@ -674,6 +674,17 @@ section .card .image img {
   display: block;
 }
 
+.overlay{
+    position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  background: rgba(0,0,0,0.5); /* sfondo nero trasparente */
+  display: none; /* nascosto di default */
+  z-index: 2; 
+}
 
 
 /* Overlay & modal per shared wallets */
@@ -713,7 +724,9 @@ section .card .image img {
     display: block;
 }
 
-
+.h1 title{
+  text-align: center;
+}
 
 .sw-header {
     display: flex;
@@ -942,4 +955,110 @@ section .card .image img {
     box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
     display: none;
     z-index: 2002;
+}
+
+.popup-tutorial {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    height: 800px;
+    display: none;
+    /* inizialmente nascosto */
+    flex-direction: column;
+    justify-content: space-between;
+    position: fixed;
+      top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+    transition: 200ms ease-in-out;
+}
+
+
+
+.popup-tutorial img {
+    width: 268px;
+    height: 551px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    margin-left: 19px;
+}
+
+/* Bottoni */
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.buttons button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.back {
+    background: #ddd;
+}
+
+.next {
+    background: #007bff;
+    color: white;
+}
+
+.ok {
+    background: #28a745;
+    color: white;
+}
+
+.help-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    transition: background 0.2s;
+    margin-top: 18px;
+    margin-left: 10px;
+}
+
+.help-btn:hover {
+    background: #0056b3;
+}
+
+#overlay-tutorial {
+    z-index: 10;
+    pointer-events: none;
+}
+
+.description {
+    width: 300px;
+    height: 100px;
+    text-align: center;
+}
+
+#back-arrow {
+    transform: scale(0.65);
+}
+
+.skipButton {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    max-width: 100px;
+    margin-left: 200px;
+
 }

@@ -115,6 +115,22 @@ $apiHost = $_ENV['DB_HOST'] ;
                 </div>
             </form>
 
+    <div class="popup-tutorial" id="popup-tutorial">
+            <h1 class="title">Shared wallet creation </h1>
+            <button id="skipButton" class="skipButton">
+                Skip <i class="fa-solid fa-forward"></i>
+            </button>
+            <img id="tutorial-image"  alt="Step 1">
+            <div class="description" id="tutorial-description"></div>
+                <div class="buttons">
+                    <button class="back" id="backBtn" disabled>Back</button>
+                    <button class="next" id="nextBtn">Next</button>
+                </div>
+            </div>
+    </div>
+
+    <div class="overlay" id="overlay-tutorial"></div>
+
     <div id="overlay-cancel" class="overlay " style="z-index: 90;"></div> 
     <div class="popup-cancel" id="popup-cancel">
         <h1>Are you sure to cancel the operation?</h1>

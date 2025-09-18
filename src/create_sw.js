@@ -137,6 +137,7 @@ function showCancelPopup(value) {
 
 
 
+  let currentStep = 0;
 
 document.addEventListener("DOMContentLoaded", () => {
   const walletName = document.getElementById("walletName");
@@ -153,7 +154,95 @@ document.addEventListener("DOMContentLoaded", () => {
   const cancel = document.getElementById("cancel");
   const confirm = document.getElementById("confirm");
 
-  
+  const tutorialBtn = document.getElementById("tutorialBtn");
+  const overlayTutorial = document.getElementById("overlay-tutorial");
+  const popupTutorial = document.getElementById("popup-tutorial");
+  const tutorialImage = document.getElementById("tutorial-image");
+  const tutorialDescription = document.getElementById("tutorial-description");
+  const backBtn = document.getElementById("backBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const skipBtn = document.getElementById("skipButton");
+  const backarrow = document.getElementById("back-arrow"); 
+     
+
+  const images =  [
+      "../tutorial/create_shared_wallet/2.png",
+      "../tutorial/create_shared_wallet/3.png",
+      "../tutorial/create_shared_wallet/4.png"
+    ];
+  const descriptions=  [
+      "Step 1: Insert the name for the new shared wallet",
+      "Step 2: Complete the fields by adding participants and selecting their roles.",
+      "Step 3: When selecting the role you are always the admin since you are creating it. Then you can choose if a participant can be a viewer or an editor(can add shared transaction) "
+    ];
+
+  const qs = (sel, root = document) => root.querySelector(sel);
+  const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  function updateTutorial() {
+    tutorialImage.src = images[currentStep];
+    tutorialDescription.textContent = descriptions[currentStep];
+    backBtn.disabled = currentStep === 0;
+
+    if (currentStep === images.length - 1) {
+      nextBtn.textContent = "OK";
+      nextBtn.classList.remove("next");
+      nextBtn.classList.add("ok");
+    } else {
+      nextBtn.textContent = "Next";
+      nextBtn.classList.remove("ok");
+      nextBtn.classList.add("next");
+    }
+  }
+
+  function resetTutorial() {
+    currentStep = 0;
+    backBtn.disabled = true;
+    nextBtn.textContent = "Next";
+    nextBtn.classList.remove("ok");
+    nextBtn.classList.add("next");
+    tutorialImage.src = images[0];
+    tutorialDescription.textContent = descriptions[0];
+  }
+
+
+   if (tutorialBtn && overlayTutorial && popupTutorial) {
+    tutorialBtn.addEventListener("click", () => {
+      overlayTutorial.classList.add("overlayactive");
+      popupTutorial.classList.add("show");
+      updateTutorial();
+    });
+
+    backBtn?.addEventListener("click", () => {
+      if (currentStep > 0) {
+        currentStep--;
+        updateTutorial();
+      }
+    });
+
+    skipBtn?.addEventListener("click", () => {
+      overlayTutorial.classList.remove("overlayactive");
+      popupTutorial.classList.remove("show");
+      resetTutorial();
+    });
+
+    nextBtn?.addEventListener("click", () => {
+      if (currentStep < images.length - 1) {
+        currentStep++;
+        updateTutorial();
+      } else {
+        overlayTutorial.classList.remove("overlayactive");
+        popupTutorial.classList.remove("show");
+        resetTutorial();
+      }
+    });
+
+    overlayTutorial.addEventListener("click", () => {
+      overlayTutorial.classList.remove("overlayactive");
+      popupTutorial.classList.remove("show");
+      resetTutorial();
+    });
+  }
 
   //Reveal sections once wallet name is filled
   walletName.addEventListener("input", () => {
